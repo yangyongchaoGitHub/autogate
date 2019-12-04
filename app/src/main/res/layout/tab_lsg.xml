@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tab_lsg"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_margin="10dp"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="IP Address:" />
+    <EditText
+        android:id="@+id/ed_ipaddr"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:text="192.168.0.222" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="Port:" />
+    <EditText
+        android:id="@+id/ed_port"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:text="6012" />
+    <Button
+        android:id="@+id/btn_open"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Open" />
+
+    <Button
+        android:id="@+id/btn_close"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Close" />
+
+</LinearLayout>

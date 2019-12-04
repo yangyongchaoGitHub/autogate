@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tab_command"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" 
+    android:layout_margin="10dp">
+
+    <Button
+        android:id="@+id/btn_get_dev_info"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Get Device Information" />
+    
+    <Button
+        android:id="@+id/btn_get_passing_counter"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Get passing counter" />
+
+    <Button
+        android:id="@+id/btn_reset_passing_counter"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Reset passing counter" />
+
+    <Button
+        android:id="@+id/btn_reverse_direction"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Reverse Direction" />
+
+    <Button
+        android:id="@+id/btn_get_system_time"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Get System Time" />
+
+    <Button
+        android:id="@+id/btn_set_system_time"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Set System Time" />
+    
+    <Button
+        android:id="@+id/btn_set_output"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Set Output" />
+
+</LinearLayout>

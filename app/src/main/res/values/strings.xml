@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AutoGate</string>
+    <string name="back">返回</string>
+    <string name="IP">IP:</string>
+    <string name="port">端口:</string>
+    <string name="reconnect">更改并重新连接</string>
+</resources>
