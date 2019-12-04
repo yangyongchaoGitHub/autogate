@@ -141,7 +141,6 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
 
                         iv_head.setImageBitmap(bitmap);
                     }
-
                 }
             });
         }
