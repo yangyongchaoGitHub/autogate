@@ -13,7 +13,9 @@ import java.util.ArrayList;
 
 public class DBUtils {
     private final String TAG = DBUtils.class.getSimpleName();
-    private final String dbname = "gate_user";
+    public final static String TABLE_USER = "gate_user";
+    public final static String TABLE_CARD_RECORD = "gate_card_record";
+
     private final String dbnamePath = "/gate.db";
     private SQLiteDatabase db;
 
@@ -34,9 +36,10 @@ public class DBUtils {
      */
     public void create(Context contenxt) {
         String path = contenxt.getCacheDir().getPath() + dbnamePath;
-        Log.i(TAG, "path========="+ path);
+        Log.i(TAG, "db path========="+ path);
         db = SQLiteDatabase.openOrCreateDatabase(path, null);
-        String sql = "create table if not exists " + dbname +
+
+        String sql_user = "create table if not exists " + TABLE_USER +
                 "(id integer primary key autoincrement," +
                 "name nchar(50), " +
                 "company nchar(50), " +
@@ -44,65 +47,47 @@ public class DBUtils {
                 "cardcode nchar(50), " +
                 "gender int, " +
                 "code nchar(50))";
-        db.execSQL(sql);//创建表
+
+        String sql_card_record = "create table if not exists " + TABLE_CARD_RECORD +
+                "(id integer primary key autoincrement," +
+                "number nchar(50), " +
+                "direction nchar(50), " +
+                "time nchar(50))";
+        db.execSQL(sql_user);//创建表 user
+        db.execSQL(sql_card_record);//创建表 card_record
+    }
+
+    //添加数据基础方法
+    public long insert(String tebleName, String nullColumnHack, ContentValues contentValues) {
+        return db.insert(tebleName, nullColumnHack, contentValues);
     }
 
     /**
-     * 添加数据
-     * bsid 添加的数据ID
-     * name 添加数据名称
+     * 查询全部的基本方法
      */
-    public long insertData(String name, String company, String position, String cardcode, int gender, String code) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("name", name);
-        contentValues.put("company", company);
-        contentValues.put("cardcode", cardcode);
-        contentValues.put("position", position);
-        contentValues.put("gender", gender);
-        contentValues.put("code", code);
-        return db.insert(dbname, null, contentValues);
-    }
-
-    /**
-     * 查询数据
-     * 返回List
-     */
-    public ArrayList<User> listAll() {
-        ArrayList<User> list = new ArrayList<>();
-        Cursor cursor = db.query(dbname, null, null, null, null, null, null);
-
-        while (cursor.moveToNext()) {
-            int id = cursor.getInt(cursor.getColumnIndex("id"));
-            String name = cursor.getString(cursor.getColumnIndex("name"));
-            String company = cursor.getString(cursor.getColumnIndex("company"));
-            String cardcode = cursor.getString(cursor.getColumnIndex("cardcode"));
-            String position = cursor.getString(cursor.getColumnIndex("position"));
-            int gender = cursor.getInt(cursor.getColumnIndex("gender"));
-            String code = cursor.getString(cursor.getColumnIndex("code"));
-            list.add(new User(id, name, company, cardcode, position, gender, code));
-        }
-
-        cursor.close();
-        return list;
+    public Cursor listAll(String table_name, String[] columns, String selection,
+                          String[] selectionArgs, String groupBy, String having,
+                          String orderBy) {
+        return db.query(table_name, columns, selection, selectionArgs, groupBy, having, orderBy);
     }
 
     /**
      * 根据ID删除数据
      * id 删除id
      */
-    public int delData(int id) {
+    public int delData(String table, int id) {
         Log.e(TAG, "id==============" + id);
-        int inde = db.delete(dbname, "id = ?", new String[]{String.valueOf(id)});
+        int inde = db.delete(table, "id = ?", new String[]{String.valueOf(id)});
         Log.e(TAG, "删除了==============" + inde);
         return inde;
     }
 
     /**
-     * 根据
+     * 删除整个table
      *
      */
-    public int delDataAll() {
-        int inde = db.delete(dbname,null,null);
+    public int delDataAll(String table) {
+        int inde = db.delete(table,null,null);
         Log.e("--Main--", "删除了==============" + inde);
         return inde;
     }
@@ -110,29 +95,20 @@ public class DBUtils {
     /**
      * 根据ID修改数据
      * id 修改条码的id
-     * bsid 修改的ID
-     * name 修改的数据库
      */
-    public int modifyData(int id, int bsid, String name) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("name", name);
-        contentValues.put("bsid", id);
-        int index = db.update(dbname, contentValues, "id = ?", new String[]{String.valueOf(id)});
+    public int modifyData(String table, int id, ContentValues contentValues, String name) {
+        int index = db.update(table, contentValues, "id = ?", new String[]{String.valueOf(id)});
         Log.e("--Main--", "修改了===============" + index);
         return index;
     }
 
     /**
-     * 查询code单个数据
+     * 查询单个数据是否存在
      * @param code
      * @return
      */
-    public boolean findByCode(String code) {
+    public Cursor findBy(String table, String where, String code) {
         //查询数据库
-        Cursor cursor = db.query(dbname, null, "code = ?", new String[]{code}, null, null, null);
-        while (cursor.moveToNext()) {
-            return true;
-        }
-        return false;
+       return db.query(table, null, where + " = ?", new String[]{code}, null, null, null);
     }
 }

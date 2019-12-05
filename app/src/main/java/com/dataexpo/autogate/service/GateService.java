@@ -161,7 +161,6 @@ public class GateService extends GateSubject {
 
                     if (nCount > 0)
                     {
-                        Log.i(TAG, "----------------------------------------------");
                         Vector<ReportData> mReports = new Vector<ReportData>();
                         Object hReport = m_reader
                                 .RDR_GetTagDataReport(RfidDef.RFID_SEEK_FIRST);
@@ -207,9 +206,9 @@ public class GateService extends GateSubject {
                                 System.arraycopy(reportBuf, 9, byData, 0,
                                         dataLen);
                                 ReportData report = new ReportData();
-                                report.setStrData(GFunction.encodeHexStr(byData));
-                                report.setStrDirection(direction == 1 ? "In" : (direction == 2 ? "Out" : "null"));
-                                report.setStrTime(GFunction.encodeHexStr(time));
+                                report.setNumber(GFunction.encodeHexStr(byData));
+                                report.setDirection(direction == 1 ? "In" : (direction == 2 ? "Out" : "null"));
+                                report.setTime(GFunction.encodeHexStr(time));
                                 mReports.add(report);
                                 hReport = m_reader
                                         .RDR_GetTagDataReport(RfidDef.RFID_SEEK_NEXT);

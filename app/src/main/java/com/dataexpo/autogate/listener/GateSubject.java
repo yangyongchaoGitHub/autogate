@@ -7,16 +7,18 @@ import java.util.List;
 import java.util.Vector;
 
 public abstract class GateSubject {
+    //观察者列表
     protected List<GateObserver> gateObservers =new ArrayList<GateObserver>();
-
+    //增加观察者的方法
     public void add(GateObserver gateObserver)
     {
         gateObservers.add(gateObserver);
     }
-    //删除观察者方法
+    //删除观察者的方法
     public void remove(GateObserver gateObserver)
     {
         gateObservers.remove(gateObserver);
     }
-    public abstract void notifyObserver(int status, Vector<ReportData> mReports); //通知观察者方法
+    //通知观察者的方法
+    public abstract void notifyObserver(int status, Vector<ReportData> mReports);
 }

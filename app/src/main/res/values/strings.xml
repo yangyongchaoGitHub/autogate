@@ -4,4 +4,6 @@
     <string name="IP">IP:</string>
     <string name="port">端口:</string>
     <string name="reconnect">更改并重新连接</string>
+    <string name="title">中国国际春节博览会</string>
+    <string name="bottom">2019</string>
 </resources>

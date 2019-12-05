@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.dataexpo.autogate.comm.FileUtils;
+import com.dataexpo.autogate.comm.JsonUtil;
 import com.dataexpo.autogate.listener.IGetMessageCallBack;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -20,20 +23,22 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import com.dataexpo.autogate.listener.*;
+import com.dataexpo.autogate.model.User;
+
+import java.io.File;
 
 public class MQTTService {
     private static final String TAG = MQTTService.class.getSimpleName();
     private Context mContext;
-    private static String host = "";
-    private static String userName = "";
-    private static String password = "";
-    private static String topic = "";
-    private String  clientId = "";
+    private static String host = "tcp://192.168.1.4:61616";
+    private static String userName = "admin";
+    private static String password = "admin";
+    private static String topic = "testpn";
+    private String  clientId = "2dc3a0d48b0c4b2f987f2e448379edea";
 
     private static MqttAndroidClient client;
     private MqttConnectOptions options;
     private IGetMessageCallBack iGetMessageCallBack;
-    private static String myTopic = "ForTest";
 
     private MQTTService (){};
     private static class HolderClass {
@@ -63,9 +68,8 @@ public class MQTTService {
 
         boolean doConnect = true;
         String message = "{\"terminal_uid\":\"" + clientId + "\"}";
-        Log.e(TAG, "message是:" + message);
+        Log.e(TAG, "遗嘱 是:" + message);
 
-        String topic = myTopic;
         Integer qos = 0;
         Boolean retained = false;
 
@@ -124,7 +128,7 @@ public class MQTTService {
             Log.i(TAG, "连接成功 ");
             try {
                 // 订阅myTopic话题
-                client.subscribe(myTopic,1);
+                client.subscribe(topic,1);
             } catch (MqttException e) {
                 e.printStackTrace();
             }
@@ -142,14 +146,27 @@ public class MQTTService {
 
         @Override
         public void messageArrived(String topic, MqttMessage message) throws Exception {
-
             String str1 = new String(message.getPayload());
             if (iGetMessageCallBack != null){
                 iGetMessageCallBack.setMessage(str1);
             }
+            User user = JsonUtil.getInstance().json2obj(str1, User.class);
+
             String str2 = topic + ";qos:" + message.getQos() + ";retained:" + message.isRetained();
-            Log.i(TAG, "messageArrived:" + str1);
+            //Log.i(TAG, "messageArrived:" + str1);
             Log.i(TAG, str2);
+            //Log.i(TAG, "user name " + user.name + " cardCode " + user.cardCode + " image:" + user.image);
+            UserService.getInstance().insert(user);
+//            String test = FileUtils.toBase64("AABBCC");
+//
+//            Log.i(TAG, "AABBCC : " + test);
+
+//            Log.i(TAG, String.valueOf(Environment.getExternalStorageDirectory()));
+//            File file = FileUtils.isFileExist(String.valueOf(Environment.getExternalStorageDirectory()), "etstpg");
+//            Log.i(TAG, "file: " + file);
+//            String sss = FileUtils.toBase64(file);
+//            Log.i(TAG, "file base64: " + sss);
+            //FileUtils.writeTxtFile(sss, String.valueOf(Environment.getExternalStorageDirectory()) + "/testbase64");
         }
 
         @Override

@@ -1,44 +1,59 @@
 package com.dataexpo.autogate.model.gate;
 
 public class ReportData {
-    private String strData = "";
-    private String strDirection = "";
-    private String strTime = "";
+    private int id;
+    private String number = "";
+    private String direction = "";
+    private String time = "";
 
     public ReportData()
     {
         super();
     }
 
-    public ReportData(String sData, String sDir, String sTime)
-    {
+    public ReportData(int id, String number, String direction, String time) {
+        this.id = id;
+        this.number = number;
+        this.direction = direction;
+        this.time = time;
+    }
+
+    public ReportData(String sData, String sDir, String sTime) {
         super();
-        this.setStrData(sData);
-        this.setStrDirection(sDir);
-        this.setStrTime(sTime);
+        this.setNumber(sData);
+        this.setDirection(sDir);
+        this.setTime(sTime);
     }
 
-    public String getStrData() {
-        return strData;
+    public int getId() {
+        return id;
     }
 
-    public void setStrData(String strData) {
-        this.strData = strData;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getStrDirection() {
-        return strDirection;
+    public String getNumber() {
+        return number;
     }
 
-    public void setStrDirection(String strDirection) {
-        this.strDirection = strDirection;
+    public void setNumber(String number) {
+        this.number = number;
     }
 
-    public String getStrTime() {
-        return strTime;
+    public String getDirection() {
+        return direction;
     }
 
-    public void setStrTime(String strTime) {
-        this.strTime = strTime;
+    public void setDirection(String direction) {
+        this.direction = direction;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

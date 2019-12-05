@@ -2,19 +2,27 @@ package com.dataexpo.autogate.comm;
 
 import android.graphics.Bitmap;
 import android.os.Environment;
+import android.util.Base64;
+import android.util.Log;
 
+import com.rfid.def.TAG_CMD_CODING;
+
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 /**
  * description :文件工具类
  */
 public class FileUtils {
+    private static final String TAG = FileUtils.class.getSimpleName();
     /**
      * 读取txt文件的内容
      *
@@ -41,13 +49,43 @@ public class FileUtils {
         return result.toString();
     }
 
+    public static boolean writeByteFile(byte[] bytes, String filePath) {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        boolean flag = false;
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(file);
+            fileOutputStream.write(bytes);
+            fileOutputStream.close();
+            flag = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return flag;
+    }
+
     /**
      * 写入TXT文件
      */
     public static boolean writeTxtFile(String content, String filePath) {
         File file = new File(filePath);
         if (!file.exists()) {
-            return false;
+            Log.i("FileUtils ", "!file.exists");
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //
+            // return false;
         }
 
         boolean flag = false;
@@ -225,4 +263,83 @@ public class FileUtils {
         return result;
     }
 
+    public static byte[] base64ToBytes(String base) {
+        // like /9j/4A is image
+        if (base == null) {
+            return null;
+        }
+        byte[] decodes = new byte[0];
+        try {
+            decodes = Base64.decode(base.getBytes(), Base64.NO_WRAP);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return decodes;
+    }
+
+
+    public static String base64ToFile(String base) {
+        if (base == null) {
+            Log.i("FileUtils ", "b2f is null");
+            return null;
+        }
+
+
+        String decodeWord = null;
+        byte[] decodes;
+        try {
+             decodes = Base64.decode(base.getBytes(), Base64.NO_WRAP);
+             String log = "";
+             for (int i = 0; i < 10; i++) {
+                 log += decodes[i] + " ";
+             }
+
+             Log.i(TAG, "----- " + log);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return decodeWord;
+    }
+
+    public static String toBase64(File file) {
+        long size = file.length();
+        byte[] imageByte = new byte[100];
+        //byte[] imageByte = new byte[(int) size];
+        FileInputStream fis = null;
+        BufferedInputStream bis = null;
+
+        try {
+            fis = new FileInputStream(file);
+            bis = new BufferedInputStream(fis);
+            bis.read(imageByte);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (bis != null) {
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        Log.i(TAG, "head: " + imageByte[0] + " " + imageByte[1] + " " + imageByte[2] + " " + imageByte[3]);
+
+        return Base64.encodeToString(imageByte, Base64.NO_WRAP);
+    }
+
+    public static String toBase64(String src) {
+        Log.i(TAG, "toBase64 : " + src.getBytes()[0] + " " + src.getBytes()[1]);
+
+        return Base64.encodeToString(src.getBytes(), Base64.NO_WRAP);
+    }
 }

@@ -10,10 +10,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dataexpo.autogate.R;
 import com.dataexpo.autogate.comm.DBUtils;
@@ -46,7 +44,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
          * test code add a user
          */
 //        DBUtils.getInstance().insertData("测试", "数展科技", "研发",
-//                "123456", 1, "999999");
+//                "123456", 1, "etst");
 
         mConnection = new ServiceConnection() {
             @Override
@@ -122,27 +120,30 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
 
     @Override
     public void response(int status, final Vector<ReportData> mReports) {
-        Log.i(TAG, "-------------- ");
-        if (mReports != null) {
+        //if (mReports != null) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    for (ReportData rd : mReports) {
-                        tv_name.setText(rd.getStrData());
-                    }
-                    User user = new User();
-                    user.code = "999999";
-                    if (UserService.getInstance().checkUser(user)) {
-                        //有此用户
-                        String absolutePath = FileUtils.getBatchImportDirectory()
-                                + "/" + user.code + ".jpg";
-                        final Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
-                        Log.i(TAG, " response image path: " + absolutePath);
+                    //if (mReports.size() > 0) {
+                    //    ReportData data = mReports.get(0);
+                        User user = new User();
+                        user.cardCode = "E0040150C714EA6B";
+                        user.code = "u23123";
+                        user.name = "测试用户";
+                        //user.cardCode = data.getNumber();
+                        if (UserService.getInstance().findUserByCardCode(user) != null) {
+                            //有此用户
+                            String absolutePath = FileUtils.getBatchImportDirectory()
+                                    + "/" + user.code + ".jpg";
+                            final Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
+                            Log.i(TAG, " response image path: " + absolutePath);
 
-                        iv_head.setImageBitmap(bitmap);
-                    }
+                            iv_head.setImageBitmap(bitmap);
+                            tv_name.setText(user.name);
+                        }
+                    //}
                 }
             });
-        }
+        //}
     }
 }

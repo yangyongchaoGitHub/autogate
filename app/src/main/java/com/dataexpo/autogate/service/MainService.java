@@ -56,7 +56,8 @@ public class MainService extends Service {
         super.onCreate();
         GateService.getInstance().start();
         GateService.getInstance().setContext(this);
+        addGateObserver(CardService.getInstance());
 
-        //MQTTService.getInstance().init(this);
+        MQTTService.getInstance().init(this);
     }
 }

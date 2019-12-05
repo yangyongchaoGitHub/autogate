@@ -121,7 +121,7 @@ public class MainActivity extends Activity implements OnClickListener
 		String sRemotePort = GetHistory("LSGPORT");
 		if ("".equals(sRemoteIp))
 		{
-			sRemoteIp = "192.168.0.222";
+			sRemoteIp = "192.168.1.222";
 		}
 		if ("".equals(sRemotePort))
 		{
@@ -462,8 +462,8 @@ public class MainActivity extends Activity implements OnClickListener
 				Vector<ReportData> reports = (Vector<ReportData>) msg.obj;
 				for (ReportData report : reports)
 				{
-					pt.reportList.add(new ReportData(report.getStrData(),
-							report.getStrDirection(), report.getStrTime()));
+					pt.reportList.add(new ReportData(report.getNumber(),
+							report.getDirection(), report.getTime()));
 				}
 				pt.reportAdapter.notifyDataSetChanged();
 				pt.tv_report_cnt.setText(String.format("Record count:%d",
@@ -524,9 +524,9 @@ public class MainActivity extends Activity implements OnClickListener
 				viewHolder = (ViewHolder) convertView.getTag();
 			}
 
-			viewHolder.mTextData.setText(mReport.getStrData());
-			viewHolder.mTextDirection.setText(mReport.getStrDirection());
-			viewHolder.mTextTime.setText(mReport.getStrTime());
+			viewHolder.mTextData.setText(mReport.getNumber());
+			viewHolder.mTextDirection.setText(mReport.getDirection());
+			viewHolder.mTextTime.setText(mReport.getTime());
 
 			return convertView;
 		}
@@ -600,20 +600,20 @@ public class MainActivity extends Activity implements OnClickListener
 								System.arraycopy(reportBuf, 9, byData, 0,
 										dataLen);
 								ReportData report = new ReportData();
-								report.setStrData(GFunction.encodeHexStr(byData));
+								report.setNumber(GFunction.encodeHexStr(byData));
 								if (direction == 1)
 								{
-									report.setStrDirection("In");
+									report.setDirection("In");
 								}
 								else if (direction == 2)
 								{
-									report.setStrDirection("Out");
+									report.setDirection("Out");
 								}
 								else
 								{
-									report.setStrDirection("null");
+									report.setDirection("null");
 								}
-								report.setStrTime(GFunction.encodeHexStr(time));
+								report.setTime(GFunction.encodeHexStr(time));
 								mReports.add(report);
 								hReport = m_reader
 										.RDR_GetTagDataReport(RfidDef.RFID_SEEK_NEXT);
