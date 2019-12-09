@@ -53,6 +53,14 @@ public class MainService extends Service {
         GateService.getInstance().setCallback(callback);
     }
 
+    public void testOption(byte b1, byte b2) {
+        GateService.testOption(b1, b2);
+    }
+
+    public void ledCtrl(int target) {
+        GateService.getInstance().ledCtrl(target);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();

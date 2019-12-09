@@ -29,7 +29,7 @@ public class CardService implements GateObserver {
 
     @Override
     public void response(int status, Vector<ReportData> mReports) {
-        Log.i(TAG, "response");
+        //Log.i(TAG, "response");
         //save record
         if (mReports == null) {
             return;

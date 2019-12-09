@@ -25,6 +25,9 @@ import com.dataexpo.autogate.service.UserService;
 
 import java.util.Vector;
 
+import static com.dataexpo.autogate.service.GateService.LED_GREEN;
+import static com.dataexpo.autogate.service.GateService.LED_RED;
+
 public class GateActivity extends BascActivity implements View.OnClickListener {
     private static final String TAG = GateActivity.class.getSimpleName();
     private Context mContext;
@@ -143,6 +146,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                         user.cardCode = data.getNumber();
                         if ("FFFFFFFFFFFFFFFF".equals(data.getNumber())) {
                             Log.i(TAG, " GATE  FFFFFFFFFFFFFFFF!!!!!!!!!!!!!!");
+                            MainApplication.getInstance().getService().ledCtrl(LED_RED);
                             return;
                         }
 
@@ -154,6 +158,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
 
                             iv_head.setImageBitmap(bitmap);
                             tv_name.setText(res.name);
+                            MainApplication.getInstance().getService().ledCtrl(LED_GREEN);
                         }
                     }
                 }

@@ -32,6 +32,11 @@ public class GateService extends GateSubject {
     //上下文为空
     public static final int GATE_STATUS_INIT_NULL_CONTEXT = 5;
 
+    //红灯
+    public static final int LED_RED = 1;
+    //绿灯
+    public static final int LED_GREEN = 2;
+
     private boolean bGetReportThrd = true;
     private Thread mGetReportThrd = null;
     private int mStatus;
@@ -39,6 +44,19 @@ public class GateService extends GateSubject {
     private OnGateServiceCallback callback;
 
     static ADReaderInterface m_reader = new ADReaderInterface();
+
+    /**
+     *
+     * @param no 控制命令中的端口编号
+     * @param model 控制模式（暂时不知道是干嘛用的）
+     */
+    public static void testOption(byte no, byte model) {
+        Object dnOutputOper = m_reader.RDR_CreateSetOutputOperations();
+        m_reader.RDR_AddOneOutputOperation(dnOutputOper, no, model,1,
+                100, 100);
+        int iret = m_reader.RDR_SetOutput(dnOutputOper);
+        Log.i(TAG, "setOption result" + iret);
+    }
 
     public void restart() {
         bGetReportThrd = false;
@@ -124,6 +142,14 @@ public class GateService extends GateSubject {
     public void start() {
         mGetReportThrd = new Thread(new GetReportThrd());
         mGetReportThrd.start();
+    }
+
+    public void ledCtrl(int target) {
+        if (target == LED_RED) {
+            testOption((byte)2,(byte)3);
+        } else if (target == LED_GREEN) {
+            testOption((byte)3,(byte)3);
+        }
     }
 
     private class GetReportThrd implements Runnable
