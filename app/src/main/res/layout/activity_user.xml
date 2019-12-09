@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/tv_user_manager_title"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:text="@string/user_manager"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x60"
+        android:textStyle="bold"
+        app:layout_constraintHeight_percent="0.08"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_user_manager_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="@dimen/x40"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_user_manager_title"
+        android:text="@string/back"/>
+
+    <TextView
+        android:id="@+id/btn_user_manager_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel"
+        android:visibility="invisible"
+        app:layout_constraintStart_toEndOf="@+id/btn_user_manager_back"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="10dp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/btn_user_manager_back"
+        android:textSize="@dimen/x40"/>
+
+    <TextView
+        android:id="@+id/btn_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_user_manager_title"
+        android:text="+"
+        android:layout_marginEnd="@dimen/x20"
+        android:textSize="@dimen/x80"/>
+
+    <TextView
+        android:id="@+id/btn_user_manager_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/delete"
+        android:visibility="invisible"
+        android:textSize="@dimen/x40"
+        app:layout_constraintEnd_toStartOf="@+id/btn_add"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="@dimen/x20"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_user_manager_title"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/user_info_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_user_manager_title"
+        app:layout_constraintBottom_toBottomOf="parent">
+    </androidx.recyclerview.widget.RecyclerView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

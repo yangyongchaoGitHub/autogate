@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.dataexpo.autogate.comm.FileUtils;
 import com.dataexpo.autogate.comm.JsonUtil;
+import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.listener.IGetMessageCallBack;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -23,6 +24,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import com.dataexpo.autogate.listener.*;
+import com.dataexpo.autogate.model.TestData;
 import com.dataexpo.autogate.model.User;
 
 import java.io.File;
@@ -30,10 +32,10 @@ import java.io.File;
 public class MQTTService {
     private static final String TAG = MQTTService.class.getSimpleName();
     private Context mContext;
-    private static String host = "tcp://192.168.1.4:61616";
-    private static String userName = "admin";
-    private static String password = "admin";
-    private static String topic = "testpn";
+    private String host = "tcp://192.168.1.9:61616";
+    private String userName = "admin";
+    private String password = "admin";
+    private String topic = "pub_topic";
     private String  clientId = "2dc3a0d48b0c4b2f987f2e448379edea";
 
     private static MqttAndroidClient client;
@@ -41,6 +43,16 @@ public class MQTTService {
     private IGetMessageCallBack iGetMessageCallBack;
 
     private MQTTService (){};
+
+    public void destroy() {
+        Log.i(TAG, "destroy");
+        try {
+            client.disconnect();
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static class HolderClass {
         private static final MQTTService instance = new MQTTService();
     }
@@ -54,13 +66,13 @@ public class MQTTService {
 
     public void init(Context context) {
         mContext = context;
+        //host = Utils.getMQTTConfig(mContext, "host");
 
-        String uri = host;
-        client = new MqttAndroidClient(context, uri, clientId);
+        client = new MqttAndroidClient(context, host, clientId);
         client.setCallback(mqttCallback);
 
         options = new MqttConnectOptions();
-        options.setCleanSession(true);
+        options.setCleanSession(false);
         options.setConnectionTimeout(10);
         options.setKeepAliveInterval(20);
         options.setUserName(userName);
@@ -70,8 +82,9 @@ public class MQTTService {
         String message = "{\"terminal_uid\":\"" + clientId + "\"}";
         Log.e(TAG, "遗嘱 是:" + message);
 
-        Integer qos = 0;
-        Boolean retained = false;
+        //设置的是遗嘱的qos 和 retained
+        Integer qos = 2;
+        Boolean retained = true;
 
         if ((!message.equals("")) || (!topic.equals(""))) {
             // 最后的遗嘱
@@ -122,13 +135,12 @@ public class MQTTService {
 
     // MQTT是否连接成功
     private IMqttActionListener iMqttActionListener = new IMqttActionListener() {
-
         @Override
         public void onSuccess(IMqttToken arg0) {
             Log.i(TAG, "连接成功 ");
             try {
                 // 订阅myTopic话题
-                client.subscribe(topic,1);
+                client.subscribe(topic,2);
             } catch (MqttException e) {
                 e.printStackTrace();
             }
@@ -143,30 +155,38 @@ public class MQTTService {
 
     // MQTT监听并且接受消息
     private MqttCallback mqttCallback = new MqttCallback() {
-
         @Override
         public void messageArrived(String topic, MqttMessage message) throws Exception {
-            String str1 = new String(message.getPayload());
-            if (iGetMessageCallBack != null){
-                iGetMessageCallBack.setMessage(str1);
-            }
-            User user = JsonUtil.getInstance().json2obj(str1, User.class);
+            try {
+                String str1 = new String(message.getPayload());
 
-            String str2 = topic + ";qos:" + message.getQos() + ";retained:" + message.isRetained();
-            //Log.i(TAG, "messageArrived:" + str1);
-            Log.i(TAG, str2);
-            //Log.i(TAG, "user name " + user.name + " cardCode " + user.cardCode + " image:" + user.image);
-            UserService.getInstance().insert(user);
-//            String test = FileUtils.toBase64("AABBCC");
-//
-//            Log.i(TAG, "AABBCC : " + test);
+                Log.i(TAG, "messageArrived!!!!!!!!! " + str1);
+
+                if (iGetMessageCallBack != null){
+                    iGetMessageCallBack.setMessage(str1);
+                }
+                User user = JsonUtil.getInstance().json2obj(str1, User.class);
+                //TestData data = JsonUtil.getInstance().json2obj(str1, TestData.class);
+
+                String str2 = topic + ";qos:" + message.getQos() + ";retained:" + message.isRetained();
+                Log.i(TAG, "messageArrived:" + str1);
+                Log.i(TAG, str2);
+                Log.i(TAG, "data: " + user.code);
+                //Log.i(TAG, "user name " + user.name + " cardCode " + user.cardCode + " image:" + user.image);
+                // UserService.getInstance().insert(user);
+                UserService.getInstance().insert(user);
+
+
 
 //            Log.i(TAG, String.valueOf(Environment.getExternalStorageDirectory()));
 //            File file = FileUtils.isFileExist(String.valueOf(Environment.getExternalStorageDirectory()), "etstpg");
 //            Log.i(TAG, "file: " + file);
 //            String sss = FileUtils.toBase64(file);
 //            Log.i(TAG, "file base64: " + sss);
-            //FileUtils.writeTxtFile(sss, String.valueOf(Environment.getExternalStorageDirectory()) + "/testbase64");
+                //FileUtils.writeTxtFile(sss, String.valueOf(Environment.getExternalStorageDirectory()) + "/testbase64");
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -177,6 +197,7 @@ public class MQTTService {
         @Override
         public void connectionLost(Throwable arg0) {
             // 失去连接，重连
+            Log.i(TAG, "connectionLost!!!!!!!!!!!!! ");
         }
     };
 

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Button
+        android:id="@+id/btn_main_setting_1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/mqtt_setting"
+        android:background="@drawable/btn1_rect"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.3"
+        app:layout_constraintWidth_percent="0.48"
+        app:layout_constraintVertical_bias="0.02"
+        app:layout_constraintHorizontal_bias="0.02"/>
+
+
+    <Button
+        android:id="@+id/btn_main_setting_2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/user_setting"
+        android:background="@drawable/btn2_rect"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.3"
+        app:layout_constraintWidth_percent="0.48"
+        app:layout_constraintVertical_bias="0.02"
+        app:layout_constraintHorizontal_bias="0.96"/>
+
+    <Button
+        android:id="@+id/btn_main_setting_3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/other_setting"
+        android:background="@drawable/btn3_rect"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.3"
+        app:layout_constraintWidth_percent="0.48"
+        app:layout_constraintVertical_bias="0.46"
+        app:layout_constraintHorizontal_bias="0.02"/>
+
+    <Button
+        android:id="@+id/btn_main_setting_4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/btn4_rect"
+        android:text="@string/other_setting"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.3"
+        app:layout_constraintHorizontal_bias="0.962"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.458"
+        app:layout_constraintWidth_percent="0.48" />
+
+    <Button
+        android:id="@+id/btn_main_setting_5"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/other_setting"
+        android:background="@drawable/btn5_rect"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.3"
+        app:layout_constraintWidth_percent="0.48"
+        app:layout_constraintVertical_bias="0.9"
+        app:layout_constraintHorizontal_bias="0.02"/>
+
+    <Button
+        android:id="@+id/btn_main_setting_6"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/other_setting"
+        android:background="@drawable/btn6_rect"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.3"
+        app:layout_constraintWidth_percent="0.48"
+        app:layout_constraintVertical_bias="0.9"
+        app:layout_constraintHorizontal_bias="0.96"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

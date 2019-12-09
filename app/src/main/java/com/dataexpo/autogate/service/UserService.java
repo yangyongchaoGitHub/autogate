@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.dataexpo.autogate.comm.DBUtils;
 import com.dataexpo.autogate.comm.FileUtils;
+import com.dataexpo.autogate.model.TestData;
 import com.dataexpo.autogate.model.User;
 
 import java.io.File;
@@ -40,6 +41,7 @@ public class UserService {
             String code = cursor.getString(cursor.getColumnIndex("code"));
             user_response = new User (id, name, company, cardcode, position, gender, code);
         }
+        cursor.close();
         return user_response;
     }
 
@@ -57,16 +59,37 @@ public class UserService {
             String code = cursor.getString(cursor.getColumnIndex("code"));
             user_response = new User (id, name, company, cardcode, position, gender, code);
         }
+        cursor.close();
         return user_response;
     }
 
-
     public long insert(User user) {
+        if (checkByCode(user)) {
+            Log.i(TAG, "用户： " + user.code + " 重复！！！！！");
+            return 0l;
+        }
         byte[] images = FileUtils.base64ToBytes(user.image);
         if (images.length > 0) {
             FileUtils.writeByteFile(images, FileUtils.getBatchImportDirectory().getPath() + "/" + user.code + ".jpg");
         }
         return insert(user.name, user.company, user.position, user.cardCode, user.gender, user.code);
+    }
+
+    private boolean checkByCode(User user) {
+        Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_USER, "code", user.code);
+        boolean result = cursor.moveToNext();
+        cursor.close();
+        return result;
+    }
+
+    public long insert(TestData data) {
+        byte[] image = FileUtils.base64ToBytes(data.image);
+        if (image.length > 0) {
+            Log.i(TAG, "insert test data: " + data.code);
+            FileUtils.writeByteFile(image, FileUtils.getBatchImportDirectory().getPath() + "/" + data.code + ".jpg");
+        }
+
+        return 0l;
     }
 
     /**
@@ -99,7 +122,7 @@ public class UserService {
             String position = cursor.getString(cursor.getColumnIndex("position"));
             int gender = cursor.getInt(cursor.getColumnIndex("gender"));
             String code = cursor.getString(cursor.getColumnIndex("code"));
-            list.add(new User(id, name, company, cardcode, position, gender, code));
+            list.add(new User(id, name, company, position, cardcode, gender, code));
         }
 
         cursor.close();

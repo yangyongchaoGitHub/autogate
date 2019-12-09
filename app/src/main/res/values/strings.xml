@@ -6,4 +6,10 @@
     <string name="reconnect">更改并重新连接</string>
     <string name="title">中国国际春节博览会</string>
     <string name="bottom">2019</string>
+    <string name="mqtt_setting">MQTT设置</string>
+    <string name="user_setting">用户管理</string>
+    <string name="other_setting">其他设置</string>
+    <string name="user_manager">用户管理</string>
+    <string name="cancel">取消</string>
+    <string name="delete">删除</string>
 </resources>

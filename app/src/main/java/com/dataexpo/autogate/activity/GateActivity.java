@@ -43,8 +43,13 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         /**
          * test code add a user
          */
-//        DBUtils.getInstance().insertData("测试", "数展科技", "研发",
-//                "123456", 1, "etst");
+//        UserService.getInstance().insert("testU2", "dataexpo.Ltd", "development",
+//                "E0040150C71459F3", 1, "u23124");
+//        UserService.getInstance().insert("testU3", "dataexpo.Ltd", "development",
+//                "E0040150C715D092", 1, "u23125");
+//        UserService.getInstance().insert("testU1", "dataexpo.Ltd", "development",
+//                "E0040150C714EA6A", 1, "u23123");
+        //{"id":12,"name":"user1","company":"dataexpo.Ltd","position":"development","cardCode":"E0040150C714EA6A","code":"u23123","image":"test","gender":1}
 
         mConnection = new ServiceConnection() {
             @Override
@@ -61,7 +66,6 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-
             }
         };
 
@@ -96,7 +100,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_gosetting:
-                startActivity(new Intent(mContext, GateSetActivity.class));
+                startActivity(new Intent(mContext, MainSettingActivity.class));
                 break;
                 default:
         }
@@ -119,31 +123,41 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(mConnection);
+    }
+
+    @Override
     public void response(int status, final Vector<ReportData> mReports) {
-        //if (mReports != null) {
+        if (mReports != null) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    //if (mReports.size() > 0) {
-                    //    ReportData data = mReports.get(0);
+                    if (mReports.size() > 0) {
+                        ReportData data = mReports.get(0);
                         User user = new User();
-                        user.cardCode = "E0040150C714EA6B";
-                        user.code = "u23123";
-                        user.name = "测试用户";
-                        //user.cardCode = data.getNumber();
-                        if (UserService.getInstance().findUserByCardCode(user) != null) {
+//                        user.cardCode = "E0040150C714EA6B";
+//                        user.code = "u23123";
+//                        user.name = "测试用户";
+                        user.cardCode = data.getNumber();
+                        if ("FFFFFFFFFFFFFFFF".equals(data.getNumber())) {
+                            Log.i(TAG, " GATE  FFFFFFFFFFFFFFFF!!!!!!!!!!!!!!");
+                            return;
+                        }
+
+                        User res = UserService.getInstance().findUserByCardCode(user);
+                        if (res != null) {
                             //有此用户
-                            String absolutePath = FileUtils.getBatchImportDirectory()
-                                    + "/" + user.code + ".jpg";
-                            final Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
-                            Log.i(TAG, " response image path: " + absolutePath);
+                            final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(res.code));
+                            Log.i(TAG, " response image path: " + FileUtils.getUserPic(res.code));
 
                             iv_head.setImageBitmap(bitmap);
-                            tv_name.setText(user.name);
+                            tv_name.setText(res.name);
                         }
-                    //}
+                    }
                 }
             });
-        //}
+        }
     }
 }

@@ -2,7 +2,7 @@ package com.dataexpo.autogate.model;
 
 public class User {
     //{"id":12,"name":"user1","company":"dataexpo.Ltd","position":"development","cardCode":"E0040150C714EA6A","code":"u23123","image":"test","gender":1}
-    ///
+
     public int id;
     public String name;
     public String company;
@@ -12,6 +12,7 @@ public class User {
     public String code;
     public String image;
     public String image_md5;
+    public boolean check;
 
     public User() {}
 
@@ -35,5 +36,13 @@ public class User {
         this.code = code;
         this.image = image;
         this.image_md5 = image_md5;
+    }
+
+    public boolean isCheck() {
+        return check;
+    }
+
+    public void setCheck(boolean check) {
+        this.check = check;
     }
 }

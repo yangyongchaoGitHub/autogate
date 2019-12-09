@@ -4,12 +4,14 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.dataexpo.autogate.listener.GateObserver;
 import com.dataexpo.autogate.listener.OnGateServiceCallback;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
 
 public class MainService extends Service {
+    private static final String TAG = MainService.class.getSimpleName();
     private OnServeiceCallback callback;
     private MsgBinder mb = null;
 
@@ -59,5 +61,14 @@ public class MainService extends Service {
         addGateObserver(CardService.getInstance());
 
         MQTTService.getInstance().init(this);
+
+        String serialNumber = android.os.Build.SERIAL;
+        Log.i(TAG, "device serial: " + serialNumber);
+    }
+
+    @Override
+    public void onDestroy() {
+        MQTTService.getInstance().destroy();
+        super.onDestroy();
     }
 }

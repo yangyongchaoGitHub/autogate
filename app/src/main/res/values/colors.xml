@@ -4,4 +4,11 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="c_black">#000000</color>
+    <color name="c_btn1">#E1F896</color>
+    <color name="c_btn2">#9DFCF2</color>
+    <color name="c_btn3">#FCCD87</color>
+    <color name="c_btn4">#C6A6FA</color>
+    <color name="c_btn5">#FFA9CB</color>
+    <color name="c_btn6">#9AE2A4</color>
+
 </resources>

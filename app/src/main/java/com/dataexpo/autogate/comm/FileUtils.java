@@ -120,6 +120,15 @@ public class FileUtils {
     }
 
     /**
+     *
+     * @param code 图片名称
+     * @return 返回用户图片的uri
+     */
+    public static String getUserPic(String code) {
+        return getBatchImportDirectory() + "/" + code + ".jpg";
+    }
+
+    /**
      * 获取导入图片文件的目录信息
      */
     public static File getBatchImportDirectory() {

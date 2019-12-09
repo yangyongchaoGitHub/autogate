@@ -32,6 +32,8 @@
 
         <activity android:name=".MainActivity"/>
         <activity android:name=".activity.GateSetActivity"/>
+        <activity android:name=".activity.MainSettingActivity"/>
+        <activity android:name=".activity.UsersActivity"/>
 
         <service android:name=".service.MainService"/>
         <!-- Mqtt服务 -->
