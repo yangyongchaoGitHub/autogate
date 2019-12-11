@@ -35,6 +35,10 @@ public class MainService extends Service {
         GateService.getInstance().restart();
     }
 
+    public void restartMQTTService() {
+        MQTTService.getInstance().restart();
+    }
+
     public class MsgBinder extends Binder {
         public MainService getService() {
             return MainService.this;
@@ -69,9 +73,6 @@ public class MainService extends Service {
         addGateObserver(CardService.getInstance());
 
         MQTTService.getInstance().init(this);
-
-        String serialNumber = android.os.Build.SERIAL;
-        Log.i(TAG, "device serial: " + serialNumber);
     }
 
     @Override

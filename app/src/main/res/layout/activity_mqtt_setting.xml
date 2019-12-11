@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Button
+        android:id="@+id/btn_mqtt_setting_back"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/back"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x40"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="2:1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.02"
+        app:layout_constraintWidth_percent="0.2"
+        app:layout_constraintHorizontal_bias="0.02"/>
+
+    <TextView
+        android:id="@+id/tv_mqtt_setting_title"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:text="@string/mqtt_setting"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x60"
+        android:textStyle="bold"
+        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_mqtt_setting_url"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="right|center"
+        android:text="@string/server"
+        android:textStyle="bold"
+        android:textSize="@dimen/x40"
+        android:textColor="@color/c_black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.1"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintWidth_percent="0.2"
+        app:layout_constraintHeight_percent="0.08"/>
+
+
+    <EditText
+        android:id="@+id/et_mqtt_setting_url_value"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x36"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/tv_mqtt_setting_url"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.1"
+        app:layout_constraintWidth_percent="0.65"
+        app:layout_constraintHeight_percent="0.08"/>
+
+
+    <TextView
+        android:id="@+id/tv_mqtt_setting_port"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="right|center"
+        android:text="@string/port"
+        android:textStyle="bold"
+        android:textSize="@dimen/x40"
+        android:textColor="@color/c_black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.2"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintWidth_percent="0.2"
+        app:layout_constraintHeight_percent="0.08"/>
+
+    <EditText
+        android:id="@+id/et_mqtt_setting_port_value"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textSize="@dimen/x36"
+        android:textColor="@color/c_black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/tv_mqtt_setting_url"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.2"
+        app:layout_constraintWidth_percent="0.65"
+        app:layout_constraintHeight_percent="0.08"/>
+
+    <TextView
+        android:id="@+id/tv_mqtt_setting_name"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="right|center"
+        android:text="@string/name"
+        android:textStyle="bold"
+        android:textSize="@dimen/x40"
+        android:textColor="@color/c_black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintWidth_percent="0.2"
+        app:layout_constraintHeight_percent="0.08"/>
+
+    <EditText
+        android:id="@+id/et_mqtt_setting_name_value"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x36"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/tv_mqtt_setting_url"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3"
+        app:layout_constraintWidth_percent="0.65"
+        app:layout_constraintHeight_percent="0.08"/>
+
+    <TextView
+        android:id="@+id/tv_mqtt_setting_pswd"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="right|center"
+        android:text="@string/pswd"
+        android:textStyle="bold"
+        android:textSize="@dimen/x40"
+        android:textColor="@color/c_black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintWidth_percent="0.2"
+        app:layout_constraintHeight_percent="0.08"/>
+
+    <EditText
+        android:id="@+id/et_mqtt_setting_pswd_value"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x36"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/tv_mqtt_setting_url"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintWidth_percent="0.65"
+        app:layout_constraintHeight_percent="0.08"/>
+
+    <TextView
+        android:id="@+id/tv_mqtt_setting_clientid"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="right|center"
+        android:text="@string/clientid"
+        android:textStyle="bold"
+        android:textSize="@dimen/x40"
+        android:textColor="@color/c_black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintWidth_percent="0.2"
+        app:layout_constraintHeight_percent="0.08"/>
+
+    <EditText
+        android:id="@+id/et_mqtt_setting_clientid_value"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x36"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/tv_mqtt_setting_url"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintWidth_percent="0.65"
+        app:layout_constraintHeight_percent="0.08"/>
+
+    <TextView
+        android:id="@+id/tv_mqtt_setting_topic"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="right|center"
+        android:text="@string/topic"
+        android:textStyle="bold"
+        android:textSize="@dimen/x40"
+        android:textColor="@color/c_black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.6"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintWidth_percent="0.2"
+        app:layout_constraintHeight_percent="0.08"/>
+
+    <EditText
+        android:id="@+id/et_mqtt_setting_topic_value"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textColor="@color/c_black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/tv_mqtt_setting_url"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.6"
+        app:layout_constraintWidth_percent="0.65"
+        android:textSize="@dimen/x36"
+        app:layout_constraintHeight_percent="0.08"/>
+
+    <Button
+        android:id="@+id/btn_mqtt_setting_save"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/save"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x40"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="2:1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.9"
+        app:layout_constraintWidth_percent="0.2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

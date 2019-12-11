@@ -65,10 +65,12 @@ public class UserService {
 
     public long insert(User user) {
         if (checkByCode(user)) {
+            //TODO: 可以存放到另一个表，手动纠正
             Log.i(TAG, "用户： " + user.code + " 重复！！！！！");
             return 0l;
         }
         byte[] images = FileUtils.base64ToBytes(user.image);
+
         if (images.length > 0) {
             FileUtils.writeByteFile(images, FileUtils.getBatchImportDirectory().getPath() + "/" + user.code + ".jpg");
         }

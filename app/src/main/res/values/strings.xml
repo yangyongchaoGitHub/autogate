@@ -8,8 +8,16 @@
     <string name="bottom">2019</string>
     <string name="mqtt_setting">MQTT设置</string>
     <string name="user_setting">用户管理</string>
+    <string name="gate_setting">门闸设置</string>
     <string name="other_setting">其他设置</string>
     <string name="user_manager">用户管理</string>
     <string name="cancel">取消</string>
     <string name="delete">删除</string>
+    <string name="description">说明</string>
+    <string name="server">服务器地址</string>
+    <string name="name">用户名</string>
+    <string name="pswd">密码</string>
+    <string name="clientid">客户端id</string>
+    <string name="topic">主题</string>
+    <string name="save">保存</string>
 </resources>
