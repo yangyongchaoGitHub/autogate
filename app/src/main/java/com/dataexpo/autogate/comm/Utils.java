@@ -3,6 +3,8 @@ package com.dataexpo.autogate.comm;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -19,6 +21,7 @@ public class Utils {
     public static String MQTT_PSWD = "pswd";
     public static String MQTT_CLIENTID = "clientid";
     public static String MQTT_TOPIC = "topic";
+    private static Bitmap bitmap = null;
 
     public synchronized static void saveConfig(Context context, String sKey, String val) {
         SharedPreferences preferences = context.getSharedPreferences(sKey,

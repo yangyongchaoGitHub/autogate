@@ -32,7 +32,6 @@ public class MQTTService {
     private String topic = "";
     private String clientId = "";
 
-
     private static final int MQTT_CONNECT_INIT = 1;
     private static final int MQTT_CONNECT_ING = 2;
     private static final int MQTT_CONNECT_SUCCESS = 3;
@@ -160,27 +159,27 @@ public class MQTTService {
     private IMqttActionListener iMqttActionListener = new IMqttActionListener() {
         @Override
         public void onSuccess(IMqttToken arg0) {
-            conn_status = MQTT_CONNECT_SUCCESS;
-            Log.i(TAG, "连接成功 将订阅" + topic);
-            try {
-                // 订阅myTopic话题
-                token = client.subscribe(topic,2);
+            if (conn_status != MQTT_CONNECT_SUCCESS) {
+                conn_status = MQTT_CONNECT_SUCCESS;
+                Log.i(TAG, "连接成功 将订阅" + topic);
+                try {
+                    // 订阅myTopic话题
+                    token = client.subscribe(topic, 2);
 
-                if (token != null) {
-                    for (String s:token.getTopics()) {
-                        Log.i(TAG, "topics: " + s);
-                    }
+                } catch (MqttException e) {
+                    e.printStackTrace();
                 }
-
-            } catch (MqttException e) {
-                e.printStackTrace();
             }
         }
 
         @Override
         public void onFailure(IMqttToken arg0, Throwable arg1) {
-            Log.i(TAG, "onFailure " + arg1.getMessage());
-            client = null;
+            //Log.i(TAG, "onFailure " + arg1.getMessage());
+            //TODO: if client not set will set repeat
+            if (client != null) {
+                client.setCallback(null);
+                client = null;
+            }
             conn_status = MQTT_CONNECT_INIT;
             // 连接失败，重连
         }
@@ -243,14 +242,14 @@ public class MQTTService {
     private class ConnectThread extends Thread {
         @Override
         public void run() {
+            int delay = 1000;
             while (true) {
-                Log.i(TAG, "thread status:" + conn_status);
                 if (conn_status == MQTT_CONNECT_INIT) {
                     doClientConnection();
                 }
 
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(delay);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

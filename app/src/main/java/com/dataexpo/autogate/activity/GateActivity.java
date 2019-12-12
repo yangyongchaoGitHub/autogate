@@ -46,6 +46,20 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         /**
          * test code add a user
          */
+
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                for (int i = 10000; i < 40000; i++) {
+//                    UserService.getInstance().insert("test" + i, "dataexpo.Ltd", "development",
+//                            "E0040150C7145" + i, 1, "u23" + i);
+//                }
+//            }
+//        }).start();
+//        for(int i = 100; i < 10000; i++) {
+//            UserService.getInstance().insert("test" + i, "dataexpo.Ltd", "development",
+//                "E0040150C7145" + i, 1, "u23" + i);
+//        }
 //        UserService.getInstance().insert("testU2", "dataexpo.Ltd", "development",
 //                "E0040150C71459F3", 1, "u23124");
 //        UserService.getInstance().insert("testU3", "dataexpo.Ltd", "development",
@@ -147,6 +161,8 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                         if ("FFFFFFFFFFFFFFFF".equals(data.getNumber())) {
                             Log.i(TAG, " GATE  FFFFFFFFFFFFFFFF!!!!!!!!!!!!!!");
                             MainApplication.getInstance().getService().ledCtrl(LED_RED);
+                            iv_head.setVisibility(View.INVISIBLE);
+                            tv_name.setText("非法通过！");
                             return;
                         }
 
@@ -157,6 +173,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                             Log.i(TAG, " response image path: " + FileUtils.getUserPic(res.code));
 
                             iv_head.setImageBitmap(bitmap);
+                            iv_head.setVisibility(View.VISIBLE);
                             tv_name.setText(res.name);
                             MainApplication.getInstance().getService().ledCtrl(LED_GREEN);
                         }

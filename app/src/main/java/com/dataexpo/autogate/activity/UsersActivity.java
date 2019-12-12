@@ -1,7 +1,10 @@
 package com.dataexpo.autogate.activity;
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dataexpo.autogate.R;
 import com.dataexpo.autogate.comm.FileUtils;
+import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.listener.OnItemClickListener;
 import com.dataexpo.autogate.listener.OnItemLongClickListener;
 import com.dataexpo.autogate.model.TestData;
@@ -25,9 +29,12 @@ import com.dataexpo.autogate.view.CircleImageView;
 import java.util.List;
 
 public class UsersActivity extends BascActivity implements OnItemClickListener, OnItemLongClickListener, View.OnClickListener {
+    private static final String TAG = UsersActivity.class.getSimpleName();
     private UserAdapter mUserAdapter;
     private TextView btn_cancel;
     private TextView btn_delete;
+
+    private Bitmap bitmap = null;
 
     private boolean isShowCheck = false;
     private List<User> users;
@@ -175,7 +182,12 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
             holder.text_code.setText(code);
             holder.text_cardcode.setText(cardcode);
 
-            holder.image.setImageBitmap(BitmapFactory.decodeFile(FileUtils.getUserPic(mList.get(position).code)));
+            Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(code));
+            Log.i(TAG, "bitmap: " + bitmap);
+            if (bitmap == null) {
+                bitmap = getWhite();
+            }
+            holder.image.setImageBitmap(bitmap);
 
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -184,7 +196,6 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
                         mItemLongClickListener.onLongItemClick(v, position);
                         return true;
                     }
-
                     return false;
                 }
             });
@@ -194,5 +205,11 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
         public int getItemCount() {
             return mList != null ? mList.size() : 0;
         }
+    }
+    private Bitmap getWhite() {
+        if (bitmap == null) {
+            bitmap = ((BitmapDrawable)getResources().getDrawable(R.drawable.white1)).getBitmap();
+        }
+        return bitmap;
     }
 }
