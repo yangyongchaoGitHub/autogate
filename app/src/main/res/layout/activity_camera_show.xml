@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:id="@+id/all_relative">
+
+
+    <TextureView
+        android:id="@+id/ir_camera_preview_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:visibility="invisible" />
+    <!--android:layout_below="@id/search_title"-->
+
+    <TextureView
+        android:id="@+id/camera_preview_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:visibility="invisible" />
+    <!--android:layout_below="@id/search_title"-->
+
+    <TextureView
+        android:id="@+id/auto_camera_preview_view_ir"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"/>
+
+    <com.dataexpo.autogate.face.camera.AutoTexturePreviewView
+        android:id="@+id/auto_camera_preview_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!--android:layout_below="@id/search_title"-->
+    <TextureView
+        android:id="@+id/draw_detect_face_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+         <!--/>android:layout_below="@id/search_title"-->
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/auto_camera_preview_view"
+        android:background="#898989" />
+
+    <TextView
+        android:id="@+id/track_txt"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_alignParentStart="true"
+        android:background="#016838"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:visibility="gone" />
+
+    <Button
+        android:layout_width="@dimen/x150"
+        android:layout_height="@dimen/x180"
+        android:background="@android:color/transparent"
+        android:id="@+id/btn_login"
+        />
+
+    <RelativeLayout
+        android:id="@+id/layout_info"
+        android:layout_width="match_parent"
+        android:layout_height="195dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal"
+        android:visibility="invisible">
+
+        <include layout="@layout/layout_camera_boot" />
+
+    </RelativeLayout>
+</RelativeLayout>

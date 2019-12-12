@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "com.dataexpo.autogate"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -48,5 +48,6 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.8'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation project(':facelibrary')
 
 }

@@ -10,5 +10,7 @@
     <color name="c_btn4">#C6A6FA</color>
     <color name="c_btn5">#FFA9CB</color>
     <color name="c_btn6">#9AE2A4</color>
-
+    <color name="blue">#0000FF</color>
+    <color name="grey">#E2E2E2</color>
+    <color name="white">#FFFFFF</color>
 </resources>

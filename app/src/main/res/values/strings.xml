@@ -20,4 +20,6 @@
     <string name="clientid">客户端id</string>
     <string name="topic">主题</string>
     <string name="save">保存</string>
+    <string name="input_pswd">请输入密码</string>
+    <string name="confirm">确定</string>
 </resources>

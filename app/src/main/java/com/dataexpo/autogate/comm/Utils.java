@@ -3,6 +3,7 @@ package com.dataexpo.autogate.comm;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 
@@ -61,5 +62,34 @@ public class Utils {
         Date date = new Date(timeStamp);
         DateFormat dateFormat = new SimpleDateFormat(pattern);
         return dateFormat.format(date);
+    }
+
+    public static String getVersionName(Context context) {
+        if (context != null) {
+            try {
+                return context.getPackageManager()
+                        .getPackageInfo(context.getPackageName(), 0)
+                        .versionName;
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return "3.0.0";
+    }
+
+    /**
+     * 获取当前时间的字符串
+     */
+    public static String timeNow() {
+        Date date = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        return dateFormat.format(date);
+    }
+
+    /**
+     * 获取当前时间的字符串
+     */
+    public static long timeNow_() {
+        return new Date().getTime();
     }
 }

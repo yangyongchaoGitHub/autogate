@@ -135,7 +135,7 @@ public class FileUtils {
         File sdRootFile = getSDRootFile();
         File file = null;
         if (sdRootFile != null && sdRootFile.exists()) {
-            file = new File(sdRootFile, "UserImage");
+            file = new File(sdRootFile, "UserImage-autogate");
             if (!file.exists()) {
                 file.mkdirs();
             }
@@ -150,7 +150,7 @@ public class FileUtils {
         File sdRootFile = getSDRootFile();
         File file = null;
         if (sdRootFile != null && sdRootFile.exists()) {
-            file = new File(sdRootFile, "Success-Import-DataExpo");
+            file = new File(sdRootFile, "Success-Import-autogate");
             if (!file.exists()) {
                 file.mkdirs();
             }

@@ -16,6 +16,8 @@ import android.widget.TextView;
 import com.dataexpo.autogate.R;
 import com.dataexpo.autogate.comm.DBUtils;
 import com.dataexpo.autogate.comm.FileUtils;
+import com.dataexpo.autogate.face.listener.SdkInitListener;
+import com.dataexpo.autogate.face.manager.FaceSDKManager;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
 import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.gate.ReportData;
@@ -105,6 +107,44 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         };
 
         bindService(new Intent(getApplicationContext(), MainService.class), mConnection, Context.BIND_AUTO_CREATE);
+        initLicense();
+    }
+
+
+    private void initLicense() {
+        Log.i(TAG, "initLicense!!!!");
+
+        if (FaceSDKManager.initStatus != FaceSDKManager.SDK_MODEL_LOAD_SUCCESS) {
+            FaceSDKManager.getInstance().init(mContext, new SdkInitListener() {
+                @Override
+                public void initStart() {
+                    Log.i(TAG, "init sdk start");
+                }
+
+                @Override
+                public void initLicenseSuccess() {
+                    Log.i(TAG, "initLicenseSuccess");
+                }
+
+                @Override
+                public void initLicenseFail(int errorCode, String msg) {
+                    // 如果授权失败，跳转授权页面
+                    //ToastUtils.toast(mContext, errorCode + " " + msg);
+                    // startActivity(new Intent(mContext, FaceAuthActicity.class));
+                    Log.i(TAG, "initLicenseFail");
+                }
+
+                @Override
+                public void initModelSuccess() {
+                    Log.i(TAG, "initModelSuccess");
+                }
+
+                @Override
+                public void initModelFail(int errorCode, String msg) {
+                    Log.i(TAG, "initModelFail");
+                }
+            });
+        }
     }
 
     private void initView() {
