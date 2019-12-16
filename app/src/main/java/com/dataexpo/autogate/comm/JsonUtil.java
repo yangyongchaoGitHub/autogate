@@ -1,5 +1,6 @@
 package com.dataexpo.autogate.comm;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -16,6 +17,10 @@ public class JsonUtil {
         private static final JsonUtil instance = new JsonUtil();
     }
 
+    private JsonUtil(){
+        //序列化时属性为null不参加序列化
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
     /**
      * 单例模式
      */
@@ -29,6 +34,7 @@ public class JsonUtil {
 
     public <T> T json2obj(String jsonStr, Class<T> clazz)
             throws Exception {
+
         return objectMapper.readValue(jsonStr, clazz);
     }
 

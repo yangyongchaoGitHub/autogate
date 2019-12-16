@@ -2,6 +2,7 @@ package com.dataexpo.autogate.face.model;
 
 import com.baidu.idl.main.facesdk.FaceInfo;
 import com.baidu.idl.main.facesdk.model.BDFaceImageInstance;
+import com.dataexpo.autogate.model.User;
 
 public class LivenessModel {
 

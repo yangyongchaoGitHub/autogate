@@ -23,7 +23,8 @@ import com.dataexpo.autogate.face.listener.SdkInitListener;
 import com.dataexpo.autogate.face.model.GlobalSet;
 import com.dataexpo.autogate.face.model.LivenessModel;
 import com.dataexpo.autogate.face.model.SingleBaseConfig;
-import com.dataexpo.autogate.face.model.User;
+import com.dataexpo.autogate.model.User;
+import com.dataexpo.autogate.service.UserService;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -569,6 +570,7 @@ public class FaceSDKManager {
             ArrayList<Feature> featureResult = FaceSDKManager.getInstance().getFaceFeature().featureSearch(feature,
                     BDFaceSDKCommon.FeatureType.BDFACE_FEATURE_TYPE_LIVE_PHOTO,
                     1, true);
+
             if (featureResult != null) {
                 Log.i(TAG, "检索结果个数：" + featureResult.size());
             }
@@ -578,14 +580,19 @@ public class FaceSDKManager {
                 // 获取第一个数据
                 Feature topFeature = featureResult.get(0);
                 // 判断第一个阈值是否大于设定阈值，如果大于，检索成功
+                if (topFeature != null) {
+                    Log.i(TAG, "score: " + topFeature.getScore());
+                }
+
                 if (topFeature != null && topFeature.getScore() >
                         SingleBaseConfig.getBaseConfig().getThreshold()) {
                     // 当前featureEntity 只有id+feature 索引，在数据库中查到完整信息
-//                    User user = FaceApi.getInstance().getUserListById(topFeature.getId());
-//                    if (user != null) {
-//                        livenessModel.setUser(user);
-//                        livenessModel.setFeatureScore(topFeature.getScore());
-//                    }
+                    Log.i(TAG, "featureResult userid: " + topFeature.getId());
+                    User user = UserService.getInstance().findUserById(topFeature.getId());
+                    if (user != null) {
+                        livenessModel.setUser(user);
+                        livenessModel.setFeatureScore(topFeature.getScore());
+                    }
                 }
             }
             livenessModel.setCheckDuration(System.currentTimeMillis() - startFeature);
@@ -820,6 +827,6 @@ public class FaceSDKManager {
         // 初始化数据库
         //DBManager.getInstance().init(context);
         // 数据变化，更新内存
-        //FaceApi.getInstance().initDatabases(true);
+        FaceApi.getInstance().initDatabases(true);
     }
 }

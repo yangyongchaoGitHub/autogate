@@ -20,6 +20,7 @@ public class BaseConfig {
     public final static int MIRROR_POSITIVE = 0;
     public final static int MIRROR_REVERSE = 1;
 
+    private Boolean local_sync_regist = true;
     // RGB检测帧回显
     private Boolean display = true;
     // RGB预览Y轴转向falese为0，true为180    镜像
@@ -436,5 +437,13 @@ public class BaseConfig {
 
     public void setDepthHeight(int depthHeight) {
         this.depthHeight = depthHeight;
+    }
+
+    public Boolean getLocal_sync_regist() {
+        return local_sync_regist;
+    }
+
+    public void setLocal_sync_regist(Boolean local_sync_regist) {
+        this.local_sync_regist = local_sync_regist;
     }
 }

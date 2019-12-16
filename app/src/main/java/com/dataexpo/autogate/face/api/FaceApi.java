@@ -6,11 +6,20 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 
 
+import com.baidu.idl.main.facesdk.FaceInfo;
+import com.baidu.idl.main.facesdk.model.BDFaceImageInstance;
+import com.baidu.idl.main.facesdk.model.BDFaceSDKCommon;
+import com.baidu.idl.main.facesdk.model.Feature;
 import com.dataexpo.autogate.comm.DBUtils;
+import com.dataexpo.autogate.face.manager.FaceSDKManager;
+import com.dataexpo.autogate.face.manager.ImportFileManager;
 import com.dataexpo.autogate.face.model.Group;
 import com.dataexpo.autogate.face.service.FaceGroupService;
+import com.dataexpo.autogate.model.User;
+import com.dataexpo.autogate.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -210,29 +219,29 @@ public class FaceApi {
         return "0";
     }
 
-//    /**
-//     * 提取特征值
-//     */
-//    public float getFeature(Bitmap bitmap, byte[] feature, BDFaceSDKCommon.FeatureType featureType) {
-//        if (bitmap == null) {
-//            return -1;
-//        }
-//
-//        BDFaceImageInstance imageInstance = new BDFaceImageInstance(bitmap);
-//        // 最大检测人脸，获取人脸信息
-//        FaceInfo[] faceInfos = FaceSDKManager.getInstance().getFaceDetect()
-//                .detect(BDFaceSDKCommon.DetectType.DETECT_VIS, imageInstance);
-//        float ret = -1;
-//        if (faceInfos != null && faceInfos.length > 0) {
-//            FaceInfo faceInfo = faceInfos[0];
-//            // 人脸识别，提取人脸特征值
-//            ret = FaceSDKManager.getInstance().getFaceFeature().feature(
-//                    featureType, imageInstance,
-//                    faceInfo.landmarks, feature);
-//        }
-//        imageInstance.destory();
-//        return ret;
-//    }
+    /**
+     * 提取特征值
+     */
+    public float getFeature(Bitmap bitmap, byte[] feature, BDFaceSDKCommon.FeatureType featureType) {
+        if (bitmap == null) {
+            return -1;
+        }
+
+        BDFaceImageInstance imageInstance = new BDFaceImageInstance(bitmap);
+        // 最大检测人脸，获取人脸信息
+        FaceInfo[] faceInfos = FaceSDKManager.getInstance().getFaceDetect()
+                .detect(BDFaceSDKCommon.DetectType.DETECT_VIS, imageInstance);
+        float ret = -1;
+        if (faceInfos != null && faceInfos.length > 0) {
+            FaceInfo faceInfo = faceInfos[0];
+            // 人脸识别，提取人脸特征值
+            ret = FaceSDKManager.getInstance().getFaceFeature().feature(
+                    featureType, imageInstance,
+                    faceInfo.landmarks, feature);
+        }
+        imageInstance.destory();
+        return ret;
+    }
 
 
 //    public boolean registerUserIntoDBmanager(String groupName, String userName, String picName,
@@ -286,40 +295,47 @@ public class FaceApi {
         return isinitSuccess;
     }
 
-//    /**
-//     * 数据库发现变化时候，重新把数据库中的人脸信息添加到内存中，id+feature
-//     */
-//    public void initDatabases(final boolean isFeaturePush) {
-//
-//        if (future != null && !future.isDone()) {
-//            future.cancel(true);
-//        }
-//
-//        isinitSuccess = false;
-//        future = es.submit(new Runnable() {
-//            @Override
-//            public void run() {
-//                List<Group> listGroup = FaceApi.getInstance().getGroupList(0, 100);
-//                if (listGroup != null && listGroup.size() > 0) {
-//                    ArrayList<Feature> features = new ArrayList<>();
-//                    for (int i = 0; i < listGroup.size(); i++) {
-//                        List<User> listUser = FaceApi.getInstance().getUserList(listGroup.get(i).getGroupId());
-//                        for (int j = 0; j < listUser.size(); j++) {
-//                            Feature feature = new Feature();
-//                            feature.setId(listUser.get(j).getId());
-//                            feature.setFeature(listUser.get(j).getFeature());
-//                            features.add(feature);
-//                        }
-//                    }
-//                    if (isFeaturePush) {
-//                        FaceSDKManager.getInstance().getFaceFeature().featurePush(features);
-//                    }
-//                    mUserNum = features.size();
-//                }
-//                isinitSuccess = true;
-//            }
-//        });
-//    }
+    public int registFaceByImage(User user, String path) {
+        return ImportFileManager.getInstance().importByImage(user, path);
+    }
+
+    /**
+     * 数据库发现变化时候，重新把数据库中的人脸信息添加到内存中，id+feature
+     */
+    public void initDatabases(final boolean isFeaturePush) {
+        if (future != null && !future.isDone()) {
+            future.cancel(true);
+        }
+
+        isinitSuccess = false;
+        future = es.submit(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<Feature> features = new ArrayList<>();
+                List<User> listUser = UserService.getInstance().listAll();
+                for (int j = 0; j < listUser.size(); j++) {
+                    Feature feature = new Feature();
+                    feature.setId(listUser.get(j).id);
+                    feature.setFeature(listUser.get(j).feature);
+
+                    String lo = "";
+                    for (int i = 0; i<200; i++) {
+                        lo += listUser.get(j).feature[i] + " ";
+                    }
+                    Log.i(TAG, "after " + lo);
+
+
+                    features.add(feature);
+                }
+                if (isFeaturePush) {
+                    Log.i(TAG, FaceSDKManager.getInstance().getFaceFeature().featurePush(features) + " push result");
+                }
+
+                mUserNum = features.size();
+                isinitSuccess = true;
+            }
+        });
+    }
 
 //    //获取所有图片
 //    public List getAllPics(Context context) {

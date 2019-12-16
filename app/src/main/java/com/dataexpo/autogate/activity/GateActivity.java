@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -16,8 +18,13 @@ import android.widget.TextView;
 import com.dataexpo.autogate.R;
 import com.dataexpo.autogate.comm.DBUtils;
 import com.dataexpo.autogate.comm.FileUtils;
+import com.dataexpo.autogate.face.callback.CameraDataCallback;
+import com.dataexpo.autogate.face.callback.FaceDetectCallBack;
+import com.dataexpo.autogate.face.camera.AutoTexturePreviewView;
+import com.dataexpo.autogate.face.camera.CameraPreviewManager;
 import com.dataexpo.autogate.face.listener.SdkInitListener;
 import com.dataexpo.autogate.face.manager.FaceSDKManager;
+import com.dataexpo.autogate.face.model.LivenessModel;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
 import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.gate.ReportData;
@@ -27,6 +34,7 @@ import com.dataexpo.autogate.service.UserService;
 
 import java.util.Vector;
 
+import static com.dataexpo.autogate.face.model.BaseConfig.TYPE_RGBANDNIR_LIVE;
 import static com.dataexpo.autogate.service.GateService.LED_GREEN;
 import static com.dataexpo.autogate.service.GateService.LED_RED;
 
@@ -37,6 +45,10 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
     private TextView tv_name;
 
     private ServiceConnection mConnection;
+    private AutoTexturePreviewView mAutoCameraPreviewView;
+
+    private static final int PREFER_WIDTH = 1280;
+    private static final int PERFER_HEIGH = 720;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,17 +70,6 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
 //                }
 //            }
 //        }).start();
-//        for(int i = 100; i < 10000; i++) {
-//            UserService.getInstance().insert("test" + i, "dataexpo.Ltd", "development",
-//                "E0040150C7145" + i, 1, "u23" + i);
-//        }
-//        UserService.getInstance().insert("testU2", "dataexpo.Ltd", "development",
-//                "E0040150C71459F3", 1, "u23124");
-//        UserService.getInstance().insert("testU3", "dataexpo.Ltd", "development",
-//                "E0040150C715D092", 1, "u23125");
-//        UserService.getInstance().insert("testU1", "dataexpo.Ltd", "development",
-//                "E0040150C714EA6A", 1, "u23123");
-        //{"id":12,"name":"user1","company":"dataexpo.Ltd","position":"development","cardCode":"E0040150C714EA6A","code":"u23123","image":"test","gender":1}
 
         mConnection = new ServiceConnection() {
             @Override
@@ -110,7 +111,6 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         initLicense();
     }
 
-
     private void initLicense() {
         Log.i(TAG, "initLicense!!!!");
 
@@ -147,10 +147,45 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         }
     }
 
+    private void startCamera() {
+        CameraPreviewManager.getInstance().setCameraFacing(CameraPreviewManager.CAMERA_USB);
+        CameraPreviewManager.getInstance().startPreview(mContext, mAutoCameraPreviewView,
+                PREFER_WIDTH, PERFER_HEIGH, new CameraDataCallback() {
+                    @Override
+                    public void onGetCameraData(byte[] data, Camera camera, int width, int height) {
+                        // 摄像头预览数据进行人脸检测
+                        dealRgb(data, width, height);
+                    }
+                });
+
+//        if (mLiveType == TYPE_RGBANDNIR_LIVE) {
+//            if (mCamera_ir == null) {
+//                mCamera_ir = Camera.open(1);
+//                pt_ir.setCamera(mCamera_ir, PREFER_WIDTH, PERFER_HEIGH);
+//            }
+//            mCamera_ir.setPreviewCallback(new Camera.PreviewCallback() {
+//                @Override
+//                public void onPreviewFrame(byte[] data, Camera camera) {
+//                    dealIr(data);
+//                }
+//            });
+//        }
+
+//        CameraPreviewManagerSingal cpms = new CameraPreviewManagerSingal();
+//        cpms.setCameraFacing(CAMERA_FACING_FRONT);
+//        cpms.startPreview(mContext, mAutoCameraPreviewView_ir, 640, 480, new CameraDataCallback() {
+//            @Override
+//            public void onGetCameraData(byte[] data, Camera camera, int width, int height) {
+//
+//            }
+//        });
+    }
+
     private void initView() {
         iv_head = findViewById(R.id.iv_gate);
         tv_name = findViewById(R.id.tv_gage_name);
         findViewById(R.id.btn_gosetting).setOnClickListener(this);
+        mAutoCameraPreviewView = findViewById(R.id.auto_camera_preview_view);
     }
 
     @Override
@@ -169,6 +204,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         if (MainApplication.getInstance().getService() != null) {
             MainApplication.getInstance().getService().addGateObserver(this);
         }
+        startCamera();
     }
 
     @Override
@@ -209,8 +245,8 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                         User res = UserService.getInstance().findUserByCardCode(user);
                         if (res != null) {
                             //有此用户
-                            final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(res.code));
-                            Log.i(TAG, " response image path: " + FileUtils.getUserPic(res.code));
+                            final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(res.image_name));
+                            Log.i(TAG, " response image path: " + FileUtils.getUserPic(res.image_name));
 
                             iv_head.setImageBitmap(bitmap);
                             iv_head.setVisibility(View.VISIBLE);
@@ -221,5 +257,53 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                 }
             });
         }
+    }
+
+    private void dealRgb(byte[] data, int width, int height) {
+//        if (mLiveType == TYPE_NO_LIVE ||
+//                mLiveType == TYPE_RGB_LIVE) {
+            FaceSDKManager.getInstance().onDetectCheck(data, null, null,
+                    height, width, 1, new FaceDetectCallBack() {
+                        @Override
+                        public void onFaceDetectCallback(LivenessModel livenessModel) {
+                            // 输出结果
+                            checkCloseResult(livenessModel);
+                        }
+
+                        @Override
+                        public void onTip(int code, String msg) {
+                            //displayTip(code, msg);
+                        }
+
+                        @Override
+                        public void onFaceDetectDarwCallback(LivenessModel livenessModel) {
+                            //showFrame(livenessModel);
+                        }
+                    });
+//        } else if (mLiveType == TYPE_RGBANDNIR_LIVE) {
+//            rgbData = data;
+//            checkData();
+//        }
+    }
+
+    private void checkCloseResult(final LivenessModel livenessModel) {
+        // 当未检测到人脸UI显示
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (livenessModel == null || livenessModel.getFaceInfo() == null) {
+                    //Log.i(TAG, "未检测到人脸");
+                    return;
+                } else {
+                    User user = livenessModel.getUser();
+                    if (user == null) {
+                        Log.i(TAG, "识别失败");
+
+                    } else {
+                        Log.i(TAG, "识别成功");
+                    }
+                }
+            }
+        });
     }
 }

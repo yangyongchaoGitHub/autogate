@@ -1,8 +1,5 @@
 package com.dataexpo.autogate.face.activity;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,7 +10,6 @@ import android.graphics.PorterDuff;
 import android.graphics.RectF;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.TextureView;
@@ -38,10 +34,10 @@ import com.dataexpo.autogate.face.manager.FaceSDKManager;
 import com.dataexpo.autogate.face.manager.ImportFileManager;
 import com.dataexpo.autogate.face.model.LivenessModel;
 import com.dataexpo.autogate.face.model.SingleBaseConfig;
-import com.dataexpo.autogate.face.model.User;
 import com.dataexpo.autogate.face.utils.ConfigUtils;
 import com.dataexpo.autogate.face.utils.DensityUtils;
 import com.dataexpo.autogate.face.utils.FaceOnDrawTexturViewUtil;
+import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.view.CircleImageView;
 import com.dataexpo.autogate.view.LoginDialog;
 import com.dataexpo.autogate.view.PreviewTexture;
@@ -404,14 +400,15 @@ public class FaceWindow extends BascActivity implements View.OnClickListener, Lo
                 if (rgbLivenessScore > mRgbLiveScore && irLivenessScore > mNirLiveScore) {
                     User user = livenessModel.getUser();
                     if (user != null) {
-                        String absolutePath = FileUtils.getBatchImportSuccessDirectory()
-                                + "/" + user.getImageName();
-                        Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
+                        final Bitmap bitmap = getImage(user.image_name);
+//                        String absolutePath = FileUtils.getBatchImportSuccessDirectory()
+//                                + "/" + user.getImageName();
+//                        Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
                         mDetectImage.setImageBitmap(bitmap);
                         mTrackText.setVisibility(View.VISIBLE);
                         mTrackText.setText("识别成功");
                         mTrackText.setBackgroundColor(Color.rgb(66, 147, 136));
-                        mDetectText.setText("欢迎您， " + user.getUserName());
+                        mDetectText.setText("欢迎您， " + user.name);
                         info_rl.setVisibility(View.VISIBLE);
 
                     } else {
@@ -464,14 +461,12 @@ public class FaceWindow extends BascActivity implements View.OnClickListener, Lo
                             mDetectImage.setImageResource(R.drawable.icon_face_);
 
                         } else {
-                            String absolutePath = FileUtils.getBatchImportSuccessDirectory()
-                                    + "/" + user.getImageName();
-                            Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
+                            Bitmap bitmap = getImage(user.image_name);
                             mDetectImage.setImageBitmap(bitmap);
                             mTrackText.setVisibility(View.VISIBLE);
                             mTrackText.setText("识别成功");
                             mTrackText.setBackgroundColor(Color.rgb(66, 147, 136));
-                            mDetectText.setText("欢迎您， " + user.getUserName());
+                            mDetectText.setText("欢迎您， " + user.name);
                             info_rl.setVisibility(View.VISIBLE);
                         }
                     } else {
@@ -492,15 +487,12 @@ public class FaceWindow extends BascActivity implements View.OnClickListener, Lo
                                 mDetectText.setVisibility(View.VISIBLE);
                                 mDetectImage.setImageResource(R.drawable.icon_face_);
                             } else {
-
-                                String absolutePath = FileUtils.getBatchImportSuccessDirectory()
-                                        + "/" + user.getImageName();
-                                Bitmap bitmap = BitmapFactory.decodeFile(absolutePath);
+                                Bitmap bitmap = getImage(user.image_name);
                                 mDetectImage.setImageBitmap(bitmap);
                                 mTrackText.setVisibility(View.VISIBLE);
                                 mTrackText.setText("识别成功");
                                 mTrackText.setBackgroundColor(Color.rgb(66, 147, 136));
-                                mDetectText.setText("欢迎您， " + user.getUserName());
+                                mDetectText.setText("欢迎您， " + user.name);
                             }
                         }
                     }
@@ -606,5 +598,10 @@ public class FaceWindow extends BascActivity implements View.OnClickListener, Lo
     @Override
     public void onModifierClick(View view) {
         mDialog.dismiss();
+    }
+
+
+    private Bitmap getImage(String code) {
+        return BitmapFactory.decodeFile(FileUtils.getUserPic(code));
     }
 }

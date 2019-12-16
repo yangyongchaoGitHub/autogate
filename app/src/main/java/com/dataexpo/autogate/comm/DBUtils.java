@@ -11,6 +11,8 @@ import com.dataexpo.autogate.model.User;
 
 import java.util.ArrayList;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class DBUtils {
     private final String TAG = DBUtils.class.getSimpleName();
     public final static String TABLE_USER = "gate_user";
@@ -35,24 +37,33 @@ public class DBUtils {
      * @param contenxt 上下文对象
      */
     public void create(Context contenxt) {
-        String path = contenxt.getCacheDir().getPath() + dbnamePath;
+        String path = contenxt.getDir("databases", MODE_PRIVATE).getPath() + dbnamePath;
+        //String path = contenxt.getCacheDir().getPath() + dbnamePath;
         Log.i(TAG, "db path========="+ path);
         db = SQLiteDatabase.openOrCreateDatabase(path, null);
 
         String sql_user = "create table if not exists " + TABLE_USER +
                 "(id integer primary key autoincrement," +
-                "name nchar(50), " +
-                "company nchar(50), " +
-                "position nchar(50), " +
-                "cardcode nchar(50), " +
+                "name nchar(64), " +
+                "company nchar(64), " +
+                "position nchar(32), " +
+                "cardcode nchar(32), " +
                 "gender int, " +
-                "code nchar(50))";
+                "code nchar(64), " +
+                "image_name nchar(64), " +
+                "image_type int, " +
+                "ctime long, " +
+                "update_time long, " +
+                "userinfo nchar(64), " +
+                "bregist_face int, " +
+                "face_token varchar(128), " +
+                "feature blob)";
 
         String sql_card_record = "create table if not exists " + TABLE_CARD_RECORD +
                 "(id integer primary key autoincrement," +
-                "number nchar(50), " +
-                "direction nchar(50), " +
-                "time nchar(50))";
+                "number char(32), " +
+                "direction char(16), " +
+                "time char(32))";
         db.execSQL(sql_user);//创建表 user
         db.execSQL(sql_card_record);//创建表 card_record
     }

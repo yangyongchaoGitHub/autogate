@@ -175,14 +175,15 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
                 holder.check_btn.setVisibility(View.GONE);
             }
             // 添加数据
-            holder.text_name.setText(mList.get(position).name);
-            String code = mList.get(position).code;
-            String cardcode = mList.get(position).cardCode;
+            User user = mList.get(position);
+            holder.text_name.setText(user.name);
+            String code = user.code;
+            String cardcode = user.cardCode;
 
             holder.text_code.setText(code);
             holder.text_cardcode.setText(cardcode);
 
-            Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(code));
+            Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(user.image_name));
             Log.i(TAG, "bitmap: " + bitmap);
             if (bitmap == null) {
                 bitmap = getWhite();

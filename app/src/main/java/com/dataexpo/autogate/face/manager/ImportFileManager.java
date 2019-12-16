@@ -1,7 +1,18 @@
 package com.dataexpo.autogate.face.manager;
 
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+
+import com.baidu.idl.main.facesdk.FaceInfo;
+import com.baidu.idl.main.facesdk.model.BDFaceImageInstance;
+import com.baidu.idl.main.facesdk.model.BDFaceSDKCommon;
+import com.dataexpo.autogate.comm.Utils;
+import com.dataexpo.autogate.face.api.FaceApi;
 import com.dataexpo.autogate.face.listener.OnImportListener;
+import com.dataexpo.autogate.face.model.LivenessModel;
+import com.dataexpo.autogate.model.User;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,6 +25,17 @@ import java.util.concurrent.Future;
 public class ImportFileManager {
     private static final String TAG = "ImportFileManager";
     public static final String GROUP_DEFAULT = "default";
+
+    //导入成功
+    public static final int IMPORT_SUCCESS = 0;
+    //文件不存在
+    public static final int IMPORT_FILE_EMPTY = 1;
+    //监测人脸数据失败，可能原因人脸图像太小
+    public static final int IMPORT_FEATURE_FAIL = 2;
+    //没有找到人脸
+    public static final int IMPORT_NOFACE = 3;
+    //重复的导入
+    public static final int IMPORT_REPEAT = 4;
 
     private Future mFuture;
     private ExecutorService mExecutorService;
@@ -75,6 +97,55 @@ public class ImportFileManager {
 //        asyncImport(batchFaceDir, zipFile);
 //    }
 
+    /**
+     *
+     * @param imagePath 图片路径
+     * @return 返回注册结果
+     * 通过图片进行人脸注册
+     */
+    public int importByImage(User user, String imagePath) {
+        int result = IMPORT_FILE_EMPTY;
+        float ret;
+
+        // 根据图片的路径将图片转成Bitmap
+        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+
+        if (bitmap != null) {
+            byte[] bytes = new byte[512];
+
+            // 走人脸SDK接口，通过人脸检测、特征提取拿到人脸特征值
+            ret = FaceApi.getInstance().getFeature(bitmap, bytes,
+                    BDFaceSDKCommon.FeatureType.BDFACE_FEATURE_TYPE_LIVE_PHOTO);
+
+            if (ret == -1) {
+                Log.e(TAG, "：未检测到人脸，可能原因：人脸太小 ");
+                //mImportListener.showToastMessage("导入数据的文件夹没有数据");
+                result = IMPORT_FEATURE_FAIL;
+
+            } else if (ret == 128f) {
+                if (faceImport(bitmap, bytes)) {
+                    user.feature = bytes;
+                    result = IMPORT_SUCCESS;
+                    String lo = "";
+                    for (int i = 0; i<200; i++) {
+                        lo += user.feature[i] + " ";
+                    }
+                    Log.i(TAG, "befor " + lo);
+
+                } else {
+                    result = IMPORT_REPEAT;
+                }
+            } else {
+                result = IMPORT_NOFACE;
+            }
+
+            // 图片回收
+            if (!bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
+        }
+        return result;
+    }
 //    /**
 //     * 通过选择相册批量导入用户
 //     *
@@ -354,61 +425,33 @@ public class ImportFileManager {
 //    }
 
 
-//    /**
-//     *  人脸模板特这值获取成功
-//     *
-//     *  检测是否存在重复
-//     * @param bitmap  图片实体
-//     * @param userName 用户明个
-//     * @param userInfo 用户信息
-//     * @param picName 图片名称
-//     * @param bytes 特征值
-//     *
-//     */
-//    private boolean faceImport(Bitmap bitmap, String userName, String picName, String userInfo, byte[] bytes) {
-//        BDFaceImageInstance imageInstance = new BDFaceImageInstance(bitmap);
-//        LivenessModel livenessModel = new LivenessModel();
-//        //TODO: bug in baidu native!!!!!!!!!   需要重启工程才能检测当前注册的用户
-//        FaceInfo[] faceInfos = FaceSDKManager.getInstance().getFaceDetect()
-//                .track(BDFaceSDKCommon.DetectType.DETECT_VIS, imageInstance);
-//        Log.i(TAG, "139 faceInfos: " + faceInfos.length);
-//
-//        FaceSDKManager.getInstance().onFeatureCheck(imageInstance, faceInfos[0].landmarks,
-//                livenessModel, 3);
-//
-//        if (livenessModel.getUser() != null) {
-//            Log.i(TAG, "人脸库已存在该用户");
-//        } else {
-//            Log.i(TAG, "人脸库无此用户");
-//            // 将用户信息和用户组信息保存到数据库
-//            boolean importDBSuccess = FaceApi.getInstance().registerUserIntoDBmanager(GROUP_DEFAULT,
-//                    userName, picName, null, bytes);
-//
-//            // 保存数据库成功
-//            if (importDBSuccess) {
-//                // 保存图片到注册用户图片路径
-//                File facePicDir = FileUtils.getBatchImportSuccessDirectory();
-//
-//                if (facePicDir != null) {
-//                    File savePicPath = new File(facePicDir, picName);
-//
-//                    if (FileUtils.saveBitmap(savePicPath, bitmap)) {
-//                        LogUtils.i(TAG, "图片保存成功");
-//                        if (mImportListener != null) {
-//                            mImportListener.showToastMessage("保存成功！" + userName);
-//                        }
-//
-//                    } else {
-//                        LogUtils.e(TAG, "：图片保存失败");
-//                    }
-//                }
-//                return true;
-//            } else {
-//                LogUtils.e(TAG, "：保存到数据库失败");
-//            }
-//        }
-//        return false;
-//    }
+    /**
+     *  人脸模板特这值获取成功
+     *
+     *  检测是否存在重复
+     * @param bitmap  图片实体
+     * @param bytes 特征值
+     *
+     */
+    private boolean faceImport(Bitmap bitmap, byte[] bytes) {
+        BDFaceImageInstance imageInstance = new BDFaceImageInstance(bitmap);
+        LivenessModel livenessModel = new LivenessModel();
+        //TODO: bug in baidu native!!!!!!!!!   需要重启工程才能检测当前注册的用户
+        FaceInfo[] faceInfos = FaceSDKManager.getInstance().getFaceDetect()
+                .track(BDFaceSDKCommon.DetectType.DETECT_VIS, imageInstance);
+        Log.i(TAG, "faceImport getFaceDetect count " + faceInfos.length);
+
+        FaceSDKManager.getInstance().onFeatureCheck(imageInstance, faceInfos[0].landmarks,
+                livenessModel, 3);
+
+        if (livenessModel.getUser() != null) {
+            Log.i(TAG, "人脸库已存在该用户");
+        } else {
+            Log.i(TAG, "人脸库无此用户,可注册");
+            return true;
+        }
+        return false;
+    }
 
 
     private void updateProgress(int finishCount, int successCount, int failureCount, float progress) {
