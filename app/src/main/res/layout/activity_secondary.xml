@@ -4,12 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!--<com.ezvizuikit.open.EZUIPlayer-->
-        <!--android:id="@+id/camera_show"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:background="@color/c_black"-->
-        <!--/>-->
+    <com.ezvizuikit.open.EZUIPlayer
+        android:id="@+id/camera_show"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/c_black"
+        />
 
     <SurfaceView
         android:id="@+id/suface"

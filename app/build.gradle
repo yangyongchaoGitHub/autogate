@@ -24,7 +24,6 @@ android {
     sourceSets.main {
         jni.srcDirs = []
         jniLibs.srcDir "libs"
-        jniLibs.srcDirs = ['libs']
     }
 
     //因为jackson-core和jackson-databind有重复的文件，重复加载会报错。
@@ -50,4 +49,5 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation project(':facelibrary')
+    compile 'com.hikvision.ezviz:ezuikit:2.1'
 }

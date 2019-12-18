@@ -141,6 +141,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         if (displays.length > 1) {
             try {
                 secondaryActivity = new SecondaryActivity(getApplicationContext(), displays[1]);//displays[1]是副屏
+                secondaryActivity.setApplication(this.getApplication());
 
                 Window window = secondaryActivity.getWindow();
                 if (window != null) {
@@ -188,8 +189,6 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
 
             }
         });
-
-        secondaryActivity.setApplication(this.getApplication());
     }
 
     private void initLicense() {
