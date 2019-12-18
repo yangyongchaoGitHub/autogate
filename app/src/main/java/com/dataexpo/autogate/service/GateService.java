@@ -240,7 +240,6 @@ public class GateService extends GateSubject {
                                         .RDR_GetTagDataReport(RfidDef.RFID_SEEK_NEXT);
                             }
                         }
-
                         notifyObserver(mStatus, mReports);
                     }
                 } else {

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/bg"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.dataexpo.autogate.face.camera.AutoTexturePreviewView
@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"/>
-
+    <!--android:background="@mipmap/bg"-->
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
@@ -74,5 +74,24 @@
         android:textStyle="bold"
         android:text="@string/bottom"
         android:layout_marginBottom="70dp"
+        android:textSize="50dp"/>
+
+    <ImageView
+        android:id="@+id/iv_face"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintWidth_percent="0.2"
+        app:layout_constraintHeight_percent="0.2"/>
+
+    <TextView
+        android:id="@+id/tv_direction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="@color/c_black"
+        android:textStyle="bold"
         android:textSize="50dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

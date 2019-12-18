@@ -8,10 +8,17 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.Camera;
+import android.hardware.display.DisplayManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.Display;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,6 +39,7 @@ import com.dataexpo.autogate.service.MainApplication;
 import com.dataexpo.autogate.service.MainService;
 import com.dataexpo.autogate.service.UserService;
 
+import java.io.IOException;
 import java.util.Vector;
 
 import static com.dataexpo.autogate.face.model.BaseConfig.TYPE_RGBANDNIR_LIVE;
@@ -42,13 +50,19 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
     private static final String TAG = GateActivity.class.getSimpleName();
     private Context mContext;
     private ImageView iv_head;
+    private ImageView iv_face;
     private TextView tv_name;
+    private TextView tv_direction;
 
     private ServiceConnection mConnection;
     private AutoTexturePreviewView mAutoCameraPreviewView;
 
     private static final int PREFER_WIDTH = 1280;
     private static final int PERFER_HEIGH = 720;
+
+    //视频播放类
+    private MediaPlayer mMediaPlayer;
+    private SurfaceView mSurfaceView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +71,8 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         mContext = this;
         initView();
         DBUtils.getInstance().create(mContext);
+        //初始化双屏
+        initDisplay();
         /**
          * test code add a user
          */
@@ -108,7 +124,72 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         };
 
         bindService(new Intent(getApplicationContext(), MainService.class), mConnection, Context.BIND_AUTO_CREATE);
-        initLicense();
+        //initLicense();
+    }
+
+    private void initDisplay() {
+        SecondaryActivity  secondaryActivity = null;
+        DisplayManager mDisplayManager;//屏幕管理类
+        Display[]  displays;//屏幕数组
+
+        mDisplayManager = (DisplayManager)this.getSystemService(Context.DISPLAY_SERVICE);
+
+        displays = mDisplayManager.getDisplays();
+
+        Log.i(TAG, "display: " + displays.length);
+
+        if (displays.length > 1) {
+            try {
+                secondaryActivity = new SecondaryActivity(getApplicationContext(), displays[1]);//displays[1]是副屏
+
+                Window window = secondaryActivity.getWindow();
+                if (window != null) {
+                    window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                }
+                secondaryActivity.show();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+        } else {
+            return;
+        }
+
+        mMediaPlayer = new MediaPlayer();
+        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mMediaPlayer.start();
+            }
+        });
+
+        mSurfaceView= secondaryActivity.getSurfaceView();
+
+        mSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder holder) {
+                Log.d(TAG, "surfaceCreated: ");
+                try {
+                    mMediaPlayer.setDataSource("/data/data/com.dataexpo.autogate/intro.wmv");
+                    mMediaPlayer.setDisplay(mSurfaceView.getHolder());
+                    mMediaPlayer.prepareAsync();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) {
+
+            }
+        });
+
+        secondaryActivity.setApplication(this.getApplication());
     }
 
     private void initLicense() {
@@ -183,7 +264,10 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
 
     private void initView() {
         iv_head = findViewById(R.id.iv_gate);
+        iv_face = findViewById(R.id.iv_face);
         tv_name = findViewById(R.id.tv_gage_name);
+        tv_direction = findViewById(R.id.tv_direction);
+
         findViewById(R.id.btn_gosetting).setOnClickListener(this);
         mAutoCameraPreviewView = findViewById(R.id.auto_camera_preview_view);
     }
@@ -204,7 +288,8 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         if (MainApplication.getInstance().getService() != null) {
             MainApplication.getInstance().getService().addGateObserver(this);
         }
-        startCamera();
+        //开启摄像头预览
+        //startCamera();
     }
 
     @Override
@@ -228,6 +313,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                 @Override
                 public void run() {
                     if (mReports.size() > 0) {
+                        Log.i(TAG, "response card: " + mReports.get(0).getNumber());
                         ReportData data = mReports.get(0);
                         User user = new User();
 //                        user.cardCode = "E0040150C714EA6B";
@@ -235,9 +321,9 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
 //                        user.name = "测试用户";
                         user.cardCode = data.getNumber();
                         if ("FFFFFFFFFFFFFFFF".equals(data.getNumber())) {
-                            Log.i(TAG, " GATE  FFFFFFFFFFFFFFFF!!!!!!!!!!!!!!");
                             MainApplication.getInstance().getService().ledCtrl(LED_RED);
                             iv_head.setVisibility(View.INVISIBLE);
+                            tv_direction.setVisibility(View.INVISIBLE);
                             tv_name.setText("非法通过！");
                             return;
                         }
@@ -250,8 +336,15 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
 
                             iv_head.setImageBitmap(bitmap);
                             iv_head.setVisibility(View.VISIBLE);
+                            tv_direction.setVisibility(View.VISIBLE);
+                            tv_direction.setText("In".equals(data.getDirection()) ? "进" : "出");
                             tv_name.setText(res.name);
                             MainApplication.getInstance().getService().ledCtrl(LED_GREEN);
+                        } else {
+                            MainApplication.getInstance().getService().ledCtrl(LED_RED);
+                            iv_head.setVisibility(View.INVISIBLE);
+                            tv_direction.setVisibility(View.INVISIBLE);
+                            tv_name.setText("非法通过！");
                         }
                     }
                 }
@@ -291,17 +384,23 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (livenessModel == null || livenessModel.getFaceInfo() == null) {
-                    //Log.i(TAG, "未检测到人脸");
-                    return;
-                } else {
-                    User user = livenessModel.getUser();
-                    if (user == null) {
-                        Log.i(TAG, "识别失败");
+                User user = null;
+                if (livenessModel != null && livenessModel.getFaceInfo() != null) {
+                    user = livenessModel.getUser();
+                    if (user != null) {
+                        final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(user.image_name));
+                        Log.i(TAG, " face response image path: " + FileUtils.getUserPic(user.image_name));
 
-                    } else {
+                        iv_face.setImageBitmap(bitmap);
+                        iv_face.setVisibility(View.VISIBLE);
                         Log.i(TAG, "识别成功");
+                    } else {
+                        iv_face.setVisibility(View.INVISIBLE);
+                        Log.i(TAG, "识别失败");
                     }
+                } else {
+                    iv_face.setVisibility(View.INVISIBLE);
+                    //Log.i(TAG, "识别失败,未检测到人脸");
                 }
             }
         });

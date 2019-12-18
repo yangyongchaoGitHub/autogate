@@ -26,7 +26,7 @@ public class Utils {
 
     public synchronized static void saveConfig(Context context, String sKey, String val) {
         SharedPreferences preferences = context.getSharedPreferences(sKey,
-                Context.MODE_WORLD_READABLE);
+                Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(sKey, val);
         editor.commit();
@@ -34,19 +34,19 @@ public class Utils {
 
     public synchronized static String getConfig(Context context, String sKey) {
         SharedPreferences preferences = context.getSharedPreferences(sKey,
-                Context.MODE_WORLD_READABLE);
+                Context.MODE_PRIVATE);
         return preferences.getString(sKey, "");
     }
 
     public synchronized static String getMQTTConfig(Context context, String sKey) {
         SharedPreferences preferences = context.getSharedPreferences(MQTT_XML,
-                Context.MODE_WORLD_READABLE);
+                Context.MODE_PRIVATE);
         return preferences.getString(sKey, "");
     }
 
     public synchronized static void saveMQTTConfig(Context context, String sKey, String val) {
         SharedPreferences preferences = context.getSharedPreferences(MQTT_XML,
-                Context.MODE_WORLD_READABLE);
+                Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(sKey, val);
         editor.commit();

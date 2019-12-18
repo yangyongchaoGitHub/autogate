@@ -138,23 +138,19 @@ public class UserService {
 
             Log.i(TAG, "save image path:" + path);
             //TODO : 在此进行注册用户人脸
-            if (SingleBaseConfig.getBaseConfig().getLocal_sync_regist()) {
-                int result = FaceApi.getInstance().registFaceByImage(user, path);
-                Log.i(TAG, " registFace result: " + result);
-                if (result == IMPORT_SUCCESS) {
-                    user.bregist_face = 1;
-                    try {
-                        FaceApi.getInstance().initDatabases(true);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            String lo = "";
-            for (int i = 0; i<200; i++) {
-                lo += user.feature[i] + " ";
-            }
-            Log.i(TAG, "after " + lo);
+//            if (SingleBaseConfig.getBaseConfig().getLocal_sync_regist()) {
+//                int result = FaceApi.getInstance().registFaceByImage(user, path);
+//                Log.i(TAG, " registFace result: " + result);
+//                if (result == IMPORT_SUCCESS) {
+//                    user.bregist_face = 1;
+//                    try {
+//                        FaceApi.getInstance().initDatabases(true);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//            FaceApi.getInstance().initDatabases(true);
         }
         //存入数据库
         return insertDB(user);
@@ -196,7 +192,7 @@ public class UserService {
         contentValues.put("bregist_face", user.bregist_face);
         contentValues.put("feature", user.feature);
         contentValues.put("face_token", user.getFaceToken());
-        Log.i(TAG, user.feature.length + " is length !!!!!!");
+        //Log.i(TAG, user.feature.length + " is length !!!!!!");
         return DBUtils.getInstance().insert(DBUtils.TABLE_USER, null, contentValues);
     }
 

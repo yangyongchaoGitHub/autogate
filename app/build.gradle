@@ -12,7 +12,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
-            abiFilters "armeabi-v7a", 'arm64-v8a', 'armeabi'
+            abiFilters "armeabi-v7a"
         }
     }
     buildTypes {
@@ -24,6 +24,7 @@ android {
     sourceSets.main {
         jni.srcDirs = []
         jniLibs.srcDir "libs"
+        jniLibs.srcDirs = ['libs']
     }
 
     //因为jackson-core和jackson-databind有重复的文件，重复加载会报错。
@@ -44,10 +45,9 @@ dependencies {
     implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.1'
     implementation 'com.android.support:support-v4:4.4.1'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.8'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.8'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.9.8'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.8'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation project(':facelibrary')
-
 }
