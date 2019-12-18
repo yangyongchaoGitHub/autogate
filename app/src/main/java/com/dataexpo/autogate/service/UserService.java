@@ -35,83 +35,7 @@ public class UserService {
         return UserService.HolderClass.instance;
     }
 
-    public User findUserByCode(User user) {
-        Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_USER, "code", user.code);
-        User user_response = null;
 
-        if (cursor.moveToNext()) {
-            user_response = new User();
-            user_response.id = cursor.getInt(cursor.getColumnIndex("id"));
-            user_response.name = cursor.getString(cursor.getColumnIndex("name"));
-            user_response.company = cursor.getString(cursor.getColumnIndex("company"));
-            user_response.position = cursor.getString(cursor.getColumnIndex("position"));
-            user_response.cardCode = cursor.getString(cursor.getColumnIndex("cardcode"));
-            user_response.gender = cursor.getInt(cursor.getColumnIndex("gender"));
-            user_response.code = cursor.getString(cursor.getColumnIndex("code"));
-            user_response.image_name = cursor.getString(cursor.getColumnIndex("image_name"));
-            user_response.image_type = cursor.getInt(cursor.getColumnIndex("image_type"));
-            user_response.ctime = cursor.getLong(cursor.getColumnIndex("ctime"));
-            user_response.updateTime = cursor.getLong(cursor.getColumnIndex("update_time"));
-            user_response.userInfo = cursor.getString(cursor.getColumnIndex("userinfo"));
-            user_response.bregist_face = cursor.getInt(cursor.getColumnIndex("bregist_face"));
-            user_response.feature = cursor.getBlob(cursor.getColumnIndex("feature"));
-            user_response.setFaceToken(cursor.getString(cursor.getColumnIndex("face_token")));
-        }
-        cursor.close();
-        return user_response;
-    }
-
-    public User findUserById(int id) {
-        Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_USER, "id", id + "");
-        User user_response = null;
-
-        if (cursor.moveToNext()) {
-            user_response = new User();
-            user_response.id = cursor.getInt(cursor.getColumnIndex("id"));
-            user_response.name = cursor.getString(cursor.getColumnIndex("name"));
-            user_response.company = cursor.getString(cursor.getColumnIndex("company"));
-            user_response.position = cursor.getString(cursor.getColumnIndex("position"));
-            user_response.cardCode = cursor.getString(cursor.getColumnIndex("cardcode"));
-            user_response.gender = cursor.getInt(cursor.getColumnIndex("gender"));
-            user_response.code = cursor.getString(cursor.getColumnIndex("code"));
-            user_response.image_name = cursor.getString(cursor.getColumnIndex("image_name"));
-            user_response.image_type = cursor.getInt(cursor.getColumnIndex("image_type"));
-            user_response.ctime = cursor.getLong(cursor.getColumnIndex("ctime"));
-            user_response.updateTime = cursor.getLong(cursor.getColumnIndex("update_time"));
-            user_response.userInfo = cursor.getString(cursor.getColumnIndex("userinfo"));
-            user_response.bregist_face = cursor.getInt(cursor.getColumnIndex("bregist_face"));
-            user_response.feature = cursor.getBlob(cursor.getColumnIndex("feature"));
-            user_response.setFaceToken(cursor.getString(cursor.getColumnIndex("face_token")));
-        }
-        cursor.close();
-        return user_response;
-    }
-
-    public User findUserByCardCode(User user) {
-        Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_USER, "cardcode", user.cardCode);
-        User user_response = null;
-
-        if (cursor.moveToNext()) {
-            user_response = new User();
-            user_response.id = cursor.getInt(cursor.getColumnIndex("id"));
-            user_response.name = cursor.getString(cursor.getColumnIndex("name"));
-            user_response.company = cursor.getString(cursor.getColumnIndex("company"));
-            user_response.position = cursor.getString(cursor.getColumnIndex("position"));
-            user_response.cardCode = cursor.getString(cursor.getColumnIndex("cardcode"));
-            user_response.gender = cursor.getInt(cursor.getColumnIndex("gender"));
-            user_response.code = cursor.getString(cursor.getColumnIndex("code"));
-            user_response.image_name = cursor.getString(cursor.getColumnIndex("image_name"));
-            user_response.image_type = cursor.getInt(cursor.getColumnIndex("image_type"));
-            user_response.ctime = cursor.getLong(cursor.getColumnIndex("ctime"));
-            user_response.updateTime = cursor.getLong(cursor.getColumnIndex("update_time"));
-            user_response.userInfo = cursor.getString(cursor.getColumnIndex("userinfo"));
-            user_response.bregist_face = cursor.getInt(cursor.getColumnIndex("bregist_face"));
-            user_response.feature = cursor.getBlob(cursor.getColumnIndex("feature"));
-            user_response.setFaceToken(cursor.getString(cursor.getColumnIndex("face_token")));
-        }
-        cursor.close();
-        return user_response;
-    }
 
     public long insert(User user) {
         String suffix = ".jpg";
@@ -205,26 +129,84 @@ public class UserService {
         Cursor cursor = DBUtils.getInstance().listAll(DBUtils.TABLE_USER, null, null, null, null, null, null);
 
         while (cursor.moveToNext()) {
-            User user_response = new User();
-            user_response.id = cursor.getInt(cursor.getColumnIndex("id"));
-            user_response.name = cursor.getString(cursor.getColumnIndex("name"));
-            user_response.company = cursor.getString(cursor.getColumnIndex("company"));
-            user_response.position = cursor.getString(cursor.getColumnIndex("position"));
-            user_response.cardCode = cursor.getString(cursor.getColumnIndex("cardcode"));
-            user_response.gender = cursor.getInt(cursor.getColumnIndex("gender"));
-            user_response.code = cursor.getString(cursor.getColumnIndex("code"));
-            user_response.image_name = cursor.getString(cursor.getColumnIndex("image_name"));
-            user_response.image_type = cursor.getInt(cursor.getColumnIndex("image_type"));
-            user_response.ctime = cursor.getLong(cursor.getColumnIndex("ctime"));
-            user_response.updateTime = cursor.getLong(cursor.getColumnIndex("update_time"));
-            user_response.userInfo = cursor.getString(cursor.getColumnIndex("userinfo"));
-            user_response.bregist_face = cursor.getInt(cursor.getColumnIndex("bregist_face"));
-            user_response.feature = cursor.getBlob(cursor.getColumnIndex("feature"));
-            user_response.setFaceToken(cursor.getString(cursor.getColumnIndex("face_token")));
-            list.add(user_response);
+            User user_response = resolve(cursor);
+            if (user_response != null) {
+                list.add(user_response);
+            }
         }
 
         cursor.close();
         return list;
+    }
+
+    public ArrayList<User> findUserNoFaceRegist() {
+        ArrayList<User> list = new ArrayList<>();
+        Cursor cursor = DBUtils.getInstance().listAll(DBUtils.TABLE_USER, null, null, null, null, null, null);
+
+        while (cursor.moveToNext()) {
+            User user_response = resolve(cursor);
+            if (user_response != null && user_response.bregist_face != 0) {
+                list.add(user_response);
+            }
+        }
+
+        cursor.close();
+        return list;
+    }
+
+    public User findUserByCode(User user) {
+        Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_USER, "code", user.code);
+        User user_response = null;
+
+        if (cursor.moveToNext()) {
+            user_response = resolve(cursor);
+        }
+        cursor.close();
+        return user_response;
+    }
+
+    public User findUserById(int id) {
+        Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_USER, "id", id + "");
+        User user_response = null;
+
+        if (cursor.moveToNext()) {
+            user_response = resolve(cursor);
+        }
+        cursor.close();
+        return user_response;
+    }
+
+    public User findUserByCardCode(User user) {
+        Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_USER, "cardcode", user.cardCode);
+        User user_response = null;
+
+        if (cursor.moveToNext()) {
+            user_response = resolve(cursor);
+        }
+        cursor.close();
+        return user_response;
+    }
+
+    private User resolve(Cursor cursor) {
+        if (cursor == null) {
+            return null;
+        }
+        User user_response = new User();
+        user_response.id = cursor.getInt(cursor.getColumnIndex("id"));
+        user_response.name = cursor.getString(cursor.getColumnIndex("name"));
+        user_response.company = cursor.getString(cursor.getColumnIndex("company"));
+        user_response.position = cursor.getString(cursor.getColumnIndex("position"));
+        user_response.cardCode = cursor.getString(cursor.getColumnIndex("cardcode"));
+        user_response.gender = cursor.getInt(cursor.getColumnIndex("gender"));
+        user_response.code = cursor.getString(cursor.getColumnIndex("code"));
+        user_response.image_name = cursor.getString(cursor.getColumnIndex("image_name"));
+        user_response.image_type = cursor.getInt(cursor.getColumnIndex("image_type"));
+        user_response.ctime = cursor.getLong(cursor.getColumnIndex("ctime"));
+        user_response.updateTime = cursor.getLong(cursor.getColumnIndex("update_time"));
+        user_response.userInfo = cursor.getString(cursor.getColumnIndex("userinfo"));
+        user_response.bregist_face = cursor.getInt(cursor.getColumnIndex("bregist_face"));
+        user_response.feature = cursor.getBlob(cursor.getColumnIndex("feature"));
+        user_response.setFaceToken(cursor.getString(cursor.getColumnIndex("face_token")));
+        return user_response;
     }
 }

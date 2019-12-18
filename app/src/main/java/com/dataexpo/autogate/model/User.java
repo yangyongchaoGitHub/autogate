@@ -2,6 +2,8 @@ package com.dataexpo.autogate.model;
 
 import android.util.Base64;
 
+import static com.dataexpo.autogate.face.manager.ImportFileManager.IMPORT_FILE_EMPTY;
+
 public class User {
     //{"id":12,"name":"user1","company":"dataexpo.Ltd","position":"development","cardCode":"E0040150C714EA6A","code":"u23123","image":"test","gender":1}
     public static final int IMAGE_TYPE_JPG = 0;
@@ -27,7 +29,7 @@ public class User {
     public long ctime = 0L;
     public long updateTime = 0L;
     public String userInfo = "";
-    public Integer bregist_face = 0;
+    public Integer bregist_face = IMPORT_FILE_EMPTY;
     private String faceToken = "";
     public Integer sync_regist = SYNC_IMMEDIATELY;
 

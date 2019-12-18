@@ -1,5 +1,6 @@
 package com.dataexpo.autogate.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -78,7 +79,7 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
         btn_delete = findViewById(R.id.btn_user_manager_delete);
         btn_delete.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
-
+        findViewById(R.id.btn_user_manager_filter).setOnClickListener(this);
     }
 
     @Override
@@ -94,6 +95,11 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.btn_user_manager_filter:
+                Intent intent = new Intent(mContext, UserFilterActivity.class);
+                startActivityForResult(intent, 1);
+                break;
+
             case R.id.btn_user_manager_back:
                 finish();
                 break;
@@ -102,6 +108,13 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.i(TAG, "onActityResult!!!! ");
+        users = UserService.getInstance().findUserNoFaceRegist();
+        mUserAdapter.notifyDataSetChanged();
+    }
 
     private static class FaceUserHolder extends RecyclerView.ViewHolder {
         private View itemView;

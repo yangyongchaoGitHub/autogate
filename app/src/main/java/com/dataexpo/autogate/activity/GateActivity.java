@@ -343,7 +343,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                             MainApplication.getInstance().getService().ledCtrl(LED_RED);
                             iv_head.setVisibility(View.INVISIBLE);
                             tv_direction.setVisibility(View.INVISIBLE);
-                            tv_name.setText("非法通过！");
+                            tv_name.setText("未注册！");
                         }
                     }
                 }

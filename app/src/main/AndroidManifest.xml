@@ -45,6 +45,7 @@
         <activity android:name=".activity.UsersActivity"/>
         <activity android:name=".activity.TestActivity"/>
         <activity android:name=".activity.MQTTSettingActivity"/>
+        <activity android:name=".activity.UserFilterActivity"/>
 
         <service android:name=".service.MainService"/>
         <!-- Mqtt服务 -->

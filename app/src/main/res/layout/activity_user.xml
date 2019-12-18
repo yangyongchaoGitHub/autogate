@@ -65,6 +65,17 @@
         android:layout_marginEnd="@dimen/x20"
         app:layout_constraintBottom_toBottomOf="@+id/tv_user_manager_title"/>
 
+    <TextView
+        android:id="@+id/btn_user_manager_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/filter"
+        android:textSize="@dimen/x40"
+        app:layout_constraintEnd_toStartOf="@+id/btn_user_manager_delete"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="@dimen/x20"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_user_manager_title"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/user_info_recyclerview"
         android:layout_width="match_parent"

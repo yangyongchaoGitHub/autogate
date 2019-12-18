@@ -11,8 +11,10 @@
     <string name="gate_setting">门闸设置</string>
     <string name="other_setting">其他设置</string>
     <string name="user_manager">用户管理</string>
+    <string name="user_filter">用户显示筛选</string>
     <string name="cancel">取消</string>
     <string name="delete">删除</string>
+    <string name="filter">筛选</string>
     <string name="description">说明</string>
     <string name="server">服务器地址</string>
     <string name="name">用户名</string>
@@ -22,4 +24,5 @@
     <string name="save">保存</string>
     <string name="input_pswd">请输入密码</string>
     <string name="confirm">确定</string>
+    <string name="no_regist_face">未注册人脸</string>
 </resources>
