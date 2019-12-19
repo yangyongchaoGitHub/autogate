@@ -9,6 +9,7 @@
     <string name="mqtt_setting">MQTT设置</string>
     <string name="user_setting">用户管理</string>
     <string name="gate_setting">门闸设置</string>
+    <string name="face_setting">人脸识别设置</string>
     <string name="other_setting">其他设置</string>
     <string name="user_manager">用户管理</string>
     <string name="user_filter">用户显示筛选</string>
@@ -25,4 +26,45 @@
     <string name="input_pswd">请输入密码</string>
     <string name="confirm">确定</string>
     <string name="no_regist_face">未注册人脸</string>
+    <!--人脸识别相关-->
+    <string name="cameraDisplayAngle">摄像头视频流回显角度设置</string>
+    <string name="cameradisplayangle_description">此项设置用于管理：摄像头输出视频流的实际预览界面角度，仅作用于RGB视频流的回显界面。可用于纠正部分摄像头输出视频流角度不正确的问题，从而确保人脸保持水平朝上。</string>
+    <string name="rotation_angle">选择旋转角度（顺时针方向）</string>
+    <string name="auth">授权激活</string>
+    <string name="device_id">设备硬件指纹</string>
+    <string name="check_license">检测license</string>
+    <string name="offline_auth">离线激活</string>
+    <string name="faceDetectAngle">人脸检测角度设置</string>
+    <string name="facedetectangle_description">此项设置用于管理：从视频流中实际检测人脸的方向，分为0，90，180，270四个角度。选择固定方向后，则只有人脸在此方向角度才会被检测到(RGB)。此处设置不影响RGB视频流回显方向。</string>
+    <string name="detect_angle">选择检测角度:</string>
+    <string name="faceliveness_threshold">活体检测阈值</string>
+    <string name="faceliveness_threshold_description">活体阈值用于判断是否活体通过，每种活体模型的阈值单独设定，可以根据此阈值来判断活体通过率和拒绝率。通常情况下，真人的活体得分极大接近于1，非活体极大接近于0.0，阈值设定视安全性而定</string>
+    <string name="recognizeModelThreshold_dspc">生活照和证件模型阈值已经都做过分值映射，官方推荐判断为同一个人的阈值为80分，详细的FAR和FRR映射关系请在SDK文档中查看</string>
+    <string name="rgb_live_threshold_">RGB活体阈值:</string>
+    <string name="nir_live_threshold_">NIR活体阈值:</string>
+    <string name="depth_lice_threshold_">Depth活体阈值:</string>
+    <string name="face_liviness_set">镜头及活体模式设置</string>
+    <string name="no_live_desp">活体检测主要用于判断用户是否为真人，但如使用场景下，常有固定人员看守，则可无需活体，直接采集人脸。因为活体检测虽然保障了安全性，但却会影响一定的通过率</string>
+    <string name="no_live">不使用活体检测</string>
+    <string name="rgb_live_threshold">RGB活体阈值</string>
+    <string name="rgb_live">RGB单目活体</string>
+    <string name="rgb_live_desp">仅使用RGB活体（单目活体），可有效防止照片翻拍、屏幕等攻击，前端采集为USB单目镜头即可。</string>
+    <string name="rgbandnir_live">RGB+NIR活体</string>
+    <string name="rgbandnir_live_desp">RGB单目活体+NIR近红外活体，基于近红外图像的成像特点，如屏幕无法成像，不同材质反射率不同等，可对屏幕、高清照片等攻击，更加有效的防作弊。</string>
+    <string name="rgbanddepth">RGB+Depth活体</string>
+    <string name="rgbanddepth_desp">RGB单目活体+Depth深度活体，在RGB活体的安全级别基础上，对屏幕、高清彩灯照片、视频、模具等防御力更强。硬件需要搭配3D结构光、TOF类型的镜头。</string>
+    <string name="min_face_setting">最小检测人脸设置</string>
+    <string name="min_face_setting_dspc">最小检测人脸是指：视频流中可以检测到的人脸的最小面积，相同镜头焦距情况下，此数值设置的越小，人脸越容易被检测到，对应的可识别距离也就越大，此数值通常和分辨率一起使用。数值可调整范围为30px至200px之间，需要同时考虑分辨率大小因素影响，每次调解上下改动幅度为10px</string>
+    <string name="min_face_setting_value">最小检测人脸:(像素)</string>
+    <string name="mirror_setting">检测框镜像调节</string>
+    <string name="mirror_tips">根据镜头或者使用设备差异，可能存在检测框与实际人脸方向镜像的问题，可通过以下设置进行调节。常见于镜头前置后置切换。</string>
+    <string name="rbg_mirror">RGB检测:</string>
+    <string name="nir_mirror">NIR检测:</string>
+    <string name="no_mirror">当前方向</string>
+    <string name="mirror">镜像方向</string>
+    <string name="recognizeModelThreshold">识别模型阈值</string>
+    <string name="recognizeModelThreshold_value">识别模型阈值:</string>
+    <string name="all_config">全部设置</string>
+
+
 </resources>

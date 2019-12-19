@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.dataexpo.autogate.R;
+import com.dataexpo.autogate.activity.faceset.SettingMainActivity;
 
 public class MainSettingActivity extends BascActivity implements View.OnClickListener {
 
@@ -41,6 +42,7 @@ public class MainSettingActivity extends BascActivity implements View.OnClickLis
                 break;
 
             case R.id.btn_main_setting_4:
+                startActivity(new Intent(mContext, SettingMainActivity.class));
                 break;
             case R.id.btn_main_setting_5:
                 break;

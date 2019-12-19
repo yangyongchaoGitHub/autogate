@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:id="@+id/cl_setting_main_root"
+            xmlns:app="http://schemas.android.com/apk/res-auto">
+
+            <TextView
+                android:id="@+id/tv_setting_main_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/all_config"
+                android:textColor="@color/black"
+                android:textSize="@dimen/x60"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/x20"
+                app:layout_constraintHeight_percent="0.07"
+                app:layout_constraintLeft_toLeftOf="@+id/cl_setting_main_root"
+                app:layout_constraintRight_toRightOf="@+id/cl_setting_main_root"
+                app:layout_constraintTop_toTopOf="@+id/cl_setting_main_root" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btn_setting_main_back"
+                android:text="@string/back"
+                android:textSize="@dimen/x40"
+                app:layout_constraintLeft_toLeftOf="@+id/cl_setting_main_root"
+                app:layout_constraintTop_toTopOf="@+id/cl_setting_main_root"/>
+
+            <TextView
+                android:id="@+id/tv_setting_main_min_face"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x100"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:text="@string/min_face_setting"
+                android:textSize="@dimen/x46"
+                android:layout_marginStart="@dimen/x30"
+                android:layout_marginTop="@dimen/x30"
+                app:layout_constraintTop_toBottomOf="@+id/tv_setting_main_title"/>
+
+            <TextView
+                android:id="@+id/tv_setting_main_face_detect_angle"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x100"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:textSize="@dimen/x46"
+                android:textColor="@color/black"
+                android:text="@string/faceDetectAngle"
+                android:layout_marginStart="@dimen/x30"
+                android:layout_marginTop="@dimen/x30"
+                app:layout_constraintTop_toBottomOf="@+id/tv_setting_main_min_face"/>
+
+            <TextView
+                android:id="@+id/tv_setting_main_camera_display_angle"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x100"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:textSize="@dimen/x46"
+                android:textColor="@color/black"
+                android:text="@string/cameraDisplayAngle"
+                android:layout_marginStart="@dimen/x30"
+                android:layout_marginTop="@dimen/x30"
+                app:layout_constraintTop_toBottomOf="@+id/tv_setting_main_face_detect_angle"/>
+
+            <TextView
+                android:id="@+id/tv_setting_main_mirror_setting"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x100"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:textSize="@dimen/x46"
+                android:textColor="@color/black"
+                android:text="@string/mirror_setting"
+                android:layout_marginStart="@dimen/x30"
+                android:layout_marginTop="@dimen/x30"
+                app:layout_constraintTop_toBottomOf="@+id/tv_setting_main_camera_display_angle"/>
+
+            <TextView
+                android:id="@+id/tv_setting_main_faceliveness"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x100"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="@dimen/x46"
+                android:text="@string/face_liviness_set"
+                android:layout_marginStart="@dimen/x30"
+                android:layout_marginTop="@dimen/x30"
+                app:layout_constraintTop_toBottomOf="@+id/tv_setting_main_mirror_setting"/>
+
+
+            <TextView
+                android:id="@+id/tv_setting_main_recognize_model_threshold"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x100"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="@dimen/x46"
+                android:text="@string/recognizeModelThreshold"
+                android:layout_marginStart="@dimen/x30"
+                android:layout_marginTop="@dimen/x30"
+                app:layout_constraintTop_toBottomOf="@+id/tv_setting_main_faceliveness"/>
+
+            <TextView
+                android:id="@+id/tv_setting_main_recognize_model"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x100"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="@dimen/x46"
+                android:text="@string/faceliveness_threshold"
+                android:layout_marginStart="@dimen/x30"
+                android:layout_marginTop="@dimen/x30"
+                app:layout_constraintTop_toBottomOf="@+id/tv_setting_main_recognize_model_threshold"/>
+
+            <TextView
+                android:id="@+id/tv_setting_main_user_auth"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x100"
+                android:gravity="center_vertical"
+                android:textSize="@dimen/x46"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:text="@string/auth"
+                android:layout_marginStart="@dimen/x30"
+                android:layout_marginTop="@dimen/x30"
+                app:layout_constraintTop_toBottomOf="@+id/tv_setting_main_recognize_model"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</LinearLayout>
+
+

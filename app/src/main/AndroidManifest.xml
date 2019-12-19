@@ -47,6 +47,17 @@
         <activity android:name=".activity.MQTTSettingActivity"/>
         <activity android:name=".activity.UserFilterActivity"/>
 
+        <!--人脸识别设置-->
+        <activity android:name=".activity.faceset.CameraDisplayAngleActivity"/>
+        <activity android:name=".activity.faceset.FaceAuthActivity"/>
+        <activity android:name=".activity.faceset.FaceDetectAngleActivity"/>
+        <activity android:name=".activity.faceset.FaceLivinessType"/>
+        <activity android:name=".activity.faceset.MinFaceActivity"/>
+        <activity android:name=".activity.faceset.MirrorSettingActivity"/>
+        <activity android:name=".activity.faceset.RecognizeModleThresholdActivity"/>
+        <activity android:name=".activity.faceset.ScreensaverActivity"/>
+        <activity android:name=".activity.faceset.SettingMainActivity"/>
+
         <service android:name=".service.MainService"/>
         <!-- Mqtt服务 -->
         <service android:name="org.eclipse.paho.android.service.MqttService" />

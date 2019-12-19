@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/cameradisplayangle_title"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:text="@string/cameraDisplayAngle"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x60"
+        android:textStyle="bold"
+        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/cameradisplayangle_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/description"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x60"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.086"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cameradisplayangle_title"
+        app:layout_constraintVertical_bias="0.03" />
+
+    <TextView
+        android:id="@+id/tv_cameradisplayangle_description_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/x50"
+        android:text="@string/cameradisplayangle_description"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x46"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/cameradisplayangle_description"
+        app:layout_constraintTop_toBottomOf="@+id/cameradisplayangle_description"
+        app:layout_constraintVertical_bias="0.03" />
+
+    <TextView
+        android:id="@+id/tv_cameradisplayangle_description_set"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/rotation_angle"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x36"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tv_cameradisplayangle_description_value"
+        app:layout_constraintTop_toBottomOf="@+id/tv_cameradisplayangle_description_value"
+        app:layout_constraintVertical_bias="0.03" />
+
+    <RadioButton
+        android:id="@+id/rb_0_angle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:text="0"
+        android:textSize="@dimen/x40"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tv_cameradisplayangle_description_set"
+        app:layout_constraintTop_toBottomOf="@+id/tv_cameradisplayangle_description_set"
+        app:layout_constraintVertical_bias="0.03" />
+
+    <ImageView
+        android:id="@+id/iv_cameradisplayangle_0"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/image_0_angle"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintStart_toStartOf="@+id/rb_0_angle"
+        app:layout_constraintTop_toBottomOf="@+id/rb_0_angle"
+        app:layout_constraintWidth_percent="0.2" />
+
+    <RadioButton
+        android:id="@+id/rb_90_angle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:text="90"
+        android:textSize="@dimen/x40"
+        android:textStyle="bold"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rb_0_angle" />
+
+    <ImageView
+        android:id="@+id/iv_cameradisplayangle_90"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/image_90_angle"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintStart_toStartOf="@+id/rb_90_angle"
+        app:layout_constraintTop_toBottomOf="@+id/rb_90_angle"
+        app:layout_constraintWidth_percent="0.2" />
+
+    <RadioButton
+        android:id="@+id/rb_180_angle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:text="180"
+        android:textSize="@dimen/x40"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tv_cameradisplayangle_description_set"
+        app:layout_constraintTop_toBottomOf="@+id/iv_cameradisplayangle_0"
+        app:layout_constraintVertical_bias="0.03" />
+
+    <ImageView
+        android:id="@+id/iv_cameradisplayangle_180"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/image_180_angle"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintStart_toStartOf="@+id/rb_180_angle"
+        app:layout_constraintTop_toBottomOf="@+id/rb_180_angle"
+        app:layout_constraintWidth_percent="0.2" />
+
+
+    <RadioButton
+        android:id="@+id/rb_270_angle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:text="270"
+        android:textSize="@dimen/x40"
+        android:textStyle="bold"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rb_180_angle" />
+
+    <ImageView
+        android:id="@+id/iv_cameradisplayangle_270"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/image_90_angle"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintStart_toStartOf="@+id/rb_270_angle"
+        app:layout_constraintTop_toBottomOf="@+id/rb_270_angle"
+        app:layout_constraintWidth_percent="0.2" />
+
+    <Button
+        android:id="@+id/btn_cameradisplayangle_save"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/save"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x40"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="2:1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.9"
+        app:layout_constraintWidth_percent="0.2" />
+</androidx.constraintlayout.widget.ConstraintLayout>

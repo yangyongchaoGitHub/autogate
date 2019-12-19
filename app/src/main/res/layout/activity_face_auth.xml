@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_face_auth_back"
+        android:text="@string/back"/>
+
+    <TextView
+        android:id="@+id/tv_face_auth_str"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/auth"
+        android:layout_below="@+id/btn_face_auth_back"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_face_auth_device_id"
+        android:text="@string/device_id"
+        android:layout_below="@+id/tv_face_auth_str"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_face_auth_device_id_value"
+        android:layout_below="@+id/tv_face_auth_device_id"
+        android:layout_alignStart="@+id/tv_face_auth_device_id"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_face_auth_device_id_value"
+        android:layout_centerHorizontal="true">
+
+        <EditText
+            android:layout_width="290dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/et_face_auth_key"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_face_auth_confirm"
+            android:text="@string/confirm"
+            android:layout_below="@id/et_face_auth_key"
+            android:layout_centerHorizontal="true"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_face_auth_check_license"
+            android:text="@string/check_license"
+            android:layout_below="@id/btn_face_auth_confirm"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_face_auth_offline"
+            android:text="@string/offline_auth"
+            android:layout_below="@id/btn_face_auth_check_license"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
+</RelativeLayout>

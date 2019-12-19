@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/tv_min_face_title"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:text="@string/min_face_setting"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x60"
+        android:textStyle="bold"
+        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_min_face_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="说明"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x60"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.086"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_min_face_title"
+        app:layout_constraintVertical_bias="0.03" />
+
+    <TextView
+        android:id="@+id/tv_min_face_description_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/x50"
+        android:text="@string/min_face_setting_dspc"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x46"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tv_min_face_description"
+        app:layout_constraintTop_toBottomOf="@+id/tv_min_face_description"
+        app:layout_constraintVertical_bias="0.03" />
+
+    <TextView
+        android:id="@+id/tv_min_face_description_set"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/min_face_setting_value"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x36"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tv_min_face_description_value"
+        app:layout_constraintTop_toBottomOf="@+id/tv_min_face_description_value"
+        app:layout_constraintVertical_bias="0.03" />
+
+    <Button
+        android:id="@+id/btn_min_face_decrease"
+        android:layout_width="@dimen/x50"
+        android:layout_height="@dimen/x50"
+        android:gravity="center"
+        android:text="-"
+        app:layout_constraintEnd_toStartOf="@+id/et_min_face"
+        app:layout_constraintTop_toTopOf="@+id/et_min_face"/>
+
+    <EditText
+        android:id="@+id/et_min_face"
+        android:layout_width="@dimen/x150"
+        android:layout_height="@dimen/x50"
+        android:background="@null"
+        android:focusable="false"
+        android:gravity="center"
+        android:inputType="number"
+        android:minWidth="60dp"
+        android:text=""
+        android:textSize="30sp"
+        android:textColor="@color/c_black"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_min_face_description_set"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.08"/>
+
+    <Button
+        android:id="@+id/btn_min_face_increase"
+        android:layout_width="@dimen/x50"
+        android:layout_height="@dimen/x50"
+        android:gravity="center"
+        android:text="+"
+        app:layout_constraintStart_toEndOf="@+id/et_min_face"
+        app:layout_constraintTop_toTopOf="@+id/et_min_face"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btn_min_face_save"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/save"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x40"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="2:1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.9"
+        app:layout_constraintWidth_percent="0.2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
