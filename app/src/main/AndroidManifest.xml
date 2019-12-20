@@ -46,6 +46,8 @@
         <activity android:name=".activity.TestActivity"/>
         <activity android:name=".activity.MQTTSettingActivity"/>
         <activity android:name=".activity.UserFilterActivity"/>
+        <activity android:name=".activity.RecordsActivity"/>
+        <activity android:name=".activity.GateRecordActivity"/>
 
         <!--人脸识别设置-->
         <activity android:name=".activity.faceset.CameraDisplayAngleActivity"/>

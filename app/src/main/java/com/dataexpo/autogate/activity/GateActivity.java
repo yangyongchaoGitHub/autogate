@@ -306,49 +306,44 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
     }
 
     @Override
-    public void response(int status, final Vector<ReportData> mReports) {
-        if (mReports != null) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (mReports.size() > 0) {
-                        Log.i(TAG, "response card: " + mReports.get(0).getNumber());
-                        ReportData data = mReports.get(0);
-                        User user = new User();
-//                        user.cardCode = "E0040150C714EA6B";
-//                        user.code = "u23123";
-//                        user.name = "测试用户";
-                        user.cardCode = data.getNumber();
-                        if ("FFFFFFFFFFFFFFFF".equals(data.getNumber())) {
-                            MainApplication.getInstance().getService().ledCtrl(LED_RED);
-                            iv_head.setVisibility(View.INVISIBLE);
-                            tv_direction.setVisibility(View.INVISIBLE);
-                            tv_name.setText("非法通过！");
-                            return;
-                        }
+    public void response(final Vector<ReportData> mReports) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mReports != null && mReports.size() > 0) {
+                    Log.i(TAG, "response card: " + mReports.get(0).getNumber() + " time " + mReports.get(0).getTime());
+                    ReportData data = mReports.get(0);
+                    User user = new User();
+                    user.cardCode = data.getNumber();
 
-                        User res = UserService.getInstance().findUserByCardCode(user);
-                        if (res != null) {
-                            //有此用户
-                            final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(res.image_name));
-                            Log.i(TAG, " response image path: " + FileUtils.getUserPic(res.image_name));
+                    if ("FFFFFFFFFFFFFFFF".equals(data.getNumber())) {
+                        iv_head.setVisibility(View.INVISIBLE);
+                        tv_direction.setVisibility(View.INVISIBLE);
+                        tv_name.setText("非法通过！");
+                        return;
+                    }
 
-                            iv_head.setImageBitmap(bitmap);
-                            iv_head.setVisibility(View.VISIBLE);
-                            tv_direction.setVisibility(View.VISIBLE);
-                            tv_direction.setText("In".equals(data.getDirection()) ? "进" : "出");
-                            tv_name.setText(res.name);
-                            MainApplication.getInstance().getService().ledCtrl(LED_GREEN);
-                        } else {
-                            MainApplication.getInstance().getService().ledCtrl(LED_RED);
-                            iv_head.setVisibility(View.INVISIBLE);
-                            tv_direction.setVisibility(View.INVISIBLE);
-                            tv_name.setText("未注册！");
-                        }
+                    User res = UserService.getInstance().findUserByCardCode(user);
+
+                    if (res != null) {
+                        //有此用户
+                        final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(res.image_name));
+                        Log.i(TAG, " response image path: " + FileUtils.getUserPic(res.image_name));
+
+                        iv_head.setImageBitmap(bitmap);
+                        iv_head.setVisibility(View.VISIBLE);
+                        tv_direction.setVisibility(View.VISIBLE);
+                        tv_direction.setText("In".equals(data.getDirection()) ? "进" : "出");
+                        tv_name.setText(res.name);
+
+                    } else {
+                        iv_head.setVisibility(View.INVISIBLE);
+                        tv_direction.setVisibility(View.INVISIBLE);
+                        tv_name.setText("未注册！");
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     private void dealRgb(byte[] data, int width, int height) {

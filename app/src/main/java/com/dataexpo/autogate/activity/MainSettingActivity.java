@@ -45,6 +45,7 @@ public class MainSettingActivity extends BascActivity implements View.OnClickLis
                 startActivity(new Intent(mContext, SettingMainActivity.class));
                 break;
             case R.id.btn_main_setting_5:
+                startActivity(new Intent(mContext, RecordsActivity.class));
                 break;
             case R.id.btn_main_setting_6:
                 break;

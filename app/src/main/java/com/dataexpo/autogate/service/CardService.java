@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.util.Log;
 
 import com.dataexpo.autogate.comm.DBUtils;
+import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.listener.GateObserver;
 import com.dataexpo.autogate.model.gate.ReportData;
 
@@ -28,7 +29,7 @@ public class CardService implements GateObserver {
     }
 
     @Override
-    public void response(int status, Vector<ReportData> mReports) {
+    public void response(Vector<ReportData> mReports) {
         //Log.i(TAG, "response");
         //save record
         if (mReports == null) {
@@ -36,7 +37,7 @@ public class CardService implements GateObserver {
         }
 
         for (ReportData r:mReports) {
-            insert(r.getNumber(), r.getDirection(), r.getTime());
+            insert(r.getNumber(), r.getDirection(), Utils.timeNowLong());
         }
     }
 
@@ -52,7 +53,7 @@ public class CardService implements GateObserver {
     }
 
     /**
-     * 查询全部用户数据
+     * 查询全部通过记录
      * 返回List
      */
     public ArrayList<ReportData> listAll() {

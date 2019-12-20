@@ -26,6 +26,11 @@
     <string name="input_pswd">请输入密码</string>
     <string name="confirm">确定</string>
     <string name="no_regist_face">未注册人脸</string>
+    <string name="data_record">数据记录</string>
+    <string name="face_records">人脸识别记录</string>
+    <string name="gate_records">智能闸通过记录</string>
+    <string name="other_records">其他记录</string>
+
     <!--人脸识别相关-->
     <string name="cameraDisplayAngle">摄像头视频流回显角度设置</string>
     <string name="cameradisplayangle_description">此项设置用于管理：摄像头输出视频流的实际预览界面角度，仅作用于RGB视频流的回显界面。可用于纠正部分摄像头输出视频流角度不正确的问题，从而确保人脸保持水平朝上。</string>

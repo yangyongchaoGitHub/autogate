@@ -5,6 +5,8 @@ public class ReportData {
     private String number = "";
     private String direction = "";
     private String time = "";
+    private String ltime = "";
+    public boolean check;
 
     public ReportData()
     {
@@ -23,6 +25,22 @@ public class ReportData {
         this.setNumber(sData);
         this.setDirection(sDir);
         this.setTime(sTime);
+    }
+
+    public String getLtime() {
+        return ltime;
+    }
+
+    public void setLtime(String ltime) {
+        this.ltime = ltime;
+    }
+
+    public boolean isCheck() {
+        return check;
+    }
+
+    public void setCheck(boolean check) {
+        this.check = check;
     }
 
     public int getId() {

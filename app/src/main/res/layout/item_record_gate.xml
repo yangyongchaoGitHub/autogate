@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <CheckBox
+        android:id="@+id/record_gate_check_btn"
+        android:layout_width="@dimen/x40"
+        android:layout_height="@dimen/x40"
+        android:layout_marginStart="@dimen/x20"
+        android:background="@drawable/checkbox_selector"
+        android:button="@null"
+        android:checked="false"
+        android:clickable="false"
+        android:focusable="false"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:focusableInTouchMode="false"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/record_gate_image"
+        android:layout_width="@dimen/x160"
+        android:layout_height="@dimen/x160"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="@dimen/x20"
+        android:layout_marginBottom="@dimen/x20"
+        android:background="@drawable/icon_card"
+        app:layout_constraintStart_toEndOf="@+id/record_gate_check_btn"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <TextView
+        android:id="@+id/text_gate_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@+id/record_gate_image"
+        app:layout_constraintBottom_toBottomOf="@+id/record_gate_image"
+        app:layout_constraintStart_toEndOf="@+id/record_gate_image"
+        android:layout_marginStart="@dimen/x20"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x25"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/text_gate_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@+id/record_gate_image"
+        app:layout_constraintBottom_toTopOf="@+id/text_gate_number"
+        app:layout_constraintStart_toEndOf="@+id/record_gate_image"
+        android:layout_marginStart="@dimen/x20"
+        android:textColor="@color/c_black"
+        android:textSize="@dimen/x25"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/text_gate_direction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="@dimen/x20"
+        android:textSize="@dimen/x25"
+        app:layout_constraintTop_toBottomOf="@+id/text_gate_number"
+        app:layout_constraintBottom_toBottomOf="@+id/record_gate_image"
+        app:layout_constraintStart_toEndOf="@+id/record_gate_image"
+        android:textColor="@color/c_black" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

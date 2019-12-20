@@ -9,8 +9,15 @@ import android.util.Log;
 import com.dataexpo.autogate.listener.GateObserver;
 import com.dataexpo.autogate.listener.OnGateServiceCallback;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
+import com.dataexpo.autogate.model.User;
+import com.dataexpo.autogate.model.gate.ReportData;
 
-public class MainService extends Service {
+import java.util.Vector;
+
+import static com.dataexpo.autogate.service.GateService.LED_GREEN;
+import static com.dataexpo.autogate.service.GateService.LED_RED;
+
+public class MainService extends Service implements GateObserver {
     private static final String TAG = MainService.class.getSimpleName();
     private OnServeiceCallback callback;
     private MsgBinder mb = null;
@@ -37,6 +44,30 @@ public class MainService extends Service {
 
     public void restartMQTTService() {
         MQTTService.getInstance().restart();
+    }
+
+
+    @Override
+    public void response(Vector<ReportData> mReports) {
+        if (mReports != null && mReports.size() > 0) {
+            for (ReportData data: mReports) {
+                Log.i(TAG, "response card: " + data.getNumber() + " time " + data.getTime());
+                User user = new User();
+                user.cardCode = data.getNumber();
+
+                User res = UserService.getInstance().findUserByCardCode(user);
+
+                if (res != null) {
+                    //有此用户
+                    MainApplication.getInstance().getService().ledCtrl(LED_GREEN);
+
+                } else {
+                    MainApplication.getInstance().getService().ledCtrl(LED_RED);
+                }
+            }
+
+
+        }
     }
 
     public class MsgBinder extends Binder {
@@ -71,6 +102,7 @@ public class MainService extends Service {
         GateService.getInstance().start();
         GateService.getInstance().setContext(this);
         addGateObserver(CardService.getInstance());
+        addGateObserver(this);
 
         MQTTService.getInstance().init(this);
     }

@@ -76,10 +76,10 @@ public class GateService extends GateSubject {
     }
 
     @Override
-    public void notifyObserver(int status, Vector<ReportData> mReports) {
+    public void notifyGate(Vector<ReportData> mReports) {
         for(Object obs: gateObservers)
         {
-            ((GateObserver)obs).response(status, mReports);
+            ((GateObserver)obs).response(mReports);
         }
     }
 
@@ -166,7 +166,7 @@ public class GateService extends GateSubject {
                     break;
                 }
 
-                notifyObserver(mStatus, null);
+                //notifyObserver(mStatus, null);
 
                 try {
                     Thread.sleep(2000);
@@ -177,7 +177,7 @@ public class GateService extends GateSubject {
 
             mStatus = GATE_STATUS_RUN;
 
-            notifyObserver(mStatus, null);
+            //notifyObserver(mStatus, null);
 
             while (bGetReportThrd) {
                 iret = m_reader.RDR_BuffMode_FetchRecords(flag);
@@ -240,17 +240,10 @@ public class GateService extends GateSubject {
                                         .RDR_GetTagDataReport(RfidDef.RFID_SEEK_NEXT);
                             }
                         }
-                        notifyObserver(mStatus, mReports);
+                        notifyGate(mReports);
                     }
                 } else {
-//                    if (test++ == 10) {
-//                        Vector<ReportData> mReports = new Vector<ReportData>();
-//                        notifyObserver(mStatus, mReports);
-//                        Log.i(TAG, "teset notifyObserver!!!!!");
-//                        test = 0;
-//                    } else {
-                        notifyObserver(mStatus, null);
-                    //}
+                    notifyGate(null);
                 }
             }
             /**

@@ -86,6 +86,11 @@ public class Utils {
         return dateFormat.format(date);
     }
 
+    public static String timeNowLong() {
+        Date date = new Date();
+        return String.valueOf(date.getTime());
+    }
+
     /**
      * 获取当前时间的字符串
      */

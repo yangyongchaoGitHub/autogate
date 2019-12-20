@@ -144,15 +144,4 @@ public class GateSetActivity extends BascActivity implements View.OnClickListene
 
         return true;
     }
-
-    @Override
-    public void response(final int status, Vector<ReportData> mReports) {
-        Log.i(TAG, "!!!!!!!!!!!");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                setStatusText(status);
-            }
-        });
-    }
 }

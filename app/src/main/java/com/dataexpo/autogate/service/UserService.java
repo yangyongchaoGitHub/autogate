@@ -35,8 +35,6 @@ public class UserService {
         return UserService.HolderClass.instance;
     }
 
-
-
     public long insert(User user) {
         String suffix = ".jpg";
         if (checkByCode(user)) {

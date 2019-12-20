@@ -1,6 +1,5 @@
 package com.dataexpo.autogate.activity;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -9,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -22,29 +20,27 @@ import com.dataexpo.autogate.comm.FileUtils;
 import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.listener.OnItemClickListener;
 import com.dataexpo.autogate.listener.OnItemLongClickListener;
-import com.dataexpo.autogate.model.TestData;
-import com.dataexpo.autogate.model.User;
-import com.dataexpo.autogate.service.UserService;
+import com.dataexpo.autogate.model.gate.ReportData;
+import com.dataexpo.autogate.service.CardService;
+import com.dataexpo.autogate.service.GateService;
 import com.dataexpo.autogate.view.CircleImageView;
 
 import java.util.List;
 
-public class UsersActivity extends BascActivity implements OnItemClickListener, OnItemLongClickListener, View.OnClickListener {
-    private static final String TAG = UsersActivity.class.getSimpleName();
-    private UserAdapter mUserAdapter;
+public class GateRecordActivity extends BascActivity implements View.OnClickListener, OnItemClickListener, OnItemLongClickListener {
+    private static String TAG = GateRecordActivity.class.getSimpleName();
+    private Bitmap bitmap = null;
+    private boolean isShowCheck = false;
+    private List<ReportData> datas;
+    private GateAdapter adapter;
+
     private TextView btn_cancel;
     private TextView btn_delete;
-
-    private Bitmap bitmap = null;
-
-    private boolean isShowCheck = false;
-    private List<User> users;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user);
-        mContext = this;
+        setContentView(R.layout.activity_record_gate);
         initView();
     }
 
@@ -55,31 +51,47 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
     }
 
     private void initData() {
-        users = UserService.getInstance().listAll();
-        mUserAdapter.setDataList(users);
-        mUserAdapter.notifyDataSetChanged();
+        datas = CardService.getInstance().listAll();
+        adapter.setDataList(datas);
+        adapter.notifyDataSetChanged();
     }
 
     private void initView() {
         RecyclerView recyclerView;
-        recyclerView = findViewById(R.id.user_info_recyclerview);
+        recyclerView = findViewById(R.id.gate_record_recyclerview);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
         //RecyclerView.LayoutManager layoutManager = new GridLayoutManager(mContext, 4);
         recyclerView.setLayoutManager(layoutManager);
 
-        mUserAdapter = new UserAdapter();
-        recyclerView.setAdapter(mUserAdapter);
-        mUserAdapter.setItemClickListener(this);
-        mUserAdapter.setOnItemLongClickListener(this);
+        adapter = new GateAdapter();
+        recyclerView.setAdapter(adapter);
+        adapter.setItemClickListener(this);
+        adapter.setOnItemLongClickListener(this);
 
-        findViewById(R.id.btn_add).setOnClickListener(this);
-        findViewById(R.id.btn_user_manager_back).setOnClickListener(this);
+        findViewById(R.id.btn_gate_record_add).setOnClickListener(this);
+        findViewById(R.id.btn_gate_record_back).setOnClickListener(this);
 
-        btn_cancel = findViewById(R.id.btn_user_manager_cancel);
-        btn_delete = findViewById(R.id.btn_user_manager_delete);
+        btn_cancel = findViewById(R.id.btn_gate_record_cancel);
+        btn_delete = findViewById(R.id.btn_gate_record_delete);
         btn_delete.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
-        findViewById(R.id.btn_user_manager_filter).setOnClickListener(this);
+        findViewById(R.id.btn_gate_record_filter).setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_add:
+                break;
+            case R.id.btn_user_manager_back:
+                finish();
+                break;
+            case R.id.btn_user_manager_cancel:
+                break;
+            case R.id.btn_user_manager_delete:
+                break;
+                default:
+        }
     }
 
     @Override
@@ -92,56 +104,30 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
 
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_user_manager_filter:
-                Intent intent = new Intent(mContext, UserFilterActivity.class);
-                startActivityForResult(intent, 1);
-                break;
-
-            case R.id.btn_user_manager_back:
-                finish();
-                break;
-
-                default:
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.i(TAG, "onActityResult!!!! ");
-        users = UserService.getInstance().findUserNoFaceRegist();
-        mUserAdapter.notifyDataSetChanged();
-    }
-
-    private static class FaceUserHolder extends RecyclerView.ViewHolder {
+    private static class GateDataHolder extends RecyclerView.ViewHolder {
         private View itemView;
-        private TextView text_name;
-        private TextView text_code;
-        private TextView text_cardcode;
-        private CircleImageView image;
+        private TextView text_number;
+        private TextView text_time;
+        private TextView text_direction;
         private CheckBox check_btn;
 
-        public FaceUserHolder(@NonNull View itemView) {
+        public GateDataHolder(@NonNull View itemView) {
             super(itemView);
             this.itemView = itemView;
-            image = itemView.findViewById(R.id.user_info_image);
-            text_name = itemView.findViewById(R.id.text_user_name);
-            text_code = itemView.findViewById(R.id.text_user_code);
-            text_cardcode = itemView.findViewById(R.id.text_user_cardcode);
-            check_btn = itemView.findViewById(R.id.check_btn);
+            text_number = itemView.findViewById(R.id.text_gate_number);
+            text_time = itemView.findViewById(R.id.text_gate_time);
+            text_direction = itemView.findViewById(R.id.text_gate_direction);
+            check_btn = itemView.findViewById(R.id.record_gate_check_btn);
         }
     }
 
-    public class UserAdapter extends RecyclerView.Adapter<FaceUserHolder> implements View.OnClickListener {
-        private List<User> mList;
+    public class GateAdapter extends RecyclerView.Adapter<GateDataHolder> implements View.OnClickListener {
+        private List<ReportData> mList;
         private boolean mShowCheckBox;
         private OnItemClickListener mItemClickListener;
         private OnItemLongClickListener mItemLongClickListener;
 
-        private void setDataList(List<User> list) {
+        private void setDataList(List<ReportData> list) {
             mList = list;
         }
 
@@ -166,16 +152,16 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
 
         @NonNull
         @Override
-        public FaceUserHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public GateDataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_user_info_list, parent, false);
-            FaceUserHolder viewHolder = new FaceUserHolder(view);
+                    .inflate(R.layout.item_record_gate, parent, false);
+            GateDataHolder viewHolder = new GateDataHolder(view);
             view.setOnClickListener(this);
             return viewHolder;
         }
 
         @Override
-        public void onBindViewHolder(@NonNull FaceUserHolder holder, final int position) {
+        public void onBindViewHolder(@NonNull GateDataHolder holder, final int position) {
             holder.itemView.setTag(position);
             if (mShowCheckBox) {
                 holder.check_btn.setVisibility(View.VISIBLE);
@@ -188,20 +174,12 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
                 holder.check_btn.setVisibility(View.GONE);
             }
             // 添加数据
-            User user = mList.get(position);
-            holder.text_name.setText(user.name);
-            String code = user.code;
-            String cardcode = user.cardCode;
+            ReportData data = mList.get(position);
+            holder.text_direction.setText("In".equals(data.getDirection()) ? "进" : "出");
 
-            holder.text_code.setText(code);
-            holder.text_cardcode.setText(cardcode);
+            holder.text_number.setText(data.getNumber());
+            holder.text_time.setText(Utils.formatTime(Long.parseLong(data.getTime()), "yyyy年MM月dd日HH时mm分ss秒"));
 
-            Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(user.image_name));
-            Log.i(TAG, "bitmap: " + bitmap);
-            if (bitmap == null) {
-                bitmap = getWhite();
-            }
-            holder.image.setImageBitmap(bitmap);
 
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
