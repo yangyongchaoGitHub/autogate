@@ -143,6 +143,22 @@ public class FileUtils {
         return file;
     }
 
+    public static String getFacePicPath(String name) {
+        return getFaceRecordDirectory() + "/" + name + ".jpg";
+    }
+
+    public static File getFaceRecordDirectory() {
+        File sdRootFile = getSDRootFile();
+        File file = null;
+        if (sdRootFile != null && sdRootFile.exists()) {
+            file = new File(sdRootFile, "autogate-facerecord");
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+        }
+        return file;
+    }
+
     /**
      * 获取导入图片成功的目录信息
      */

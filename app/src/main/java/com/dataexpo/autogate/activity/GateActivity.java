@@ -35,6 +35,7 @@ import com.dataexpo.autogate.face.model.LivenessModel;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
 import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.gate.ReportData;
+import com.dataexpo.autogate.service.FaceService;
 import com.dataexpo.autogate.service.MainApplication;
 import com.dataexpo.autogate.service.MainService;
 import com.dataexpo.autogate.service.UserService;
@@ -53,16 +54,14 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
     private ImageView iv_face;
     private TextView tv_name;
     private TextView tv_direction;
+    private User faceCurrUser = null;
+    private User GateCurrUser = null;
 
     private ServiceConnection mConnection;
     private AutoTexturePreviewView mAutoCameraPreviewView;
 
     private static final int PREFER_WIDTH = 1280;
     private static final int PERFER_HEIGH = 720;
-
-    //视频播放类
-    private MediaPlayer mMediaPlayer;
-    private SurfaceView mSurfaceView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +123,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         };
 
         bindService(new Intent(getApplicationContext(), MainService.class), mConnection, Context.BIND_AUTO_CREATE);
-        //initLicense();
+        initLicense();
     }
 
     private void initDisplay() {
@@ -155,40 +154,6 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         } else {
             return;
         }
-
-        mMediaPlayer = new MediaPlayer();
-        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mMediaPlayer.start();
-            }
-        });
-
-        mSurfaceView= secondaryActivity.getSurfaceView();
-
-        mSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder holder) {
-                Log.d(TAG, "surfaceCreated: ");
-                try {
-                    mMediaPlayer.setDataSource("/data/data/com.dataexpo.autogate/intro.wmv");
-                    mMediaPlayer.setDisplay(mSurfaceView.getHolder());
-                    mMediaPlayer.prepareAsync();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder holder) {
-
-            }
-        });
     }
 
     private void initLicense() {
@@ -288,12 +253,13 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
             MainApplication.getInstance().getService().addGateObserver(this);
         }
         //开启摄像头预览
-        //startCamera();
+        startCamera();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        CameraPreviewManager.getInstance().waitPreview();
         if (MainApplication.getInstance().getService() != null) {
             MainApplication.getInstance().getService().removeGateObserver(this);
         }
@@ -382,12 +348,19 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                 if (livenessModel != null && livenessModel.getFaceInfo() != null) {
                     user = livenessModel.getUser();
                     if (user != null) {
+                        //是否是同一个用户在镜头前
                         final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(user.image_name));
                         Log.i(TAG, " face response image path: " + FileUtils.getUserPic(user.image_name));
 
                         iv_face.setImageBitmap(bitmap);
                         iv_face.setVisibility(View.VISIBLE);
                         Log.i(TAG, "识别成功");
+
+                        //保存用户人脸识别记录
+                        if (faceCurrUser == null || faceCurrUser.id != user.id) {
+                            faceCurrUser = user;
+                            FaceService.getInstance().saveFaceRecord(livenessModel);
+                        }
                     } else {
                         iv_face.setVisibility(View.INVISIBLE);
                         Log.i(TAG, "识别失败");

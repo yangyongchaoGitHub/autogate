@@ -17,6 +17,7 @@ public class DBUtils {
     private final String TAG = DBUtils.class.getSimpleName();
     public final static String TABLE_USER = "gate_user";
     public final static String TABLE_CARD_RECORD = "gate_card_record";
+    public final static String TABLE_FACE_RECORD = "gate_face_record";
 
     private final String dbnamePath = "/gate.db";
     private SQLiteDatabase db;
@@ -64,8 +65,20 @@ public class DBUtils {
                 "number char(32), " +
                 "direction char(16), " +
                 "time char(32))";
+
+        String sql_face_record = "create table if not exists " + TABLE_FACE_RECORD +
+                "(id integer primary key autoincrement," +
+                "user_id integer, " +
+                "code nchar(64), " +
+                "time char(32), " +
+                "imagename nchar(32), " +
+                "company nchar(64), " +
+                "cardcode nchar(32)," +
+                "name nchar(64))";
+
         db.execSQL(sql_user);//创建表 user
         db.execSQL(sql_card_record);//创建表 card_record
+        db.execSQL(sql_face_record);//创建表 face_record
     }
 
     //添加数据基础方法

@@ -85,10 +85,6 @@ public class SecondaryActivity extends Presentation implements EZUIPlayer.EZUIPl
         player.setLoadingView(initProgressBar());
     }
 
-    public SurfaceView getSurfaceView() {
-        return surface;
-    }
-
     /**
      * 创建加载view
      * @return

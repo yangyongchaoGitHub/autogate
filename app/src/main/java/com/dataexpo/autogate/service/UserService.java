@@ -60,19 +60,19 @@ public class UserService {
 
             Log.i(TAG, "save image path:" + path);
             //TODO : 在此进行注册用户人脸
-//            if (SingleBaseConfig.getBaseConfig().getLocal_sync_regist()) {
-//                int result = FaceApi.getInstance().registFaceByImage(user, path);
-//                Log.i(TAG, " registFace result: " + result);
-//                if (result == IMPORT_SUCCESS) {
-//                    user.bregist_face = 1;
-//                    try {
-//                        FaceApi.getInstance().initDatabases(true);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//            FaceApi.getInstance().initDatabases(true);
+            if (SingleBaseConfig.getBaseConfig().getLocal_sync_regist()) {
+                int result = FaceApi.getInstance().registFaceByImage(user, path);
+                Log.i(TAG, " registFace result: " + result);
+                if (result == IMPORT_SUCCESS) {
+                    user.bregist_face = 1;
+                    try {
+                        FaceApi.getInstance().initDatabases(true);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            FaceApi.getInstance().initDatabases(true);
         }
         //存入数据库
         return insertDB(user);

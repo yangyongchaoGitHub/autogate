@@ -28,9 +28,10 @@
         tools:ignore="GoogleAppIndexingWarning"
         android:name=".service.MainApplication">
 
+        <!--android:launchMode="singleInstance"-->
         <activity
             android:name=".activity.GateActivity"
-            android:launchMode="singleInstance"
+
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -48,6 +49,7 @@
         <activity android:name=".activity.UserFilterActivity"/>
         <activity android:name=".activity.RecordsActivity"/>
         <activity android:name=".activity.GateRecordActivity"/>
+        <activity android:name=".activity.FaceRecordActivity"/>
 
         <!--人脸识别设置-->
         <activity android:name=".activity.faceset.CameraDisplayAngleActivity"/>
