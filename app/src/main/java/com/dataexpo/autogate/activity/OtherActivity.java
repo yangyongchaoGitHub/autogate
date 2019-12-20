@@ -10,6 +10,7 @@ import com.dataexpo.autogate.service.MainApplication;
 import java.util.Vector;
 
 import static com.dataexpo.autogate.service.GateService.*;
+import static com.dataexpo.autogate.service.MQTTService.*;
 
 public class OtherActivity extends BascActivity {
     private TextView tv_gate_status;
@@ -26,9 +27,21 @@ public class OtherActivity extends BascActivity {
         super.onResume();
         if (MainApplication.getInstance().getService() != null) {
             MainApplication.getInstance().getService().addGateObserver(this);
+            MainApplication.getInstance().getService().addMQTTObserver(this);
         }
         int status = MainApplication.getInstance().getGateStatus();
         responseStatus(status);
+        status = MainApplication.getInstance().getMQTTStatus();
+        responseMQTTStatus(status);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (MainApplication.getInstance().getService() != null) {
+            MainApplication.getInstance().getService().removeGateObserver(this);
+            MainApplication.getInstance().getService().removeMQTTObserver(this);
+        }
     }
 
     private void initView() {
@@ -71,6 +84,35 @@ public class OtherActivity extends BascActivity {
             @Override
             public void run() {
                 tv_gate_status.setText(finalStatuValue);
+            }
+        });
+    }
+
+    @Override
+    public void responseMQTTStatus(int status) {
+        super.responseMQTTStatus(status);
+        String statuValue = "";
+        switch (status) {
+            case MQTT_CONNECT_INIT:
+                statuValue = "连接失败";
+                break;
+
+            case MQTT_CONNECT_ING:
+                statuValue = "正在连接";
+                break;
+
+            case MQTT_CONNECT_SUCCESS:
+                statuValue = "连接成功";
+                break;
+
+            default:
+        }
+
+        final String finalStatuValue = statuValue;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tv_mqtt_status.setText(finalStatuValue);
             }
         });
     }

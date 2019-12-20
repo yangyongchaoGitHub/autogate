@@ -52,7 +52,7 @@ public class GateService extends GateSubject {
      * @param no 控制命令中的端口编号
      * @param model 控制模式（暂时不知道是干嘛用的）
      */
-    public static void testOption(byte no, byte model) {
+    public static void ledOption(byte no, byte model) {
         Object dnOutputOper = m_reader.RDR_CreateSetOutputOperations();
         m_reader.RDR_AddOneOutputOperation(dnOutputOper, no, model,1,
                 100, 100);
@@ -87,8 +87,7 @@ public class GateService extends GateSubject {
 
     @Override
     public void notifyGate(Vector<ReportData> mReports) {
-        for(Object obs: gateObservers)
-        {
+        for(Object obs: gateObservers) {
             ((GateObserver)obs).responseData(mReports);
         }
     }
@@ -127,7 +126,6 @@ public class GateService extends GateSubject {
     }
 
     int init() {
-        Log.i(TAG, "init status " + mStatus);
         if (mContext == null) {
             mStatus = GATE_STATUS_INIT_NULL_CONTEXT;
             return mStatus;
@@ -164,9 +162,9 @@ public class GateService extends GateSubject {
 
     public void ledCtrl(int target) {
         if (target == LED_RED) {
-            testOption((byte)2,(byte)3);
+            ledOption((byte)2,(byte)3);
         } else if (target == LED_GREEN) {
-            testOption((byte)3,(byte)3);
+            ledOption((byte)3,(byte)3);
         }
     }
 

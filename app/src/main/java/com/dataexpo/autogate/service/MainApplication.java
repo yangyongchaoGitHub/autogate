@@ -8,7 +8,7 @@ public class MainApplication extends Application {
     private static MainApplication application;
     private MainService service;
     private int gateStatus = -1;
-    private int MQTTStatus;
+    private int MQTTStatus = -1;
     private int faceSDKStatus;
 
     public MainService getService() {

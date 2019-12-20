@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import androidx.core.content.PermissionChecker;
 
 import com.dataexpo.autogate.listener.GateObserver;
+import com.dataexpo.autogate.listener.MQTTObserver;
 import com.dataexpo.autogate.listener.OnGateServiceCallback;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
 import com.dataexpo.autogate.model.gate.ReportData;
@@ -25,7 +26,7 @@ import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Vector;
 
-public class BascActivity extends Activity implements GateObserver {
+public class BascActivity extends Activity implements GateObserver, MQTTObserver {
     public Context mContext;
     public OnServeiceCallback onServeiceCallback;
     public OnGateServiceCallback onGateServiceCallback;
@@ -57,7 +58,6 @@ public class BascActivity extends Activity implements GateObserver {
                 }
 
                 int hasSdcardWrite = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                Log.i("---------------------", hasSdcardWrite + " ");
                 if (hasSdcardWrite != PackageManager.PERMISSION_GRANTED) {
                     requestPerssionArr.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 }
@@ -105,5 +105,9 @@ public class BascActivity extends Activity implements GateObserver {
 
     @Override
     public void responseStatus(int status) {
+    }
+
+    @Override
+    public void responseMQTTStatus(int status) {
     }
 }

@@ -7,6 +7,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.dataexpo.autogate.listener.GateObserver;
+import com.dataexpo.autogate.listener.MQTTObserver;
 import com.dataexpo.autogate.listener.OnGateServiceCallback;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
 import com.dataexpo.autogate.model.User;
@@ -17,7 +18,7 @@ import java.util.Vector;
 import static com.dataexpo.autogate.service.GateService.LED_GREEN;
 import static com.dataexpo.autogate.service.GateService.LED_RED;
 
-public class MainService extends Service implements GateObserver {
+public class MainService extends Service implements GateObserver, MQTTObserver {
     private static final String TAG = MainService.class.getSimpleName();
     private OnServeiceCallback callback;
     private MsgBinder mb = null;
@@ -74,6 +75,12 @@ public class MainService extends Service implements GateObserver {
         MainApplication.getInstance().setGateStatus(status);
     }
 
+    @Override
+    public void responseMQTTStatus(int status) {
+        Log.i(TAG, "responseMQTTStatus: " + status);
+        MainApplication.getInstance().setMQTTStatus(status);
+    }
+
     public class MsgBinder extends Binder {
         public MainService getService() {
             return MainService.this;
@@ -88,12 +95,20 @@ public class MainService extends Service implements GateObserver {
         GateService.getInstance().remove(observer);
     }
 
+    public void addMQTTObserver(MQTTObserver observer) {
+        MQTTService.getInstance().add(observer);
+    }
+
+    public void removeMQTTObserver(MQTTObserver observer) {
+        MQTTService.getInstance().remove(observer);
+    }
+
     public void setOnGateServiceCallback(OnGateServiceCallback callback) {
         GateService.getInstance().setCallback(callback);
     }
 
     public void testOption(byte b1, byte b2) {
-        GateService.testOption(b1, b2);
+        GateService.ledOption(b1, b2);
     }
 
     public void ledCtrl(int target) {
@@ -109,6 +124,7 @@ public class MainService extends Service implements GateObserver {
         addGateObserver(this);
 
         MQTTService.getInstance().init(this);
+        MQTTService.getInstance().add(this);
     }
 
     @Override

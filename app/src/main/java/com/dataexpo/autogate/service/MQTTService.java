@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.dataexpo.autogate.comm.JsonUtil;
 import com.dataexpo.autogate.comm.Utils;
+import com.dataexpo.autogate.listener.GateObserver;
 import com.dataexpo.autogate.listener.IGetMessageCallBack;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -18,11 +19,13 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import com.dataexpo.autogate.listener.MQTTObserver;
+import com.dataexpo.autogate.listener.MQTTSubject;
 import com.dataexpo.autogate.model.User;
 
 import static com.dataexpo.autogate.comm.Utils.*;
 
-public class MQTTService {
+public class MQTTService extends MQTTSubject {
     private static final String TAG = MQTTService.class.getSimpleName();
     private Context mContext;
     private String host = "";
@@ -32,9 +35,13 @@ public class MQTTService {
     private String topic = "";
     private String clientId = "";
 
-    private static final int MQTT_CONNECT_INIT = 1;
-    private static final int MQTT_CONNECT_ING = 2;
-    private static final int MQTT_CONNECT_SUCCESS = 3;
+    //连接失败
+    public static final int MQTT_CONNECT_INIT = 1;
+    //正在连接
+    public static final int MQTT_CONNECT_ING = 2;
+    //连接成功
+    public static final int MQTT_CONNECT_SUCCESS = 3;
+
     private int conn_status = MQTT_CONNECT_INIT;
 
     private static MqttAndroidClient client = null;
@@ -60,6 +67,13 @@ public class MQTTService {
     public void restart() {
         if (conn_status == MQTT_CONNECT_SUCCESS) {
             destroy();
+        }
+    }
+
+    @Override
+    public void notifyStatus(int status) {
+        for(Object obs: observers) {
+            ((MQTTObserver)obs).responseMQTTStatus(conn_status);
         }
     }
 
@@ -248,6 +262,7 @@ public class MQTTService {
                     doClientConnection();
                 }
 
+                notifyStatus(conn_status);
                 try {
                     Thread.sleep(delay);
                 } catch (InterruptedException e) {
