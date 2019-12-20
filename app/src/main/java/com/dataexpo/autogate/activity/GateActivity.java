@@ -272,12 +272,12 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
     }
 
     @Override
-    public void response(final Vector<ReportData> mReports) {
+    public void responseData(final Vector<ReportData> mReports) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (mReports != null && mReports.size() > 0) {
-                    Log.i(TAG, "response card: " + mReports.get(0).getNumber() + " time " + mReports.get(0).getTime());
+                    Log.i(TAG, "responseData card: " + mReports.get(0).getNumber() + " time " + mReports.get(0).getTime());
                     ReportData data = mReports.get(0);
                     User user = new User();
                     user.cardCode = data.getNumber();
@@ -294,7 +294,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                     if (res != null) {
                         //有此用户
                         final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(res.image_name));
-                        Log.i(TAG, " response image path: " + FileUtils.getUserPic(res.image_name));
+                        Log.i(TAG, " responseData image path: " + FileUtils.getUserPic(res.image_name));
 
                         iv_head.setImageBitmap(bitmap);
                         iv_head.setVisibility(View.VISIBLE);
@@ -350,7 +350,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                     if (user != null) {
                         //是否是同一个用户在镜头前
                         final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(user.image_name));
-                        Log.i(TAG, " face response image path: " + FileUtils.getUserPic(user.image_name));
+                        Log.i(TAG, " face responseData image path: " + FileUtils.getUserPic(user.image_name));
 
                         iv_face.setImageBitmap(bitmap);
                         iv_face.setVisibility(View.VISIBLE);

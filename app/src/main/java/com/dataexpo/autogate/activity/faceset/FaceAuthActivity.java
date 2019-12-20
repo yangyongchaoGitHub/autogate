@@ -90,7 +90,7 @@ public class FaceAuthActivity extends BascActivity implements View.OnClickListen
             faceAuth.initLicenseOnLine(mContext, key, new Callback() {
                 @Override
                 public void onResponse(final int code, final String response) {
-                    //ToastUtils.toast(mContext, code + response);
+                    //ToastUtils.toast(mContext, code + responseData);
                     if (code == 0) {
                         FaceSDKManager.getInstance().initModel(mContext, new SdkInitListener() {
                             @Override
@@ -156,7 +156,7 @@ public class FaceAuthActivity extends BascActivity implements View.OnClickListen
                         });
                         finish();
                     } else {
-                        //ToastUtils.toast(mContext, response);
+                        //ToastUtils.toast(mContext, responseData);
                     }
                 }
             });

@@ -30,6 +30,8 @@
     <string name="face_records">人脸识别记录</string>
     <string name="gate_records">智能闸通过记录</string>
     <string name="other_records">其他记录</string>
+    <string name="gate_status">智能通道状态</string>
+    <string name="mqtt_status">mqtt连接状态</string>
 
     <!--人脸识别相关-->
     <string name="cameraDisplayAngle">摄像头视频流回显角度设置</string>

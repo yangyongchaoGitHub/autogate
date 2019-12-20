@@ -48,10 +48,10 @@ public class MainService extends Service implements GateObserver {
 
 
     @Override
-    public void response(Vector<ReportData> mReports) {
+    public void responseData(Vector<ReportData> mReports) {
         if (mReports != null && mReports.size() > 0) {
             for (ReportData data: mReports) {
-                Log.i(TAG, "response card: " + data.getNumber() + " time " + data.getTime());
+                Log.i(TAG, "responseData card: " + data.getNumber() + " time " + data.getTime());
                 User user = new User();
                 user.cardCode = data.getNumber();
 
@@ -65,9 +65,13 @@ public class MainService extends Service implements GateObserver {
                     MainApplication.getInstance().getService().ledCtrl(LED_RED);
                 }
             }
-
-
         }
+    }
+
+    @Override
+    public void responseStatus(int status) {
+        Log.i(TAG, "responseStatus: " + status);
+        MainApplication.getInstance().setGateStatus(status);
     }
 
     public class MsgBinder extends Binder {

@@ -22,6 +22,9 @@ public abstract class GateSubject {
         gateObservers.remove(gateObserver);
     }
 
-    //通知观察者的方法
+    //通知观察者有智能通道通过记录
     public abstract void notifyGate(Vector<ReportData> mReports);
+
+    //通知观察者状态有变化
+    public abstract void notifyStatus(int status);
 }

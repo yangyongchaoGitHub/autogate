@@ -100,6 +100,10 @@ public class BascActivity extends Activity implements GateObserver {
     }
 
     @Override
-    public void response(Vector<ReportData> mReports) {
+    public void responseData(Vector<ReportData> mReports) {
+    }
+
+    @Override
+    public void responseStatus(int status) {
     }
 }

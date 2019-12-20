@@ -31,6 +31,8 @@ public class GateService extends GateSubject {
     public static final int GATE_STATUS_INIT_OPEN_FAIL = 4;
     //上下文为空
     public static final int GATE_STATUS_INIT_NULL_CONTEXT = 5;
+    //和设备通信失败
+    public static final int GATE_STATUS_READ_ERROR = 6;
 
     //红灯
     public static final int LED_RED = 1;
@@ -71,15 +73,31 @@ public class GateService extends GateSubject {
         {
             m_reader.RDR_Close();
         }
-
         start();
+    }
+
+    //获取设备信息
+    private boolean getDeviceInfo()
+    {
+        StringBuffer buffer = new StringBuffer();
+        int iret = m_reader.RDR_GetReaderInfor(buffer);
+        //获取设备信息成功，说明正常通信
+        return iret == ApiErrDefinition.NO_ERROR;
     }
 
     @Override
     public void notifyGate(Vector<ReportData> mReports) {
         for(Object obs: gateObservers)
         {
-            ((GateObserver)obs).response(mReports);
+            ((GateObserver)obs).responseData(mReports);
+        }
+    }
+
+    @Override
+    public void notifyStatus(int status) {
+        for(Object obs: gateObservers)
+        {
+            ((GateObserver)obs).responseStatus(mStatus);
         }
     }
 
@@ -159,14 +177,17 @@ public class GateService extends GateSubject {
             bGetReportThrd = true;
             int iret;
             byte flag = 0;
-            int test = 0;
 
             while (bGetReportThrd) {
                 if (init() == GATE_STATUS_START) {
-                    break;
+                    if (getDeviceInfo()) {
+                        break;
+                    }
+                    mStatus = GATE_STATUS_READ_ERROR;
                 }
 
                 //notifyObserver(mStatus, null);
+                notifyStatus(mStatus);
 
                 try {
                     Thread.sleep(2000);
@@ -175,8 +196,10 @@ public class GateService extends GateSubject {
                 }
             }
 
+
             mStatus = GATE_STATUS_RUN;
 
+            notifyStatus(mStatus);
             //notifyObserver(mStatus, null);
 
             while (bGetReportThrd) {
@@ -242,9 +265,10 @@ public class GateService extends GateSubject {
                         }
                         notifyGate(mReports);
                     }
-                } else {
-                    notifyGate(null);
                 }
+//                else {
+//                    notifyGate(null);
+//                }
             }
             /**
              * 可以发送反馈数据

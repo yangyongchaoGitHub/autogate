@@ -50,6 +50,7 @@
         <activity android:name=".activity.RecordsActivity"/>
         <activity android:name=".activity.GateRecordActivity"/>
         <activity android:name=".activity.FaceRecordActivity"/>
+        <activity android:name=".activity.OtherActivity"/>
 
         <!--人脸识别设置-->
         <activity android:name=".activity.faceset.CameraDisplayAngleActivity"/>

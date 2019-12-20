@@ -29,8 +29,8 @@ public class CardService implements GateObserver {
     }
 
     @Override
-    public void response(Vector<ReportData> mReports) {
-        //Log.i(TAG, "response");
+    public void responseData(Vector<ReportData> mReports) {
+        //Log.i(TAG, "responseData");
         //save record
         if (mReports == null) {
             return;
@@ -39,6 +39,11 @@ public class CardService implements GateObserver {
         for (ReportData r:mReports) {
             insert(r.getNumber(), r.getDirection(), Utils.timeNowLong());
         }
+    }
+
+    @Override
+    public void responseStatus(int status) {
+
     }
 
     /**

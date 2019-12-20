@@ -727,7 +727,7 @@ public class FaceSDKManager {
                 new Callback() {
                     @Override
                     public void onResponse(int code, String response) {
-                        //  ToastUtils.toast(context, code + "  " + response);
+                        //  ToastUtils.toast(context, code + "  " + responseData);
                         if (code != 0 && listener != null) {
                             listener.initModelFail(code, response);
                         }
@@ -761,7 +761,7 @@ public class FaceSDKManager {
                 new Callback() {
                     @Override
                     public void onResponse(int code, String response) {
-                        //  ToastUtils.toast(context, code + "  " + response);
+                        //  ToastUtils.toast(context, code + "  " + responseData);
                         if (code != 0 && listener != null) {
                             listener.initModelFail(code, response);
                         }
