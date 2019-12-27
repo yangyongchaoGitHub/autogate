@@ -1,6 +1,8 @@
 package com.dataexpo.autogate.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import com.dataexpo.autogate.R;
@@ -12,13 +14,15 @@ import java.util.Vector;
 import static com.dataexpo.autogate.service.GateService.*;
 import static com.dataexpo.autogate.service.MQTTService.*;
 
-public class OtherActivity extends BascActivity {
+public class OtherActivity extends BascActivity implements View.OnClickListener {
     private TextView tv_gate_status;
     private TextView tv_mqtt_status;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_other);
+        mContext = this;
         initView();
     }
 
@@ -47,6 +51,7 @@ public class OtherActivity extends BascActivity {
     private void initView() {
         tv_gate_status = findViewById(R.id.tv_gate_status_value);
         tv_mqtt_status = findViewById(R.id.tv_mqtt_status_value);
+        findViewById(R.id.btn_testcamera).setOnClickListener(this);
     }
 
     @Override
@@ -115,5 +120,15 @@ public class OtherActivity extends BascActivity {
                 tv_mqtt_status.setText(finalStatuValue);
             }
         });
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_testcamera:
+                startActivity(new Intent(mContext, CameraTestActivity.class));
+                break;
+                default:
+        }
     }
 }

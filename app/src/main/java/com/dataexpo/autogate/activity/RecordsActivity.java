@@ -26,12 +26,12 @@ public class RecordsActivity extends BascActivity implements View.OnClickListene
         switch (v.getId()) {
             case R.id.btn_record_1:
                 startActivity(new Intent(mContext, FaceRecordActivity.class));
-
                 break;
+
             case R.id.btn_record_2:
                 startActivity(new Intent(mContext, GateRecordActivity.class));
-
                 break;
+
             case R.id.btn_record_3:
                 break;
                 default:

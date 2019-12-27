@@ -8,10 +8,12 @@ import android.util.Log;
 
 import com.dataexpo.autogate.listener.GateObserver;
 import com.dataexpo.autogate.listener.MQTTObserver;
+import com.dataexpo.autogate.listener.OnFrameCallback;
 import com.dataexpo.autogate.listener.OnGateServiceCallback;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
 import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.gate.ReportData;
+import com.dataexpo.autogate.netty.UDPClient;
 
 import java.util.Vector;
 
@@ -22,6 +24,7 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
     private static final String TAG = MainService.class.getSimpleName();
     private OnServeiceCallback callback;
     private MsgBinder mb = null;
+    UDPClient client = null;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -29,6 +32,12 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
             mb = new MsgBinder();
         }
         return mb;
+    }
+
+    public void setFrameCallback(OnFrameCallback onFrameCallback) {
+        if (client != null) {
+            client.setOnFrameCallback(onFrameCallback);
+        }
     }
 
     public void setCallback(OnServeiceCallback onServeiceCallback) {
@@ -125,6 +134,7 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
 
         MQTTService.getInstance().init(this);
         MQTTService.getInstance().add(this);
+        client= new UDPClient();
     }
 
     @Override
