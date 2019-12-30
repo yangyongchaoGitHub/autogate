@@ -32,6 +32,9 @@
     <string name="other_records">其他记录</string>
     <string name="gate_status">智能通道状态</string>
     <string name="mqtt_status">mqtt连接状态</string>
+    <string name="go_camera_test">摄像头测试</string>
+    <string name="localip">查看本地ip</string>
+    <string name="ip">本地ip</string>
 
     <!--人脸识别相关-->
     <string name="cameraDisplayAngle">摄像头视频流回显角度设置</string>

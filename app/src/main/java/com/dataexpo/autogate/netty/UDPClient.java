@@ -7,6 +7,7 @@ import com.dataexpo.autogate.listener.OnFrameCallback;
 import com.dataexpo.autogate.model.Frame;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,7 +26,7 @@ public class UDPClient extends UdpChannelInboundHandler implements Runnable {
     private EventLoopGroup eventLoopGroup;
     private UdpChannelInitializer udpChannelInitializer;
     private ExecutorService executorService;
-    private OnFrameCallback onFrameCallback;
+    private ArrayList<OnFrameCallback> callbacks = new ArrayList<>();
 
     public UDPClient(){
         init();
@@ -47,13 +48,31 @@ public class UDPClient extends UdpChannelInboundHandler implements Runnable {
     }
 
     public void setOnFrameCallback(OnFrameCallback onFrameCallback) {
-        this.onFrameCallback = onFrameCallback;
+        boolean bExist = false;
+        for (OnFrameCallback o: callbacks) {
+            if (o == onFrameCallback) {
+                bExist = true;
+                break;
+            }
+        }
+        if (!bExist) {
+            callbacks.add(onFrameCallback);
+        }
+    }
+
+    public void deleteFrameCallback(OnFrameCallback onFrameCallback) {
+        for (int i = 0; i < callbacks.size(); i++) {
+            if (callbacks.get(i) == onFrameCallback) {
+                callbacks.remove(i);
+            }
+        }
     }
 
     @Override
     public void receive(String data) {
-//        Log.d(TAG, "client rcv size : " + data.length());
+        //Log.d(TAG, "client rcv size : " + data.length());
 //        Log.d(TAG, "client rcv : " + data);
+        //Log.d(TAG, "callbacks size : " + callbacks.size());
         Frame frame = null;
         try {
             frame = JsonUtil.getInstance().json2obj(data, Frame.class);
@@ -63,12 +82,9 @@ public class UDPClient extends UdpChannelInboundHandler implements Runnable {
         }
 
         if (frame != null) {
-            if (onFrameCallback != null) {
-                onFrameCallback.onFrame(FileUtils.base64ToBytes(frame.data));
+            for (OnFrameCallback o: callbacks) {
+                o.onFrame(FileUtils.base64ToBytes(frame.data));
             }
-//            if (i++ < 6) {
-//                FileUtils.writeByteFile(FileUtils.base64ToBytes(frame.data), "/data/data/com.dataexpo.autogate/ss" + i + ".jpg");
-//            }
         }
     }
 

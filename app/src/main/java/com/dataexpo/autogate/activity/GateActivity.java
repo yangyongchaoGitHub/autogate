@@ -6,16 +6,12 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.display.DisplayManager;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Display;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -40,12 +36,7 @@ import com.dataexpo.autogate.service.MainApplication;
 import com.dataexpo.autogate.service.MainService;
 import com.dataexpo.autogate.service.UserService;
 
-import java.io.IOException;
 import java.util.Vector;
-
-import static com.dataexpo.autogate.face.model.BaseConfig.TYPE_RGBANDNIR_LIVE;
-import static com.dataexpo.autogate.service.GateService.LED_GREEN;
-import static com.dataexpo.autogate.service.GateService.LED_RED;
 
 public class GateActivity extends BascActivity implements View.OnClickListener {
     private static final String TAG = GateActivity.class.getSimpleName();
@@ -96,6 +87,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                 if (MainApplication.getInstance().getService() != null) {
                     MainApplication.getInstance().getService().removeGateObserver(GateActivity.this);
                     MainApplication.getInstance().getService().addGateObserver(GateActivity.this);
+                    initDisplay();
                 }
             }
 
@@ -127,32 +119,62 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
     }
 
     private void initDisplay() {
-        SecondaryActivity  secondaryActivity = null;
-        DisplayManager mDisplayManager;//屏幕管理类
-        Display[]  displays;//屏幕数组
+        if (1 == 1) {
+            SecondaryPhoneCameraPresentation cameraPresentation = null;
+            DisplayManager mDisplayManager;//屏幕管理类
+            Display[] displays;//屏幕数组
 
-        mDisplayManager = (DisplayManager)this.getSystemService(Context.DISPLAY_SERVICE);
+            mDisplayManager = (DisplayManager) this.getSystemService(Context.DISPLAY_SERVICE);
 
-        displays = mDisplayManager.getDisplays();
+            displays = mDisplayManager.getDisplays();
 
-        Log.i(TAG, "display: " + displays.length);
+            Log.i(TAG, "display: " + displays.length);
 
-        if (displays.length > 1) {
-            try {
-                secondaryActivity = new SecondaryActivity(getApplicationContext(), displays[1]);//displays[1]是副屏
-                secondaryActivity.setApplication(this.getApplication());
+            if (displays.length > 1) {
+                try {
+                    cameraPresentation = new SecondaryPhoneCameraPresentation(getApplicationContext(), displays[1]);//displays[1]是副屏
+                    //cameraPresentation.setApplication(this.getApplication());
 
-                Window window = secondaryActivity.getWindow();
-                if (window != null) {
-                    window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                    Window window = cameraPresentation.getWindow();
+                    if (window != null) {
+                        window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                    }
+                    cameraPresentation.show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
                 }
-                secondaryActivity.show();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } else {
                 return;
             }
         } else {
-            return;
+            SecondaryEZUActivity secondaryActivity = null;
+            DisplayManager mDisplayManager;//屏幕管理类
+            Display[] displays;//屏幕数组
+
+            mDisplayManager = (DisplayManager) this.getSystemService(Context.DISPLAY_SERVICE);
+
+            displays = mDisplayManager.getDisplays();
+
+            Log.i(TAG, "display: " + displays.length);
+
+            if (displays.length > 1) {
+                try {
+                    secondaryActivity = new SecondaryEZUActivity(getApplicationContext(), displays[1]);//displays[1]是副屏
+                    secondaryActivity.setApplication(this.getApplication());
+
+                    Window window = secondaryActivity.getWindow();
+                    if (window != null) {
+                        window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                    }
+                    secondaryActivity.show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+            } else {
+                return;
+            }
         }
     }
 

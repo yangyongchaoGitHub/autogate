@@ -26,13 +26,13 @@ import com.ezvizuikit.open.EZUIPlayer;
 
 import java.util.Calendar;
 
-public class SecondaryActivity extends Presentation implements EZUIPlayer.EZUIPlayerCallBack {
+public class SecondaryEZUActivity extends Presentation implements EZUIPlayer.EZUIPlayerCallBack {
     private Application application = null;
     private Context context;
     private SurfaceView surface;
     private EZUIPlayer player;
 
-    public SecondaryActivity(Context outerContext, Display display) {
+    public SecondaryEZUActivity(Context outerContext, Display display) {
         super(outerContext, display);
     }
 

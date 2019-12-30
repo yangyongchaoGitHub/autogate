@@ -1,10 +1,12 @@
 package com.dataexpo.autogate.activity;
 
+import android.app.Presentation;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
+import android.view.Display;
 import android.widget.ImageView;
 
 import com.dataexpo.autogate.R;
@@ -14,33 +16,38 @@ import com.dataexpo.autogate.face.manager.FaceSDKManager;
 import com.dataexpo.autogate.face.model.LivenessModel;
 import com.dataexpo.autogate.listener.OnFrameCallback;
 import com.dataexpo.autogate.model.User;
-import com.dataexpo.autogate.service.FaceService;
 import com.dataexpo.autogate.service.MainApplication;
 
-public class CameraTestActivity extends BascActivity implements OnFrameCallback {
-    private static final String TAG = CameraTestActivity.class.getSimpleName();
-    OnFrameCallback onFrameCallback = null;
-    ImageView iv_camera;
+public class SecondaryPhoneCameraPresentation extends Presentation implements OnFrameCallback {
+    private static final String TAG = SecondaryPhoneCameraPresentation.class.getSimpleName();
+    private Context context;
+    private ImageView iv_camera;
+
+    public SecondaryPhoneCameraPresentation(Context outerContext, Display display) {
+        super(outerContext, display);
+        context = outerContext;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_testcamera);
+        setContentView(R.layout.presentation_phone_camera);
         initView();
         MainApplication.getInstance().getService().setFrameCallback(this);
     }
 
     private void initView() {
-        iv_camera = findViewById(R.id.iv_testcamera);
+        iv_camera = findViewById(R.id.iv_phone_camera);
     }
 
     @Override
-    public void onFrame(final byte[] image) {
+    public void onFrame(byte[] image) {
         //Log.i(TAG, "image length :" + image.length);
         Bitmap bitmap = null;
         bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
         final Bitmap finalBitmap = bitmap;
-        runOnUiThread(new Runnable() {
+
+        iv_camera.post(new Runnable() {
             @Override
             public void run() {
                 iv_camera.setImageBitmap(finalBitmap);
@@ -69,36 +76,23 @@ public class CameraTestActivity extends BascActivity implements OnFrameCallback 
 
     private void checkCloseResult(final LivenessModel livenessModel) {
         // 当未检测到人脸UI显示
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                User user = null;
-                if (livenessModel != null && livenessModel.getFaceInfo() != null) {
-                    user = livenessModel.getUser();
-                    if (user != null) {
-                        //是否是同一个用户在镜头前
-                        final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(user.image_name));
-                        Log.i(TAG, " face responseData image path: " + FileUtils.getUserPic(user.image_name));
-
-                        Log.i(TAG, "识别成功");
+        User user = null;
+        if (livenessModel != null && livenessModel.getFaceInfo() != null) {
+            user = livenessModel.getUser();
+            if (user != null) {
+                //是否是同一个用户在镜头前
+                final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(user.image_name));
+                Log.i(TAG, " face responseData image path: " + FileUtils.getUserPic(user.image_name));
 
 
-                    } else {
-                        Log.i(TAG, "识别失败");
-                    }
-                } else {
-                    //Log.i(TAG, "识别失败,未检测到人脸");
-                }
+                Log.i(TAG, "识别成功");
+
+
+            } else {
+                Log.i(TAG, "识别失败");
             }
-        });
-    }
-
-    @Override
-    protected void onDestroy() {
-        //MainApplication.getInstance().getService().setFrameCallback(null);
-        if (MainApplication.getInstance().getService()!= null) {
-            MainApplication.getInstance().getService().deleteFrameCallback(this);
+        } else {
+            Log.i(TAG, "识别失败,未检测到人脸");
         }
-        super.onDestroy();
     }
 }

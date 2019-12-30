@@ -19,6 +19,7 @@ import java.util.Vector;
 
 import static com.dataexpo.autogate.service.GateService.LED_GREEN;
 import static com.dataexpo.autogate.service.GateService.LED_RED;
+import static com.dataexpo.autogate.service.MQTTService.MQTT_CONNECT_SUCCESS;
 
 public class MainService extends Service implements GateObserver, MQTTObserver {
     private static final String TAG = MainService.class.getSimpleName();
@@ -37,6 +38,12 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
     public void setFrameCallback(OnFrameCallback onFrameCallback) {
         if (client != null) {
             client.setOnFrameCallback(onFrameCallback);
+        }
+    }
+
+    public void deleteFrameCallback(OnFrameCallback onFrameCallback) {
+        if (client != null) {
+            client.deleteFrameCallback(onFrameCallback);
         }
     }
 
@@ -86,7 +93,9 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
 
     @Override
     public void responseMQTTStatus(int status) {
-        Log.i(TAG, "responseMQTTStatus: " + status);
+        if (status != MQTT_CONNECT_SUCCESS) {
+            Log.i(TAG, "responseMQTTStatus: " + status);
+        }
         MainApplication.getInstance().setMQTTStatus(status);
     }
 

@@ -52,6 +52,7 @@ public class OtherActivity extends BascActivity implements View.OnClickListener 
         tv_gate_status = findViewById(R.id.tv_gate_status_value);
         tv_mqtt_status = findViewById(R.id.tv_mqtt_status_value);
         findViewById(R.id.btn_testcamera).setOnClickListener(this);
+        findViewById(R.id.btn_localip).setOnClickListener(this);
     }
 
     @Override
@@ -128,6 +129,11 @@ public class OtherActivity extends BascActivity implements View.OnClickListener 
             case R.id.btn_testcamera:
                 startActivity(new Intent(mContext, CameraTestActivity.class));
                 break;
+
+            case R.id.btn_localip:
+                startActivity(new Intent(mContext, IPActivity.class));
+                break;
+
                 default:
         }
     }
