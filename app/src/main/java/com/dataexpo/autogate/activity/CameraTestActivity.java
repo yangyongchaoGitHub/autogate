@@ -19,7 +19,6 @@ import com.dataexpo.autogate.service.MainApplication;
 
 public class CameraTestActivity extends BascActivity implements OnFrameCallback {
     private static final String TAG = CameraTestActivity.class.getSimpleName();
-    OnFrameCallback onFrameCallback = null;
     ImageView iv_camera;
 
     @Override

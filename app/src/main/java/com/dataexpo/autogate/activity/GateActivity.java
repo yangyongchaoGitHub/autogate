@@ -1,5 +1,6 @@
 package com.dataexpo.autogate.activity;
 
+import android.app.Presentation;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +29,7 @@ import com.dataexpo.autogate.face.camera.CameraPreviewManager;
 import com.dataexpo.autogate.face.listener.SdkInitListener;
 import com.dataexpo.autogate.face.manager.FaceSDKManager;
 import com.dataexpo.autogate.face.model.LivenessModel;
+import com.dataexpo.autogate.face.utils.DensityUtils;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
 import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.gate.ReportData;
@@ -36,6 +38,7 @@ import com.dataexpo.autogate.service.MainApplication;
 import com.dataexpo.autogate.service.MainService;
 import com.dataexpo.autogate.service.UserService;
 
+import java.util.List;
 import java.util.Vector;
 
 public class GateActivity extends BascActivity implements View.OnClickListener {
@@ -62,7 +65,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         initView();
         DBUtils.getInstance().create(mContext);
         //初始化双屏
-        initDisplay();
+        //initDisplay();
         /**
          * test code add a user
          */
@@ -119,61 +122,30 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
     }
 
     private void initDisplay() {
-        if (1 == 1) {
-            SecondaryPhoneCameraPresentation cameraPresentation = null;
-            DisplayManager mDisplayManager;//屏幕管理类
-            Display[] displays;//屏幕数组
+        DisplayManager mDisplayManager;//屏幕管理类
+        Display[] displays;//屏幕数组
+        mDisplayManager = (DisplayManager) this.getSystemService(Context.DISPLAY_SERVICE);
 
-            mDisplayManager = (DisplayManager) this.getSystemService(Context.DISPLAY_SERVICE);
+        displays = mDisplayManager.getDisplays();
+        Log.i(TAG, "display: " + displays.length);
 
-            displays = mDisplayManager.getDisplays();
+        Presentation presentation = null;
+        Window window = null;
 
-            Log.i(TAG, "display: " + displays.length);
-
-            if (displays.length > 1) {
-                try {
-                    cameraPresentation = new SecondaryPhoneCameraPresentation(getApplicationContext(), displays[1]);//displays[1]是副屏
-                    //cameraPresentation.setApplication(this.getApplication());
-
-                    Window window = cameraPresentation.getWindow();
-                    if (window != null) {
-                        window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-                    }
-                    cameraPresentation.show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return;
-                }
+        if (displays.length > 1) {
+            if (1 == 1) {
+                presentation = new SecondaryPhoneCameraPresentation(getApplicationContext(), displays[1]);//displays[1]是副屏
             } else {
-                return;
+                presentation = new SecondaryEZUActivity(getApplicationContext(), displays[1]);//displays[1]是副屏
+                ((SecondaryEZUActivity) presentation).setApplication(this.getApplication());
             }
-        } else {
-            SecondaryEZUActivity secondaryActivity = null;
-            DisplayManager mDisplayManager;//屏幕管理类
-            Display[] displays;//屏幕数组
+        }
 
-            mDisplayManager = (DisplayManager) this.getSystemService(Context.DISPLAY_SERVICE);
-
-            displays = mDisplayManager.getDisplays();
-
-            Log.i(TAG, "display: " + displays.length);
-
-            if (displays.length > 1) {
-                try {
-                    secondaryActivity = new SecondaryEZUActivity(getApplicationContext(), displays[1]);//displays[1]是副屏
-                    secondaryActivity.setApplication(this.getApplication());
-
-                    Window window = secondaryActivity.getWindow();
-                    if (window != null) {
-                        window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-                    }
-                    secondaryActivity.show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return;
-                }
-            } else {
-                return;
+        if (presentation != null) {
+            window = presentation.getWindow();
+            if (window != null) {
+                window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                presentation.show();
             }
         }
     }
@@ -275,7 +247,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
             MainApplication.getInstance().getService().addGateObserver(this);
         }
         //开启摄像头预览
-        startCamera();
+        //startCamera();
     }
 
     @Override
@@ -294,17 +266,16 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
     }
 
     @Override
-    public void responseData(final Vector<ReportData> mReports) {
+    public void responseData(final ReportData mReports) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (mReports != null && mReports.size() > 0) {
-                    Log.i(TAG, "responseData card: " + mReports.get(0).getNumber() + " time " + mReports.get(0).getTime());
-                    ReportData data = mReports.get(0);
+                if (mReports != null) {
+                    Log.i(TAG, "responseData card: " + mReports.getNumber() + " time " + mReports.getTime());
                     User user = new User();
-                    user.cardCode = data.getNumber();
+                    user.cardCode = mReports.getNumber();
 
-                    if ("FFFFFFFFFFFFFFFF".equals(data.getNumber())) {
+                    if ("FFFFFFFFFFFFFFFF".equals(mReports.getNumber())) {
                         iv_head.setVisibility(View.INVISIBLE);
                         tv_direction.setVisibility(View.INVISIBLE);
                         tv_name.setText("非法通过！");
@@ -321,7 +292,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                         iv_head.setImageBitmap(bitmap);
                         iv_head.setVisibility(View.VISIBLE);
                         tv_direction.setVisibility(View.VISIBLE);
-                        tv_direction.setText("In".equals(data.getDirection()) ? "进" : "出");
+                        tv_direction.setText("In".equals(mReports.getDirection()) ? "进" : "出");
                         tv_name.setText(res.name);
 
                     } else {

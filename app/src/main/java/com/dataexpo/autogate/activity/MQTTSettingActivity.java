@@ -155,7 +155,7 @@ public class MQTTSettingActivity extends BascActivity implements View.OnClickLis
                     pswd.equals(pswd_) && clientid.equals(clientid_) && topic.equals(topic_));
         }
 
-        Log.i(TAG, "result: " + result);
+        //Log.i(TAG, "result: " + result);
         return result;
     }
 }

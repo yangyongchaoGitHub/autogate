@@ -24,6 +24,7 @@ import com.dataexpo.autogate.service.UserService;
 
 import java.security.Permission;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 public class BascActivity extends Activity implements GateObserver, MQTTObserver {
@@ -100,7 +101,7 @@ public class BascActivity extends Activity implements GateObserver, MQTTObserver
     }
 
     @Override
-    public void responseData(Vector<ReportData> mReports) {
+    public void responseData(ReportData mReports) {
     }
 
     @Override

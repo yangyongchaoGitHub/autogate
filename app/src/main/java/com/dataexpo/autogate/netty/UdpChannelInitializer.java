@@ -24,7 +24,7 @@ public class UdpChannelInitializer extends ChannelInitializer<DatagramChannel> {
         ChannelPipeline pipeline = ch.pipeline();
         pipeline.addLast(new IdleStateHandler(12,15,0));
         pipeline.addLast(inboundHandler);
-        pipeline.addLast(new LengthFieldBasedFrameDecoder(1280*720, 0, 4, 0, 4));
+        pipeline.addLast(new LengthFieldBasedFrameDecoder(1920*1080, 0, 4, 0, 4));
         //pipeline.addLast(new DelimiterBasedFrameDecoder(1383400, delimiter));
 //        pipeline.addLast(new LengthFieldBasedFrameDecoder(ByteOrder.LITTLE_ENDIAN, Integer.MAX_VALUE,
 //                0, 4, 0, 4, true));

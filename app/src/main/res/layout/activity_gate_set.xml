@@ -60,6 +60,20 @@
         app:layout_constraintBottom_toBottomOf="@+id/tv_gate_set_port"
         app:layout_constraintWidth_percent="0.7"/>
 
+    <CheckBox
+        android:id="@+id/rb_gate_set_direction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/direction_set"
+        android:textSize="@dimen/x36"
+        android:textStyle="bold"
+        app:layout_constraintHorizontal_bias="0.15"
+        app:layout_constraintVertical_bias="0.6"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
     <Button
         android:id="@+id/btn_gate_set_confirm"
         android:layout_width="0dp"
@@ -71,7 +85,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHeight_percent="0.1"
         app:layout_constraintWidth_percent="0.8"
-        app:layout_constraintVertical_bias="0.6"/>
+        app:layout_constraintVertical_bias="0.8"/>
 
     <TextView
         android:id="@+id/tv_gate_set_status"

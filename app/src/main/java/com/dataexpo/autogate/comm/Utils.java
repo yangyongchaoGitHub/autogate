@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -15,6 +16,7 @@ public class Utils {
     //TODO: change config filename
     //public static String USER_XML = "user";
     public static String MQTT_XML = "mqtt";
+    public static String GATE_XML = "gate";
 
     public static String MQTT_HOST = "host";
     public static String MQTT_PORT = "port";
@@ -22,20 +24,23 @@ public class Utils {
     public static String MQTT_PSWD = "pswd";
     public static String MQTT_CLIENTID = "clientid";
     public static String MQTT_TOPIC = "topic";
-    private static Bitmap bitmap = null;
 
-    public synchronized static void saveConfig(Context context, String sKey, String val) {
-        SharedPreferences preferences = context.getSharedPreferences(sKey,
+    public static String GATE_PORT = "gate_port";
+    public static String GATE_IP = "gate_ip";
+    public static String GATE_DIRECTION_SET = "direction_set";
+
+    public synchronized static String getGATEConfig(Context context, String sKey) {
+        SharedPreferences preferences = context.getSharedPreferences(GATE_XML,
+                Context.MODE_PRIVATE);
+        return preferences.getString(sKey, "");
+    }
+
+    public synchronized static void saveGATEConfig(Context context, String sKey, String val) {
+        SharedPreferences preferences = context.getSharedPreferences(GATE_XML,
                 Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(sKey, val);
         editor.commit();
-    }
-
-    public synchronized static String getConfig(Context context, String sKey) {
-        SharedPreferences preferences = context.getSharedPreferences(sKey,
-                Context.MODE_PRIVATE);
-        return preferences.getString(sKey, "");
     }
 
     public synchronized static String getMQTTConfig(Context context, String sKey) {
@@ -74,7 +79,7 @@ public class Utils {
                 e.printStackTrace();
             }
         }
-        return "3.0.0";
+        return "1.0.0";
     }
 
     /**

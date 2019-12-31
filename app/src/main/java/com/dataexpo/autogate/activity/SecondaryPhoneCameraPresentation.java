@@ -22,6 +22,7 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
     private static final String TAG = SecondaryPhoneCameraPresentation.class.getSimpleName();
     private Context context;
     private ImageView iv_camera;
+    private ImageView iv_success_curr;
 
     public SecondaryPhoneCameraPresentation(Context outerContext, Display display) {
         super(outerContext, display);
@@ -38,14 +39,20 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
 
     private void initView() {
         iv_camera = findViewById(R.id.iv_phone_camera);
+        iv_success_curr = findViewById(R.id.iv_success_curr);
+        final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic("c1000001"));
+        iv_success_curr.post(new Runnable() {
+            @Override
+            public void run() {
+                iv_success_curr.setImageBitmap(bitmap);
+            }
+        });
     }
 
     @Override
     public void onFrame(byte[] image) {
         //Log.i(TAG, "image length :" + image.length);
-        Bitmap bitmap = null;
-        bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-        final Bitmap finalBitmap = bitmap;
+        final Bitmap finalBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
 
         iv_camera.post(new Runnable() {
             @Override

@@ -10,6 +10,7 @@ import com.dataexpo.autogate.listener.GateObserver;
 import com.dataexpo.autogate.model.gate.ReportData;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 public class CardService implements GateObserver {
@@ -20,7 +21,6 @@ public class CardService implements GateObserver {
     private static class HolderClass {
         private static final CardService instance = new CardService();
     }
-
     /**
      * 单例模式
      */
@@ -29,16 +29,14 @@ public class CardService implements GateObserver {
     }
 
     @Override
-    public void responseData(Vector<ReportData> mReports) {
+    public void responseData(ReportData mReports) {
         //Log.i(TAG, "responseData");
         //save record
         if (mReports == null) {
             return;
         }
 
-        for (ReportData r:mReports) {
-            insert(r.getNumber(), r.getDirection(), Utils.timeNowLong());
-        }
+        insert(mReports.getNumber(), mReports.getDirection(), Utils.timeNowLong());
     }
 
     @Override
@@ -49,7 +47,7 @@ public class CardService implements GateObserver {
     /**
      * 添加数据
      */
-    public long insert(String number, String direction, String time) {
+    public long insert(String number, int direction, String time) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("number", number);
         contentValues.put("direction", direction);
@@ -68,7 +66,7 @@ public class CardService implements GateObserver {
         while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex("id"));
             String number = cursor.getString(cursor.getColumnIndex("number"));
-            String direction = cursor.getString(cursor.getColumnIndex("direction"));
+            int direction = cursor.getInt(cursor.getColumnIndex("direction"));
             String time = cursor.getString(cursor.getColumnIndex("time"));
             list.add(new ReportData(id, number, direction, time));
         }
@@ -88,7 +86,7 @@ public class CardService implements GateObserver {
         while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex("id"));
             String n = cursor.getString(cursor.getColumnIndex("number"));
-            String direction = cursor.getString(cursor.getColumnIndex("direction"));
+            int direction = cursor.getInt(cursor.getColumnIndex("direction"));
             String time = cursor.getString(cursor.getColumnIndex("time"));
             list.add(new ReportData(id, n, direction, time));
         }

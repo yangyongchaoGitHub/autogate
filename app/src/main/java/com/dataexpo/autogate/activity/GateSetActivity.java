@@ -4,7 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,8 +18,9 @@ import com.dataexpo.autogate.service.MainApplication;
 
 import java.util.Vector;
 
-import static com.dataexpo.autogate.service.GateService.CONFIG_DEFAULT_IP;
-import static com.dataexpo.autogate.service.GateService.CONFIG_DEFAULT_PORT;
+import static com.dataexpo.autogate.comm.Utils.GATE_DIRECTION_SET;
+import static com.dataexpo.autogate.comm.Utils.GATE_IP;
+import static com.dataexpo.autogate.comm.Utils.GATE_PORT;
 import static com.dataexpo.autogate.service.GateService.GATE_STATUS_INIT_NULL_CONTEXT;
 import static com.dataexpo.autogate.service.GateService.GATE_STATUS_INIT_NULL_SETTING;
 import static com.dataexpo.autogate.service.GateService.GATE_STATUS_INIT_OPEN_FAIL;
@@ -32,6 +35,8 @@ public class GateSetActivity extends BascActivity implements View.OnClickListene
     private TextView tv_status;
     private String ip;
     private String port;
+    private CheckBox rb_direction;
+    private int direction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +63,20 @@ public class GateSetActivity extends BascActivity implements View.OnClickListene
     @Override
     protected void onResume() {
         super.onResume();
-        ip = Utils.getConfig(mContext, CONFIG_DEFAULT_IP);
-        port = Utils.getConfig(mContext, CONFIG_DEFAULT_PORT);
+        ip = Utils.getGATEConfig(mContext, GATE_IP);
+        port = Utils.getGATEConfig(mContext, GATE_PORT);
+        String dire = Utils.getGATEConfig(mContext, GATE_DIRECTION_SET);
+        direction = "".equals(dire) ? 1 : Integer.parseInt(dire);
         et_ip.setText(ip);
         et_port.setText(port);
+        Log.i(TAG, "direction: " + direction);
+
+        if (direction == 2) {
+            rb_direction.setChecked(true);
+        } else {
+            rb_direction.setChecked(false);
+        }
+
         if (MainApplication.getInstance().getService() != null) {
             MainApplication.getInstance().getService().addGateObserver(this);
         }
@@ -98,6 +113,7 @@ public class GateSetActivity extends BascActivity implements View.OnClickListene
         et_port = findViewById(R.id.et_gate_set_port);
         findViewById(R.id.btn_gate_set_confirm).setOnClickListener(this);
         tv_status = findViewById(R.id.tv_gate_set_status);
+        rb_direction = findViewById(R.id.rb_gate_set_direction);
     }
 
     @Override
@@ -116,16 +132,16 @@ public class GateSetActivity extends BascActivity implements View.OnClickListene
                 }
 
                 break;
-
                 default:
         }
     }
 
     private void saveConfig() {
-        Log.i(TAG, "saveConfig ip:" + ip + " port: " + port);
+        Log.i(TAG, "saveConfig ip:" + ip + " port: " + port + " direction " + rb_direction.isChecked());
 
-        Utils.saveConfig(mContext, CONFIG_DEFAULT_IP, ip);
-        Utils.saveConfig(mContext, CONFIG_DEFAULT_PORT, port);
+        Utils.saveGATEConfig(mContext, GATE_IP, ip);
+        Utils.saveGATEConfig(mContext, GATE_PORT, port);
+        Utils.saveGATEConfig(mContext, GATE_DIRECTION_SET, rb_direction.isChecked() ? "2" : "1");
     }
 
     private boolean checkValue() {
@@ -136,11 +152,12 @@ public class GateSetActivity extends BascActivity implements View.OnClickListene
             return false;
         }
 
-        if (ip.equals(this.ip) && port.equals(this.port)) {
+        if (ip.equals(this.ip) && port.equals(this.port) && rb_direction.isChecked() ? direction == 2 : direction == 1) {
             return false;
         }
         this.ip = ip;
         this.port = port;
+        this.direction = rb_direction.isChecked() ? 2 : 1;
 
         return true;
     }

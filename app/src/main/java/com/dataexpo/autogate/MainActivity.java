@@ -599,22 +599,22 @@ public class MainActivity extends Activity implements OnClickListener
 								byte[] byData = new byte[dataLen];
 								System.arraycopy(reportBuf, 9, byData, 0,
 										dataLen);
-								ReportData report = new ReportData();
-								report.setNumber(GFunction.encodeHexStr(byData));
-								if (direction == 1)
-								{
-									report.setDirection("In");
-								}
-								else if (direction == 2)
-								{
-									report.setDirection("Out");
-								}
-								else
-								{
-									report.setDirection("null");
-								}
-								report.setTime(GFunction.encodeHexStr(time));
-								mReports.add(report);
+//								ReportData report = new ReportData();
+//								report.setNumber(GFunction.encodeHexStr(byData));
+//								if (direction == 1)
+//								{
+//									report.setDirection("In");
+//								}
+//								else if (direction == 2)
+//								{
+//									report.setDirection("Out");
+//								}
+//								else
+//								{
+//									report.setDirection("null");
+//								}
+//								report.setTime(GFunction.encodeHexStr(time));
+//								mReports.add(report);
 								hReport = m_reader
 										.RDR_GetTagDataReport(RfidDef.RFID_SEEK_NEXT);
 							}

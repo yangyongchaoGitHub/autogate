@@ -13,13 +13,17 @@ import com.rfid.api.GFunction;
 import com.rfid.def.ApiErrDefinition;
 import com.rfid.def.RfidDef;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
+
+import static com.dataexpo.autogate.comm.Utils.GATE_DIRECTION_SET;
+import static com.dataexpo.autogate.comm.Utils.GATE_IP;
+import static com.dataexpo.autogate.comm.Utils.GATE_PORT;
 
 
 public class GateService extends GateSubject {
     private static final String TAG = GateService.class.getSimpleName();
-    public static final String CONFIG_DEFAULT_IP = "default_ip";
-    public static final String CONFIG_DEFAULT_PORT = "default_port";
 
     //设置的端口或者ip为空
     public static final int GATE_STATUS_INIT_NULL_SETTING = 1;
@@ -47,6 +51,23 @@ public class GateService extends GateSubject {
 
     static ADReaderInterface m_reader = new ADReaderInterface();
 
+    private static class HolderClass {
+        private static final GateService instance = new GateService();
+    }
+
+    /**
+     * 单例模式
+     */
+    public static GateService getInstance() {
+        return HolderClass.instance;
+    }
+
+    void setContext(Context context) {
+        if (context != null) {
+            mContext =  context;
+        }
+    }
+
     /**
      *
      * @param no 控制命令中的端口编号
@@ -69,16 +90,14 @@ public class GateService extends GateSubject {
         }
         mGetReportThrd = null;
 
-        if (m_reader.isReaderOpen())
-        {
+        if (m_reader.isReaderOpen()) {
             m_reader.RDR_Close();
         }
         start();
     }
 
     //获取设备信息
-    private boolean getDeviceInfo()
-    {
+    private boolean getDeviceInfo() {
         StringBuffer buffer = new StringBuffer();
         int iret = m_reader.RDR_GetReaderInfor(buffer);
         //获取设备信息成功，说明正常通信
@@ -86,7 +105,7 @@ public class GateService extends GateSubject {
     }
 
     @Override
-    public void notifyGate(Vector<ReportData> mReports) {
+    public void notifyGate(ReportData mReports) {
         for(Object obs: gateObservers) {
             ((GateObserver)obs).responseData(mReports);
         }
@@ -94,26 +113,8 @@ public class GateService extends GateSubject {
 
     @Override
     public void notifyStatus(int status) {
-        for(Object obs: gateObservers)
-        {
+        for(Object obs: gateObservers) {
             ((GateObserver)obs).responseStatus(mStatus);
-        }
-    }
-
-    private static class HolderClass {
-        private static final GateService instance = new GateService();
-    }
-
-    /**
-     * 单例模式
-     */
-    public static GateService getInstance() {
-        return HolderClass.instance;
-    }
-
-    void setContext(Context context) {
-        if (context != null) {
-            mContext =  context;
         }
     }
 
@@ -131,8 +132,8 @@ public class GateService extends GateSubject {
             return mStatus;
         }
 
-        String ip = Utils.getConfig(mContext, CONFIG_DEFAULT_IP);
-        String port = Utils.getConfig(mContext, CONFIG_DEFAULT_PORT);
+        String ip = Utils.getGATEConfig(mContext, GATE_IP);
+        String port = Utils.getGATEConfig(mContext, GATE_PORT);
 
         if ("".equals(ip) || "".equals(port)) {
             //其中有一个为空则为非法
@@ -145,8 +146,7 @@ public class GateService extends GateSubject {
                 ip, port);
         int iret = m_reader.RDR_Open(conStr);
 
-        if (iret != ApiErrDefinition.NO_ERROR)
-        {
+        if (iret != ApiErrDefinition.NO_ERROR) {
             mStatus = GATE_STATUS_INIT_OPEN_FAIL;
         } else {
             mStatus = GATE_STATUS_START;
@@ -170,8 +170,7 @@ public class GateService extends GateSubject {
 
     private class GetReportThrd implements Runnable
     {
-        public void run()
-        {
+        public void run() {
             bGetReportThrd = true;
             int iret;
             byte flag = 0;
@@ -194,7 +193,6 @@ public class GateService extends GateSubject {
                 }
             }
 
-
             mStatus = GATE_STATUS_RUN;
 
             notifyStatus(mStatus);
@@ -206,21 +204,17 @@ public class GateService extends GateSubject {
                     flag = 1;
                     int nCount = m_reader.RDR_GetTagReportCount();
 
-                    if (nCount > 0)
-                    {
-                        Vector<ReportData> mReports = new Vector<ReportData>();
-                        Object hReport = m_reader
-                                .RDR_GetTagDataReport(RfidDef.RFID_SEEK_FIRST);
-                        while (hReport != null)
-                        {
+                    if (nCount > 0) {
+                        Object hReport = m_reader.RDR_GetTagDataReport(RfidDef.RFID_SEEK_FIRST);
+
+                        while (hReport != null) {
                             byte[] reportBuf = new byte[64];
                             int[] nSize = new int[1];
                             iret = ADReaderInterface.RDR_ParseTagDataReportRaw(
                                     hReport, reportBuf, nSize);
-                            if (iret == 0)
-                            {
-                                if (nSize[0] < 9)
-                                {
+
+                            if (iret == 0) {
+                                if (nSize[0] < 9) {
                                     hReport = m_reader
                                             .RDR_GetTagDataReport(RfidDef.RFID_SEEK_NEXT);
                                     continue;
@@ -232,18 +226,15 @@ public class GateService extends GateSubject {
 
                                 // evntType = reportBuf[0];
                                 direction = reportBuf[1];
-                                for (int i = 0; i < 6; i++)
-                                {
+                                for (int i = 0; i < 6; i++) {
                                     time[i] = reportBuf[2 + i];
                                 }
                                 dataLen = reportBuf[8];
-                                if (dataLen < 0)
-                                {
+                                if (dataLen < 0) {
                                     dataLen += 256;
                                 }
                                 nSize[0] -= 9;
-                                if (nSize[0] < dataLen)
-                                {
+                                if (nSize[0] < dataLen) {
                                     hReport = m_reader
                                             .RDR_GetTagDataReport(RfidDef.RFID_SEEK_NEXT);
                                     continue;
@@ -252,16 +243,19 @@ public class GateService extends GateSubject {
                                 byte[] byData = new byte[dataLen];
                                 System.arraycopy(reportBuf, 9, byData, 0,
                                         dataLen);
-                                ReportData report = new ReportData();
-                                report.setNumber(GFunction.encodeHexStr(byData));
-                                report.setDirection(direction == 1 ? "In" : (direction == 2 ? "Out" : "null"));
-                                report.setTime(GFunction.encodeHexStr(time));
-                                mReports.add(report);
+                                //获取是否取反通过方向
+                                String dire = Utils.getGATEConfig(mContext, GATE_DIRECTION_SET);
+
+                                direction = (byte)("".equals(dire) ? 1 : Integer.parseInt(dire) == 2 ?
+                                        (direction == 1 ? 2 : 1) : direction);
+
+                                ReportData report = new ReportData(GFunction.encodeHexStr(byData),
+                                        direction, GFunction.encodeHexStr(time));
+                                notifyGate(report);
                                 hReport = m_reader
                                         .RDR_GetTagDataReport(RfidDef.RFID_SEEK_NEXT);
                             }
                         }
-                        notifyGate(mReports);
                     }
                 }
 //                else {

@@ -63,7 +63,7 @@ public class DBUtils {
         String sql_card_record = "create table if not exists " + TABLE_CARD_RECORD +
                 "(id integer primary key autoincrement," +
                 "number char(32), " +
-                "direction char(16), " +
+                "direction int, " +
                 "time char(32))";
 
         String sql_face_record = "create table if not exists " + TABLE_FACE_RECORD +

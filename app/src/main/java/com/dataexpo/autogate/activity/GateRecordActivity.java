@@ -27,6 +27,8 @@ import com.dataexpo.autogate.view.CircleImageView;
 
 import java.util.List;
 
+import static com.dataexpo.autogate.comm.Utils.GATE_DIRECTION_SET;
+
 public class GateRecordActivity extends BascActivity implements View.OnClickListener, OnItemClickListener, OnItemLongClickListener {
     private static String TAG = GateRecordActivity.class.getSimpleName();
     private Bitmap bitmap = null;
@@ -175,11 +177,10 @@ public class GateRecordActivity extends BascActivity implements View.OnClickList
             }
             // 添加数据
             ReportData data = mList.get(position);
-            holder.text_direction.setText("In".equals(data.getDirection()) ? "进" : "出");
-
+            holder.text_direction.setText(1 == data.getDirection() ? "进" : "出");
             holder.text_number.setText(data.getNumber());
-            holder.text_time.setText(Utils.formatTime(Long.parseLong(data.getTime()), "yyyy年MM月dd日HH时mm分ss秒"));
-
+            holder.text_time.setText(Utils.formatTime(Long.parseLong(data.getTime()),
+                    "yyyy年MM月dd日HH时mm分ss秒"));
 
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override

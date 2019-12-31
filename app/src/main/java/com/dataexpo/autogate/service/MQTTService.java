@@ -32,7 +32,7 @@ public class MQTTService extends MQTTSubject {
     private String port = "";
     private String name = "";
     private String pswd = "";
-    private String topic = "";
+    private static String topic = "";
     private String clientId = "";
 
     //连接失败
@@ -203,26 +203,26 @@ public class MQTTService extends MQTTSubject {
     private MqttCallback mqttCallback = new MqttCallback() {
         @Override
         public void messageArrived(String topic, MqttMessage message) {
-            try {
-                String str1 = new String(message.getPayload());
+            if (MQTTService.topic.equals(topic)) {
+                try {
+                    String str1 = new String(message.getPayload());
 
-                Log.i(TAG, "messageArrived!!!!!!!!! topic is " + topic +
-                        " : " + str1);
+                    Log.i(TAG, "messageArrived!!!!!!!!! topic is " + topic +
+                            " : " + str1);
 
-                if (iGetMessageCallBack != null) {
-                    iGetMessageCallBack.setMessage(str1);
-                }
-                User user = JsonUtil.getInstance().json2obj(str1, User.class);
-                //TestData data = JsonUtil.getInstance().json2obj(str1, TestData.class);
+                    if (iGetMessageCallBack != null) {
+                        iGetMessageCallBack.setMessage(str1);
+                    }
+                    User user = JsonUtil.getInstance().json2obj(str1, User.class);
+                    //TestData data = JsonUtil.getInstance().json2obj(str1, TestData.class);
 
-                String str2 = topic + ";qos:" + message.getQos() + ";retained:" + message.isRetained();
-                Log.i(TAG, "messageArrived:" + str1);
-                Log.i(TAG, str2);
-                Log.i(TAG, "data: " + user.code);
-                //Log.i(TAG, "user name " + user.name + " cardCode " + user.cardCode + " image:" + user.image);
-                // UserService.getInstance().insert(user);
-                UserService.getInstance().insert(user);
-
+                    String str2 = topic + ";qos:" + message.getQos() + ";retained:" + message.isRetained();
+                    Log.i(TAG, "messageArrived:" + str1);
+                    Log.i(TAG, str2);
+                    Log.i(TAG, "data: " + user.code);
+                    //Log.i(TAG, "user name " + user.name + " cardCode " + user.cardCode + " image:" + user.image);
+                    // UserService.getInstance().insert(user);
+                    UserService.getInstance().insert(user);
 
 
 //            Log.i(TAG, String.valueOf(Environment.getExternalStorageDirectory()));
@@ -230,9 +230,10 @@ public class MQTTService extends MQTTSubject {
 //            Log.i(TAG, "file: " + file);
 //            String sss = FileUtils.toBase64(file);
 //            Log.i(TAG, "file base64: " + sss);
-                //FileUtils.writeTxtFile(sss, String.valueOf(Environment.getExternalStorageDirectory()) + "/testbase64");
-            } catch (Exception e) {
-                e.printStackTrace();
+                    //FileUtils.writeTxtFile(sss, String.valueOf(Environment.getExternalStorageDirectory()) + "/testbase64");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 

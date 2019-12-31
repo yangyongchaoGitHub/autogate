@@ -4,7 +4,7 @@ import android.util.Base64;
 
 import static com.dataexpo.autogate.face.manager.ImportFileManager.IMPORT_FILE_EMPTY;
 
-public class User {
+public class User extends BaseModel {
     //{"id":12,"name":"user1","company":"dataexpo.Ltd","position":"development","cardCode":"E0040150C714EA6A","code":"u23123","image":"test","gender":1}
     public static final int IMAGE_TYPE_JPG = 0;
     public static final int IMAGE_TYPE_PNG = 1;

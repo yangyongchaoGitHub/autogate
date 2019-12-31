@@ -15,6 +15,7 @@ import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.gate.ReportData;
 import com.dataexpo.autogate.netty.UDPClient;
 
+import java.util.List;
 import java.util.Vector;
 
 import static com.dataexpo.autogate.service.GateService.LED_GREEN;
@@ -65,22 +66,20 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
 
 
     @Override
-    public void responseData(Vector<ReportData> mReports) {
-        if (mReports != null && mReports.size() > 0) {
-            for (ReportData data: mReports) {
-                Log.i(TAG, "responseData card: " + data.getNumber() + " time " + data.getTime());
-                User user = new User();
-                user.cardCode = data.getNumber();
+    public void responseData(ReportData mReports) {
+        if (mReports != null) {
+            Log.i(TAG, "responseData card: " + mReports.getNumber() + " time " + mReports.getTime());
+            User user = new User();
+            user.cardCode = mReports.getNumber();
 
-                User res = UserService.getInstance().findUserByCardCode(user);
+            User res = UserService.getInstance().findUserByCardCode(user);
 
-                if (res != null) {
-                    //有此用户
-                    MainApplication.getInstance().getService().ledCtrl(LED_GREEN);
+            if (res != null) {
+                //有此用户
+                MainApplication.getInstance().getService().ledCtrl(LED_GREEN);
 
-                } else {
-                    MainApplication.getInstance().getService().ledCtrl(LED_RED);
-                }
+            } else {
+                MainApplication.getInstance().getService().ledCtrl(LED_RED);
             }
         }
     }

@@ -3,24 +3,19 @@ package com.dataexpo.autogate.model.gate;
 public class ReportData {
     private int id;
     private String number = "";
-    private String direction = "";
+    private int direction = 0;
     private String time = "";
     private String ltime = "";
     public boolean check;
 
-    public ReportData()
-    {
-        super();
-    }
-
-    public ReportData(int id, String number, String direction, String time) {
+    public ReportData(int id, String number, int direction, String time) {
         this.id = id;
         this.number = number;
         this.direction = direction;
         this.time = time;
     }
 
-    public ReportData(String sData, String sDir, String sTime) {
+    public ReportData(String sData, int sDir, String sTime) {
         super();
         this.setNumber(sData);
         this.setDirection(sDir);
@@ -59,19 +54,19 @@ public class ReportData {
         this.number = number;
     }
 
-    public String getDirection() {
-        return direction;
-    }
-
-    public void setDirection(String direction) {
-        this.direction = direction;
-    }
-
     public String getTime() {
         return time;
     }
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
     }
 }

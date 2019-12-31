@@ -75,6 +75,7 @@
     <string name="recognizeModelThreshold">识别模型阈值</string>
     <string name="recognizeModelThreshold_value">识别模型阈值:</string>
     <string name="all_config">全部设置</string>
+    <string name="direction_set">进出方向取反</string>
 
 
 </resources>
