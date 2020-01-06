@@ -29,7 +29,6 @@ import com.dataexpo.autogate.face.camera.CameraPreviewManager;
 import com.dataexpo.autogate.face.listener.SdkInitListener;
 import com.dataexpo.autogate.face.manager.FaceSDKManager;
 import com.dataexpo.autogate.face.model.LivenessModel;
-import com.dataexpo.autogate.face.utils.DensityUtils;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
 import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.gate.ReportData;
@@ -37,9 +36,6 @@ import com.dataexpo.autogate.service.FaceService;
 import com.dataexpo.autogate.service.MainApplication;
 import com.dataexpo.autogate.service.MainService;
 import com.dataexpo.autogate.service.UserService;
-
-import java.util.List;
-import java.util.Vector;
 
 public class GateActivity extends BascActivity implements View.OnClickListener {
     private static final String TAG = GateActivity.class.getSimpleName();
@@ -227,6 +223,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         tv_direction = findViewById(R.id.tv_direction);
 
         findViewById(R.id.btn_gosetting).setOnClickListener(this);
+        findViewById(R.id.btn_exit).setOnClickListener(this);
         mAutoCameraPreviewView = findViewById(R.id.auto_camera_preview_view);
     }
 
@@ -235,6 +232,9 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.btn_gosetting:
                 startActivity(new Intent(mContext, MainSettingActivity.class));
+                break;
+            case R.id.btn_exit:
+                //finish();
                 break;
                 default:
         }

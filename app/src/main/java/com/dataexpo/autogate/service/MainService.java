@@ -15,8 +15,8 @@ import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.gate.ReportData;
 import com.dataexpo.autogate.netty.UDPClient;
 
-import java.util.List;
-import java.util.Vector;
+import org.eclipse.paho.android.service.MqttService;
+
 
 import static com.dataexpo.autogate.service.GateService.LED_GREEN;
 import static com.dataexpo.autogate.service.GateService.LED_RED;
@@ -147,7 +147,9 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
 
     @Override
     public void onDestroy() {
-        MQTTService.getInstance().destroy();
+        MQTTService.getInstance().exit();
+        Intent stop = new Intent(this, MqttService.class);
+        stopService(stop);
         super.onDestroy();
     }
 }

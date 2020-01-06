@@ -8,6 +8,7 @@ import android.util.Log;
 import com.rfid.def.TAG_CMD_CODING;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +17,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 
 /**
  * description :文件工具类
@@ -49,27 +52,40 @@ public class FileUtils {
         return result.toString();
     }
 
+    //使用RandomAccessFile进行写文件
     public static boolean writeByteFile(byte[] bytes, String filePath) {
-        File file = new File(filePath);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        boolean flag = false;
-        FileOutputStream fileOutputStream = null;
         try {
-            fileOutputStream = new FileOutputStream(file);
-            fileOutputStream.write(bytes);
-            fileOutputStream.close();
-            flag = true;
+            RandomAccessFile raf = new RandomAccessFile(filePath, "rw");
+            raf.write(bytes);
+            raf.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return flag;
+        //File file = new File(filePath);
+//        if (!file.exists()) {
+//            try {
+//                file.createNewFile();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        boolean flag = false;
+//        FileOutputStream fileOutputStream = null;
+//        try {
+//            fileOutputStream = new FileOutputStream(file);
+//            BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
+//            bos.write(bytes);
+//            //fileOutputStream.write(bytes);
+//            bos.flush();
+//            bos.close();
+//            fileOutputStream.close();
+//            flag = true;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return flag;
+        return true;
     }
 
     /**
@@ -329,8 +345,8 @@ public class FileUtils {
 
     public static String toBase64(File file) {
         long size = file.length();
-        byte[] imageByte = new byte[100];
-        //byte[] imageByte = new byte[(int) size];
+        //byte[] imageByte = new byte[100];
+        byte[] imageByte = new byte[(int) size];
         FileInputStream fis = null;
         BufferedInputStream bis = null;
 

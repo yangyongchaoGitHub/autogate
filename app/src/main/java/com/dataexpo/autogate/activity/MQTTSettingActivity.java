@@ -89,7 +89,7 @@ public class MQTTSettingActivity extends BascActivity implements View.OnClickLis
         et_name.setText(name);
         et_pswd.setText(pswd);
         et_clientid.setText(clientid);
-        //et_topic.setText(topic);
+        et_topic.setText(topic);
     }
 
     private void initView() {

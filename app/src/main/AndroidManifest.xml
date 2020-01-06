@@ -28,7 +28,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
-        android:name=".service.MainApplication">
+        android:name=".service.MainApplication"
+        android:hardwareAccelerated="false"
+        android:largeHeap="true">
 
         <!--android:launchMode="singleInstance"-->
         <activity
@@ -42,7 +44,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".MainActivity"/>
         <activity android:name=".activity.GateSetActivity"/>
         <activity android:name=".activity.MainSettingActivity"/>
         <activity android:name=".activity.UsersActivity"/>
@@ -68,8 +69,10 @@
         <activity android:name=".activity.faceset.SettingMainActivity"/>
 
         <service android:name=".service.MainService"/>
+
         <!-- Mqtt服务 -->
         <service android:name="org.eclipse.paho.android.service.MqttService" />
+
 
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
     </application>

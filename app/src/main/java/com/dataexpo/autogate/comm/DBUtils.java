@@ -21,6 +21,8 @@ public class DBUtils {
 
     private final String dbnamePath = "/gate.db";
     private SQLiteDatabase db;
+    private String selectionArgs[] = new String[1];
+    private String where1 = " = ?";
 
     private static class HolderClass {
         private static final DBUtils instance = new DBUtils();
@@ -132,7 +134,8 @@ public class DBUtils {
      * @return
      */
     public Cursor findBy(String table, String where, String code) {
+        selectionArgs[0] = code;
         //查询数据库
-       return db.query(table, null, where + " = ?", new String[]{code}, null, null, null);
+       return db.query(table, null, where + where1, selectionArgs, null, null, null);
     }
 }

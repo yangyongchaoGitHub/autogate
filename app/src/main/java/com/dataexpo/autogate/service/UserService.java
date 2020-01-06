@@ -15,6 +15,7 @@ import com.dataexpo.autogate.model.User;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static com.dataexpo.autogate.face.manager.ImportFileManager.IMPORT_SUCCESS;
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_JPG;
@@ -43,9 +44,11 @@ public class UserService {
             return 0L;
         }
         byte[] images = FileUtils.base64ToBytes(user.image);
+
         user.ctime = Utils.timeNow_();
 
         if (images.length > 0) {
+        //if (1 == 0) {
             if ("".equals(user.image_name)) {
                 user.image_name = user.code;
             }
@@ -54,31 +57,30 @@ public class UserService {
             } else if (user.image_type == IMAGE_TYPE_PNG){
                 suffix = ".png";
             }
-
             String path = FileUtils.getBatchImportDirectory().getPath() + "/" + user.image_name + suffix;
             FileUtils.writeByteFile(images, path);
 
-            Log.i(TAG, "save image path:" + path);
+            //Log.i(TAG, "save image path:" + path);
             //TODO : 在此进行注册用户人脸
-            if (SingleBaseConfig.getBaseConfig().getLocal_sync_regist()) {
-                int result = FaceApi.getInstance().registFaceByImage(user, path);
-                Log.i(TAG, " registFace result: " + result);
-                if (result == IMPORT_SUCCESS) {
-                    user.bregist_face = 1;
-                    try {
-                        FaceApi.getInstance().initDatabases(true);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            FaceApi.getInstance().initDatabases(true);
+//            if (SingleBaseConfig.getBaseConfig().getLocal_sync_regist()) {
+//                int result = FaceApi.getInstance().registFaceByImage(user, path);
+//                Log.i(TAG, " registFace result: " + result);
+//                if (result == IMPORT_SUCCESS) {
+//                    user.bregist_face = 1;
+//                    try {
+//                        FaceApi.getInstance().initDatabases(true);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+            //FaceApi.getInstance().initDatabases(true);
         }
         //存入数据库
         return insertDB(user);
     }
 
-    private boolean checkByCode(User user) {
+    private synchronized boolean checkByCode(User user) {
         Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_USER, "code", user.code);
         boolean result = cursor.moveToNext();
         cursor.close();
@@ -98,7 +100,7 @@ public class UserService {
     /**
      * 添加数据
      */
-    public long insertDB(User user) {
+    public synchronized long insertDB(User user) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("name", user.name);
         contentValues.put("company", user.company);

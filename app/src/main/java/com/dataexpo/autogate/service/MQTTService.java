@@ -23,6 +23,11 @@ import com.dataexpo.autogate.listener.MQTTObserver;
 import com.dataexpo.autogate.listener.MQTTSubject;
 import com.dataexpo.autogate.model.User;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import static com.dataexpo.autogate.comm.Utils.*;
 
 public class MQTTService extends MQTTSubject {
@@ -34,6 +39,10 @@ public class MQTTService extends MQTTSubject {
     private String pswd = "";
     private static String topic = "";
     private String clientId = "";
+    private boolean bRun = true;
+
+    //接收的数据
+    private String payload;
 
     //连接失败
     public static final int MQTT_CONNECT_INIT = 1;
@@ -48,7 +57,13 @@ public class MQTTService extends MQTTSubject {
     private MqttConnectOptions options;
     private IGetMessageCallBack iGetMessageCallBack;
     private ConnectThread connectThread = null;
+    private ConsumerThread consumerThread = null;
     private IMqttToken token = null;
+
+    //线程池 5个线程同时进行解析
+    ExecutorService executorService = Executors.newFixedThreadPool(5);
+    //异步处理消息的消息体队列
+    private List<String> messages = new ArrayList<>();
 
     private MQTTService (){};
 
@@ -62,6 +77,11 @@ public class MQTTService extends MQTTSubject {
         } catch (MqttException e) {
             e.printStackTrace();
         }
+    }
+
+    public void exit() {
+        destroy();
+        bRun = false;
     }
 
     public void restart() {
@@ -119,6 +139,12 @@ public class MQTTService extends MQTTSubject {
             connectThread = new ConnectThread();
             connectThread.start();
         }
+
+        executorService.execute(new ConsumerThread());
+//        executorService.execute(new ConsumerThread());
+//        executorService.execute(new ConsumerThread());
+//        executorService.execute(new ConsumerThread());
+//        executorService.execute(new ConsumerThread());
     }
 
     /** 连接MQTT服务器 */
@@ -203,36 +229,10 @@ public class MQTTService extends MQTTSubject {
     private MqttCallback mqttCallback = new MqttCallback() {
         @Override
         public void messageArrived(String topic, MqttMessage message) {
+            //此处因为设置的回调实在主线程，所以所有的耗时操作都需要放到子线程,先将数据暂存
             if (MQTTService.topic.equals(topic)) {
-                try {
-                    String str1 = new String(message.getPayload());
-
-                    Log.i(TAG, "messageArrived!!!!!!!!! topic is " + topic +
-                            " : " + str1);
-
-                    if (iGetMessageCallBack != null) {
-                        iGetMessageCallBack.setMessage(str1);
-                    }
-                    User user = JsonUtil.getInstance().json2obj(str1, User.class);
-                    //TestData data = JsonUtil.getInstance().json2obj(str1, TestData.class);
-
-                    String str2 = topic + ";qos:" + message.getQos() + ";retained:" + message.isRetained();
-                    Log.i(TAG, "messageArrived:" + str1);
-                    Log.i(TAG, str2);
-                    Log.i(TAG, "data: " + user.code);
-                    //Log.i(TAG, "user name " + user.name + " cardCode " + user.cardCode + " image:" + user.image);
-                    // UserService.getInstance().insert(user);
-                    UserService.getInstance().insert(user);
-
-
-//            Log.i(TAG, String.valueOf(Environment.getExternalStorageDirectory()));
-//            File file = FileUtils.isFileExist(String.valueOf(Environment.getExternalStorageDirectory()), "etstpg");
-//            Log.i(TAG, "file: " + file);
-//            String sss = FileUtils.toBase64(file);
-//            Log.i(TAG, "file base64: " + sss);
-                    //FileUtils.writeTxtFile(sss, String.valueOf(Environment.getExternalStorageDirectory()) + "/testbase64");
-                } catch (Exception e) {
-                    e.printStackTrace();
+                synchronized (MQTTService.class) {
+                    messages.add(new String(message.getPayload()));
                 }
             }
         }
@@ -245,7 +245,7 @@ public class MQTTService extends MQTTSubject {
         @Override
         public void connectionLost(Throwable arg0) {
             // 失去连接，重连
-            Log.i(TAG, "connectionLost!!!!!!!!!!!!! ");
+            Log.i(TAG, "connectionLost!!!!!!!!!!!!! " + arg0.getMessage());
             conn_status = MQTT_CONNECT_INIT;
         }
     };
@@ -258,8 +258,10 @@ public class MQTTService extends MQTTSubject {
         @Override
         public void run() {
             int delay = 1000;
-            while (true) {
+            while (bRun) {
                 if (conn_status == MQTT_CONNECT_INIT) {
+                    Thread th=Thread.currentThread();
+                    System.out.println("ConnectThread main is " + th.getName());
                     doClientConnection();
                 }
 
@@ -268,6 +270,57 @@ public class MQTTService extends MQTTSubject {
                     Thread.sleep(delay);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private class ConsumerThread implements Runnable {
+        @Override
+        public void run() {
+            String payload = "";
+            while (bRun) {
+                synchronized (MQTTService.class) {
+                    if (messages.size() > 0) {
+                        Log.i(TAG, "messages wait " + messages.size());
+                        payload = messages.get(0);
+                        messages.remove(0);
+                    }
+                }
+
+                if ("".equals(payload)) {
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    continue;
+                }
+
+                try {
+                    if (iGetMessageCallBack != null) {
+                        iGetMessageCallBack.setMessage(payload);
+                    }
+                    User user = JsonUtil.getInstance().json2obj(payload, User.class);
+                    //TestData data = JsonUtil.getInstance().json2obj(str1, TestData.class);
+
+                    //String str2 = topic + ";qos:" + message.getQos() + ";retained:" + message.isRetained();
+                    Log.i(TAG, " topic：" + topic + " " + payload);
+                    //Log.i(TAG, str2);
+                    Log.i(TAG, "data: " + user.code);
+                    //Log.i(TAG, "user name " + user.name + " cardCode " + user.cardCode + " image:" + user.image);
+                    UserService.getInstance().insert(user);
+
+//            Log.i(TAG, String.valueOf(Environment.getExternalStorageDirectory()));
+//            File file = FileUtils.isFileExist(String.valueOf(Environment.getExternalStorageDirectory()), "etstpg");
+//            Log.i(TAG, "file: " + file);
+//            String sss = FileUtils.toBase64(file);
+//            Log.i(TAG, "file base64: " + sss);
+                    //FileUtils.writeTxtFile(sss, String.valueOf(Environment.getExternalStorageDirectory()) + "/testbase64");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    payload = "";
                 }
             }
         }
