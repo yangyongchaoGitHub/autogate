@@ -55,7 +55,9 @@ public class FileUtils {
     //使用RandomAccessFile进行写文件
     public static boolean writeByteFile(byte[] bytes, String filePath) {
         try {
+            Log.i(TAG, "writeByteFile 1 " + (new Date()).getTime());// 50ms
             RandomAccessFile raf = new RandomAccessFile(filePath, "rw");
+            Log.i(TAG, "writeByteFile 2 " + (new Date()).getTime());
             raf.write(bytes);
             raf.close();
         } catch (Exception e) {
@@ -306,15 +308,13 @@ public class FileUtils {
 
     public static byte[] base64ToBytes(String base) {
         // like /9j/4A is image
-        if (base == null) {
-            return null;
-        }
-        byte[] decodes = new byte[0];
-        try {
-            decodes = Base64.decode(base.getBytes(), Base64.NO_WRAP);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        byte[] decodes = null;
+        if (base != null) {
+            try {
+                decodes = Base64.decode(base.getBytes(), Base64.NO_WRAP);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return decodes;
     }

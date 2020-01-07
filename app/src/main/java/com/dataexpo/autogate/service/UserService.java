@@ -7,17 +7,12 @@ import android.util.Log;
 import com.dataexpo.autogate.comm.DBUtils;
 import com.dataexpo.autogate.comm.FileUtils;
 import com.dataexpo.autogate.comm.Utils;
-import com.dataexpo.autogate.face.api.FaceApi;
-import com.dataexpo.autogate.face.model.BaseConfig;
-import com.dataexpo.autogate.face.model.SingleBaseConfig;
 import com.dataexpo.autogate.model.TestData;
 import com.dataexpo.autogate.model.User;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static com.dataexpo.autogate.face.manager.ImportFileManager.IMPORT_SUCCESS;
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_JPG;
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_PNG;
 
@@ -38,26 +33,33 @@ public class UserService {
 
     public long insert(User user) {
         String suffix = ".jpg";
-        if (checkByCode(user)) {
-            //TODO: 可以存放到另一个表，手动纠正
-            Log.i(TAG, "用户： " + user.code + " 重复！！！！！");
-            return 0L;
-        }
+        //此处也是检测是否有重复code的用户
+//        if (haveByCode(user)) {
+//            //TODO: 可以存放到另一个表，手动纠正
+//            Log.i(TAG, "用户： " + user.code + " 重复！！！！！");
+//            return 0L;
+//        }
+
         byte[] images = FileUtils.base64ToBytes(user.image);
 
         user.ctime = Utils.timeNow_();
 
-        if (images.length > 0) {
+        if (images != null && images.length > 0) {
         //if (1 == 0) {
+            //若没有设置image_name则将用户code赋给image_name
             if ("".equals(user.image_name)) {
                 user.image_name = user.code;
             }
+
+            //根据数据传输中的类型判断图片类型
             if (user.image_type == IMAGE_TYPE_JPG) {
                 suffix = ".jpg";
             } else if (user.image_type == IMAGE_TYPE_PNG){
                 suffix = ".png";
             }
+            //Log.i(TAG, "insert 3 " + (new Date()).getTime());
             String path = FileUtils.getBatchImportDirectory().getPath() + "/" + user.image_name + suffix;
+
             FileUtils.writeByteFile(images, path);
 
             //Log.i(TAG, "save image path:" + path);
@@ -80,11 +82,14 @@ public class UserService {
         return insertDB(user);
     }
 
-    private synchronized boolean checkByCode(User user) {
-        Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_USER, "code", user.code);
-        boolean result = cursor.moveToNext();
-        cursor.close();
-        return result;
+    public synchronized boolean haveByCode(User user) {
+        int count = DBUtils.getInstance().count("select count(*) from " + DBUtils.TABLE_USER + " where code = '" + user.code + "'");
+        return count > 0;
+//
+//        Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_USER, "code", user.code);
+//        boolean result = cursor.moveToNext();
+//        cursor.close();
+//        return result;
     }
 
     private long insert(TestData data) {
@@ -158,10 +163,10 @@ public class UserService {
         Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_USER, "code", user.code);
         User user_response = null;
 
-        if (cursor.moveToNext()) {
+        if (cursor != null && cursor.moveToNext()) {
             user_response = resolve(cursor);
+            cursor.close();
         }
-        cursor.close();
         return user_response;
     }
 
@@ -169,10 +174,10 @@ public class UserService {
         Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_USER, "id", id + "");
         User user_response = null;
 
-        if (cursor.moveToNext()) {
+        if (cursor != null && cursor.moveToNext()) {
             user_response = resolve(cursor);
+            cursor.close();
         }
-        cursor.close();
         return user_response;
     }
 

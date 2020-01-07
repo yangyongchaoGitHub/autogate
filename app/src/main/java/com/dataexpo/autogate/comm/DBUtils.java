@@ -128,6 +128,14 @@ public class DBUtils {
         return index;
     }
 
+    public int count(String sql) {
+        Cursor cursor = db.rawQuery(sql, null);
+        cursor.moveToFirst();
+        int res = Integer.parseInt(cursor.getString(0));
+        cursor.close();
+        return res;
+    }
+
     /**
      * 查询单个数据是否存在
      * @param code

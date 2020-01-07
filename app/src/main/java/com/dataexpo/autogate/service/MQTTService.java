@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.dataexpo.autogate.comm.JsonUtil;
 import com.dataexpo.autogate.comm.Utils;
-import com.dataexpo.autogate.listener.GateObserver;
 import com.dataexpo.autogate.listener.IGetMessageCallBack;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -24,7 +23,9 @@ import com.dataexpo.autogate.listener.MQTTSubject;
 import com.dataexpo.autogate.model.User;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -40,9 +41,6 @@ public class MQTTService extends MQTTSubject {
     private static String topic = "";
     private String clientId = "";
     private boolean bRun = true;
-
-    //接收的数据
-    private String payload;
 
     //连接失败
     public static final int MQTT_CONNECT_INIT = 1;
@@ -61,9 +59,14 @@ public class MQTTService extends MQTTSubject {
     private IMqttToken token = null;
 
     //线程池 5个线程同时进行解析
-    ExecutorService executorService = Executors.newFixedThreadPool(5);
+    ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
     //异步处理消息的消息体队列
-    private List<String> messages = new ArrayList<>();
+    private List<User> messages = new ArrayList<>();
+
+    private static final int threadCount = 5;
+    private volatile int num = 0;
+    private User[] currUsers = new User[threadCount];
+    private final Object syncThreadUser = new User();
 
     private MQTTService (){};
 
@@ -77,6 +80,10 @@ public class MQTTService extends MQTTSubject {
         } catch (MqttException e) {
             e.printStackTrace();
         }
+    }
+
+    private synchronized int getThreadNumber() {
+        return num++;
     }
 
     public void exit() {
@@ -109,6 +116,9 @@ public class MQTTService extends MQTTSubject {
     }
 
     public void init(Context context) {
+        for (int i = 0; i < threadCount; i++) {
+            currUsers[i] = null;
+        }
         mContext = context;
         options = new MqttConnectOptions();
 
@@ -140,11 +150,9 @@ public class MQTTService extends MQTTSubject {
             connectThread.start();
         }
 
-        executorService.execute(new ConsumerThread());
-//        executorService.execute(new ConsumerThread());
-//        executorService.execute(new ConsumerThread());
-//        executorService.execute(new ConsumerThread());
-//        executorService.execute(new ConsumerThread());
+        for (int i = 0; i < threadCount; i++) {
+            executorService.execute(new ConsumerThread());
+        }
     }
 
     /** 连接MQTT服务器 */
@@ -231,8 +239,31 @@ public class MQTTService extends MQTTSubject {
         public void messageArrived(String topic, MqttMessage message) {
             //此处因为设置的回调实在主线程，所以所有的耗时操作都需要放到子线程,先将数据暂存
             if (MQTTService.topic.equals(topic)) {
+                boolean bExist = false;
+                User user = null;
+                try {
+                    user = JsonUtil.getInstance().json2obj(new String(message.getPayload()), User.class);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (user == null) {
+                    return;
+                }
+
                 synchronized (MQTTService.class) {
-                    messages.add(new String(message.getPayload()));
+                    //将待处理数据放入messages
+                    // 对待的情况是 broker同时发送了多条重复的消息，若是都放到messages，则有可能导致内存溢出
+                    for (int i = messages.size() - 1; (i > 0 && i > messages.size() - threadCount); i--) {
+                        if (user.code.equals(messages.get(i).code)) {
+                            bExist = true;
+                            break;
+                        }
+                    }
+                    if (!bExist) {
+                        Log.i(TAG, "messageArrived 1 " + (new Date()).getTime());
+                        messages.add(user);
+                    }
                 }
             }
         }
@@ -245,7 +276,10 @@ public class MQTTService extends MQTTSubject {
         @Override
         public void connectionLost(Throwable arg0) {
             // 失去连接，重连
-            Log.i(TAG, "connectionLost!!!!!!!!!!!!! " + arg0.getMessage());
+            Log.i(TAG, "connectionLost!!!!!!!!!!!!! ");
+            if (arg0 != null) {
+                Log.i(TAG, Objects.requireNonNull(arg0.getMessage()));
+            }
             conn_status = MQTT_CONNECT_INIT;
         }
     };
@@ -278,17 +312,20 @@ public class MQTTService extends MQTTSubject {
     private class ConsumerThread implements Runnable {
         @Override
         public void run() {
-            String payload = "";
+            User user = null;
+            int number = getThreadNumber();
+            Log.i(TAG, "my number is " + number);
+            boolean bInOther = false;
             while (bRun) {
                 synchronized (MQTTService.class) {
                     if (messages.size() > 0) {
                         Log.i(TAG, "messages wait " + messages.size());
-                        payload = messages.get(0);
+                        user = messages.get(0);
                         messages.remove(0);
                     }
                 }
 
-                if ("".equals(payload)) {
+                if (user == null) {
                     try {
                         Thread.sleep(20);
                     } catch (InterruptedException e) {
@@ -298,16 +335,41 @@ public class MQTTService extends MQTTSubject {
                 }
 
                 try {
-                    if (iGetMessageCallBack != null) {
-                        iGetMessageCallBack.setMessage(payload);
-                    }
-                    User user = JsonUtil.getInstance().json2obj(payload, User.class);
+//                    if (iGetMessageCallBack != null) {
+//                        iGetMessageCallBack.setMessage(payload);
+//                    }
                     //TestData data = JsonUtil.getInstance().json2obj(str1, TestData.class);
 
                     //String str2 = topic + ";qos:" + message.getQos() + ";retained:" + message.isRetained();
-                    Log.i(TAG, " topic：" + topic + " " + payload);
+                    //Log.i(TAG, " topic：" + topic + " " + payload);
                     //Log.i(TAG, str2);
-                    Log.i(TAG, "data: " + user.code);
+
+                    Log.i(TAG, "ConsumerThread insert che code number " + number + " " + user.code + " " + (new Date()).getTime());
+                    //检测是否在数据库有重复用户并告知正在处理此code的id给其他线程
+                    if (UserService.getInstance().haveByCode(user)) {
+                        Log.i(TAG, "用户： " + user.code + " 重复！！！！！");
+                        continue;
+                    }
+                    //告知正在处理此code的id给其他线程
+                    bInOther = false;
+                    synchronized (syncThreadUser) {
+                        for (int i = 0; i < threadCount; i++) {
+                            if (currUsers[i] != null && user.code.equals(currUsers[i].code)) {
+                                bInOther = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (bInOther) {
+                        continue;
+                    }
+
+                    synchronized (syncThreadUser) {
+                        currUsers[number] = user;
+                    }
+
+                    Log.i(TAG, "ConsumerThread insert sta code number " + number + " " + user.code + " " + (new Date()).getTime());
                     //Log.i(TAG, "user name " + user.name + " cardCode " + user.cardCode + " image:" + user.image);
                     UserService.getInstance().insert(user);
 
@@ -320,8 +382,9 @@ public class MQTTService extends MQTTSubject {
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-                    payload = "";
+                    user = null;
                 }
+                Log.i(TAG, "ConsumerThread insert end " + (new Date()).getTime());
             }
         }
     }
