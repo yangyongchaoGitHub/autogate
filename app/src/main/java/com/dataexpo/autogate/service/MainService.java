@@ -15,12 +15,9 @@ import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.gate.ReportData;
 import com.dataexpo.autogate.netty.UDPClient;
 
-import org.eclipse.paho.android.service.MqttService;
-
-
 import static com.dataexpo.autogate.service.GateService.LED_GREEN;
 import static com.dataexpo.autogate.service.GateService.LED_RED;
-import static com.dataexpo.autogate.service.MQTTService.MQTT_CONNECT_SUCCESS;
+import static com.dataexpo.autogate.service.MQTTHiveMQService.MQTT_CONNECT_SUCCESS;
 
 public class MainService extends Service implements GateObserver, MQTTObserver {
     private static final String TAG = MainService.class.getSimpleName();
@@ -61,7 +58,7 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
     }
 
     public void restartMQTTService() {
-        MQTTService.getInstance().restart();
+        MQTTHiveMQService.getInstance().restart();
     }
 
 
@@ -113,11 +110,11 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
     }
 
     public void addMQTTObserver(MQTTObserver observer) {
-        MQTTService.getInstance().add(observer);
+        MQTTHiveMQService.getInstance().add(observer);
     }
 
     public void removeMQTTObserver(MQTTObserver observer) {
-        MQTTService.getInstance().remove(observer);
+        MQTTHiveMQService.getInstance().remove(observer);
     }
 
     public void setOnGateServiceCallback(OnGateServiceCallback callback) {
@@ -140,16 +137,15 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
         addGateObserver(CardService.getInstance());
         addGateObserver(this);
 
-        MQTTService.getInstance().init(this);
-        MQTTService.getInstance().add(this);
+        MQTTHiveMQService.getInstance().init(this);
+        MQTTHiveMQService.getInstance().add(this);
+//        MQTTService.getInstance().init(this);
+//        MQTTService.getInstance().add(this);
         client= new UDPClient();
     }
 
     @Override
     public void onDestroy() {
-        MQTTService.getInstance().exit();
-        Intent stop = new Intent(this, MqttService.class);
-        stopService(stop);
         super.onDestroy();
     }
 }

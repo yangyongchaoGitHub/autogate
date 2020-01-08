@@ -129,12 +129,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         Window window = null;
 
         if (displays.length > 1) {
-            if (1 == 1) {
-                presentation = new SecondaryPhoneCameraPresentation(getApplicationContext(), displays[1]);//displays[1]是副屏
-            } else {
-                presentation = new SecondaryEZUActivity(getApplicationContext(), displays[1]);//displays[1]是副屏
-                ((SecondaryEZUActivity) presentation).setApplication(this.getApplication());
-            }
+            presentation = new SecondaryPhoneCameraPresentation(getApplicationContext(), displays[1]);//displays[1]是副屏
         }
 
         if (presentation != null) {
