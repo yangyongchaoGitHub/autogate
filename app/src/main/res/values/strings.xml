@@ -35,6 +35,7 @@
     <string name="go_camera_test">摄像头测试</string>
     <string name="localip">查看本地ip</string>
     <string name="ip">本地ip</string>
+    <string name="change_ip">更换ip</string>
 
     <!--人脸识别相关-->
     <string name="cameraDisplayAngle">摄像头视频流回显角度设置</string>

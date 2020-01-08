@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -24,6 +25,7 @@ import static com.dataexpo.autogate.comm.Utils.GATE_PORT;
 import static com.dataexpo.autogate.service.GateService.GATE_STATUS_INIT_NULL_CONTEXT;
 import static com.dataexpo.autogate.service.GateService.GATE_STATUS_INIT_NULL_SETTING;
 import static com.dataexpo.autogate.service.GateService.GATE_STATUS_INIT_OPEN_FAIL;
+import static com.dataexpo.autogate.service.GateService.GATE_STATUS_READ_ERROR;
 import static com.dataexpo.autogate.service.GateService.GATE_STATUS_RUN;
 import static com.dataexpo.autogate.service.GateService.GATE_STATUS_START;
 
@@ -33,10 +35,12 @@ public class GateSetActivity extends BascActivity implements View.OnClickListene
     private EditText et_ip;
     private EditText et_port;
     private TextView tv_status;
+    private TextView tv_gate_status;
     private String ip;
     private String port;
     private CheckBox rb_direction;
     private int direction;
+    private EditText et_change_ip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +84,47 @@ public class GateSetActivity extends BascActivity implements View.OnClickListene
         if (MainApplication.getInstance().getService() != null) {
             MainApplication.getInstance().getService().addGateObserver(this);
         }
+        int status = MainApplication.getInstance().getGateStatus();
+        responseStatus(status);
+    }
+
+    @Override
+    public void responseStatus(int status) {
+        super.responseStatus(status);
+        String statuValue = "";
+        switch (status) {
+            case GATE_STATUS_INIT_NULL_SETTING:
+                statuValue = "设置的端口或者ip为空";
+                break;
+
+            case GATE_STATUS_START:
+                statuValue = "接口open成功";
+                break;
+
+            case GATE_STATUS_RUN:
+                statuValue = "正常运行中";
+                break;
+
+            case GATE_STATUS_INIT_OPEN_FAIL:
+                statuValue = "打开接口错误";
+                break;
+
+            case GATE_STATUS_INIT_NULL_CONTEXT:
+                statuValue = "上下文为空";
+                break;
+
+            case GATE_STATUS_READ_ERROR:
+                statuValue = "和设备通信失败";
+            default:
+        }
+
+        final String finalStatuValue = statuValue;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tv_gate_status.setText(finalStatuValue);
+            }
+        });
     }
 
     @Override
@@ -114,11 +159,19 @@ public class GateSetActivity extends BascActivity implements View.OnClickListene
         findViewById(R.id.btn_gate_set_confirm).setOnClickListener(this);
         tv_status = findViewById(R.id.tv_gate_set_status);
         rb_direction = findViewById(R.id.rb_gate_set_direction);
+        tv_gate_status = findViewById(R.id.tv_gate_status_value);
+        findViewById(R.id.btn_gate_set_change).setOnClickListener(this);
+        et_change_ip = findViewById(R.id.et_gate_set_change_ip);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.btn_gate_set_change:
+                String setip = et_change_ip.getText().toString();
+                Log.i(TAG, "setip is " + setip);
+                break;
+
             case R.id.btn_gate_set_back:
                 this.finish();
                 break;
