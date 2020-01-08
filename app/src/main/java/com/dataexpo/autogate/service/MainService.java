@@ -61,7 +61,6 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
         MQTTHiveMQService.getInstance().restart();
     }
 
-
     @Override
     public void responseData(ReportData mReports) {
         if (mReports != null) {
