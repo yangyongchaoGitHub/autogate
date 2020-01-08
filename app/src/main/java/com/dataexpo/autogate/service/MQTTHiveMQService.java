@@ -291,7 +291,7 @@ public class MQTTHiveMQService extends MQTTSubject {
             }
         }
 
-        synchronized (MQTTService.class) {
+        synchronized (syncThreadUser) {
             //将待处理数据放入messages
             // 对待的情况是 broker同时发送了多条重复的消息，若是都放到messages，则有可能导致内存溢出
             for (int i = 0; i < currUsers.size(); i++) {
