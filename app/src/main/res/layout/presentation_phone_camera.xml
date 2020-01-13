@@ -15,6 +15,11 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
+    <SurfaceView
+        android:id="@+id/surface_presentation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <ImageView
         android:id="@+id/iv_success_curr"
         android:layout_width="0dp"

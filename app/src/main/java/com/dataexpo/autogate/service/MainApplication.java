@@ -2,7 +2,7 @@ package com.dataexpo.autogate.service;
 
 import android.app.Application;
 
-import static com.dataexpo.autogate.service.GateService.*;
+import com.company.NetSDK.NET_DEVICEINFO_Ex;
 
 public class MainApplication extends Application {
     private static MainApplication application;
@@ -10,6 +10,9 @@ public class MainApplication extends Application {
     private int gateStatus = -1;
     private volatile int MQTTStatus = -1;
     private int faceSDKStatus;
+
+    private long mloginHandle;
+    private NET_DEVICEINFO_Ex mDeviceInfo;
 
     public MainService getService() {
         return service;
@@ -27,6 +30,22 @@ public class MainApplication extends Application {
     public void onCreate() {
         super.onCreate();
         application = this;
+    }
+
+    public long getLoginHandle() {
+        return mloginHandle;
+    }
+
+    public void setLoginHandle(long loginHandle) {
+        this.mloginHandle = loginHandle;
+    }
+
+    public NET_DEVICEINFO_Ex getDeviceInfo() {
+        return mDeviceInfo;
+    }
+
+    public void setDeviceInfo(NET_DEVICEINFO_Ex mDeviceInfo) {
+        this.mDeviceInfo = mDeviceInfo;
     }
 
     public int getGateStatus() {
