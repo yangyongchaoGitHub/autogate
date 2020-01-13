@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.github.sgtsilvio.gradle.android-retrofix'
+//apply plugin: 'com.github.sgtsilvio.gradle.android-retrofix'
 
 android {
     compileSdkVersion 29
@@ -35,19 +35,19 @@ android {
     packagingOptions {
         exclude 'META-INF/*' // will not include NOTICE file
         exclude 'META-INF/INDEX.LIST'
-        exclude 'META-INF/BenchmarkList'
-        exclude 'META-INF/io.netty.versions.properties'
-        exclude 'META-INF/CompilerHints'
+//        exclude 'META-INF/BenchmarkList'
+//        exclude 'META-INF/io.netty.versions.properties'
+//        exclude 'META-INF/CompilerHints'
     }
 }
 
-configurations {
-    cleanedAnnotations
-    compile.exclude group: 'org.jetbrains' , module:'annotations'
-}
+//configurations {
+//    cleanedAnnotations
+//    compile.exclude group: 'org.jetbrains' , module:'annotations'
+//}
 
 dependencies {
-    //implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
@@ -60,8 +60,11 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation project(':facelibrary')
-    compileOnly 'io.netty:netty-all:4.1.44.Final'
-    implementation 'com.hivemq:hivemq-mqtt-client:1.1.3'
-    implementation 'net.sourceforge.streamsupport:android-retrostreams:1.7.1'
-    implementation 'net.sourceforge.streamsupport:android-retrofuture:1.7.1'
+    implementation 'io.netty:netty-all:4.1.44.Final'
+    //hivemq 导入和java8引用
+//    implementation 'com.hivemq:hivemq-mqtt-client:1.1.3'
+//    implementation 'net.sourceforge.streamsupport:android-retrostreams:1.7.1'
+//    implementation 'net.sourceforge.streamsupport:android-retrofuture:1.7.1'
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.1'
+    implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
 }

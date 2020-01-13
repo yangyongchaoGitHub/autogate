@@ -17,7 +17,7 @@ import com.dataexpo.autogate.netty.UDPClient;
 
 import static com.dataexpo.autogate.service.GateService.LED_GREEN;
 import static com.dataexpo.autogate.service.GateService.LED_RED;
-import static com.dataexpo.autogate.service.MQTTHiveMQService.MQTT_CONNECT_SUCCESS;
+import static com.dataexpo.autogate.service.MQTTService.MQTT_CONNECT_SUCCESS;
 
 public class MainService extends Service implements GateObserver, MQTTObserver {
     private static final String TAG = MainService.class.getSimpleName();
@@ -58,7 +58,7 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
     }
 
     public void restartMQTTService() {
-        MQTTHiveMQService.getInstance().restart();
+        MQTTService.getInstance().restart();
     }
 
     @Override
@@ -109,11 +109,11 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
     }
 
     public void addMQTTObserver(MQTTObserver observer) {
-        MQTTHiveMQService.getInstance().add(observer);
+        MQTTService.getInstance().add(observer);
     }
 
     public void removeMQTTObserver(MQTTObserver observer) {
-        MQTTHiveMQService.getInstance().remove(observer);
+        MQTTService.getInstance().remove(observer);
     }
 
     public void setOnGateServiceCallback(OnGateServiceCallback callback) {
@@ -136,10 +136,10 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
         addGateObserver(CardService.getInstance());
         addGateObserver(this);
 
-        MQTTHiveMQService.getInstance().init(this);
-        MQTTHiveMQService.getInstance().add(this);
-//        MQTTService.getInstance().init(this);
-//        MQTTService.getInstance().add(this);
+//        MQTTHiveMQService.getInstance().init(this);
+//        MQTTHiveMQService.getInstance().add(this);
+        MQTTService.getInstance().init(this);
+        MQTTService.getInstance().add(this);
         client= new UDPClient();
     }
 
