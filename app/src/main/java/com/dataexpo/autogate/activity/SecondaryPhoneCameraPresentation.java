@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.dataexpo.autogate.R;
 import com.dataexpo.autogate.comm.FileUtils;
@@ -38,6 +40,34 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
     private Context context;
     private ImageView iv_camera;
     private ImageView iv_success_curr;
+    private ImageView iv_success_last1;
+    private ImageView iv_success_last2;
+    private ImageView iv_success_last3;
+    private ImageView iv_success_last4;
+    private ImageView iv_success_last5;
+    private ImageView iv_success_last6;
+    private ImageView iv_success_last7;
+    private ImageView iv_success_last8;
+    private ImageView iv_success_last9;
+    private ImageView iv_success_last10;
+
+    private TextView tv_name;
+    private TextView tv_company;
+    private TextView tv_deputation;
+    private TextView tv_success_last_name1;
+    private TextView tv_success_last_name2;
+    private TextView tv_success_last_name3;
+    private TextView tv_success_last_name4;
+    private TextView tv_success_last_name5;
+    private TextView tv_success_last_name6;
+    private TextView tv_success_last_name7;
+    private TextView tv_success_last_name8;
+    private TextView tv_success_last_name9;
+    private TextView tv_success_last_name10;
+
+    private ImageView[] ivs = new ImageView[10];
+    private TextView[] tvs = new TextView[10];
+    private User[] users = new User[10];
     private SurfaceView sf;
 
     private int bShowModel = MODEL_DAHUA;
@@ -48,6 +78,8 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
     private LivePreviewModule mLiveModule;
     private PTZControl ptzControl;
 
+    private int bottom_show = 0;
+
     public SecondaryPhoneCameraPresentation(Context outerContext, Display display) {
         super(outerContext, display);
         context = outerContext;
@@ -57,6 +89,9 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.presentation_phone_camera);
+        for (int i = 0; i < users.length; i++) {
+            users[i] = null;
+        }
         initView();
         /// 注意: 必须调用 init 接口初始化 INetSDK.jar 仅需要一次初始化
         NetSDKLib.getInstance().init();
@@ -68,6 +103,34 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
 
         LoginTask loginTask = new LoginTask();
         loginTask.execute();
+    }
+
+    public void setCurrImage(Bitmap bitmap, User user) {
+        iv_success_curr.post(new Runnable() {
+            @Override
+            public void run() {
+                //set big
+                iv_success_curr.setImageBitmap(bitmap);
+                tv_name.setText(user.name);
+                tv_company.setText(user.company);
+                tv_deputation.setText(user.company);
+
+                //设置底部轮换
+                int len = users.length;
+                for (int i = len - 1; i > 0; i--) {
+                    users[i] = users[i - 1];
+                }
+
+                users[0] = user;
+
+                for (int i = 0; i < len; i++) {
+                    if (users[i] != null) {
+                        ivs[i].setImageBitmap(BitmapFactory.decodeFile(FileUtils.getUserPic(users[i].image_name)));
+                        tvs[i].setText(users[i].name);
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -82,6 +145,49 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
     private void initView() {
         iv_camera = findViewById(R.id.iv_phone_camera);
         iv_success_curr = findViewById(R.id.iv_success_curr);
+        iv_success_last1 = findViewById(R.id.iv_success_last1);
+        iv_success_last2 = findViewById(R.id.iv_success_last2);
+        iv_success_last3 = findViewById(R.id.iv_success_last3);
+        iv_success_last4 = findViewById(R.id.iv_success_last4);
+        iv_success_last5 = findViewById(R.id.iv_success_last5);
+        iv_success_last6 = findViewById(R.id.iv_success_last6);
+        iv_success_last7 = findViewById(R.id.iv_success_last7);
+        iv_success_last8 = findViewById(R.id.iv_success_last8);
+        iv_success_last9 = findViewById(R.id.iv_success_last9);
+        iv_success_last10 = findViewById(R.id.iv_success_last10);
+        ivs[0] = iv_success_last1;
+        ivs[1] = iv_success_last2;
+        ivs[2] = iv_success_last3;
+        ivs[3] = iv_success_last4;
+        ivs[4] = iv_success_last5;
+        ivs[5] = iv_success_last6;
+        ivs[6] = iv_success_last7;
+        ivs[7] = iv_success_last8;
+        ivs[8] = iv_success_last9;
+        ivs[9] = iv_success_last10;
+        tv_name = findViewById(R.id.tv_presentation_name);
+        tv_company = findViewById(R.id.tv_presentation_company);
+        tv_deputation = findViewById(R.id.tv_presentation_deputation);
+        tv_success_last_name1 = findViewById(R.id.iv_success_last_name1);
+        tv_success_last_name2 = findViewById(R.id.iv_success_last_name2);
+        tv_success_last_name3 = findViewById(R.id.iv_success_last_name3);
+        tv_success_last_name4 = findViewById(R.id.iv_success_last_name4);
+        tv_success_last_name5 = findViewById(R.id.iv_success_last_name5);
+        tv_success_last_name6 = findViewById(R.id.iv_success_last_name6);
+        tv_success_last_name7 = findViewById(R.id.iv_success_last_name7);
+        tv_success_last_name8 = findViewById(R.id.iv_success_last_name8);
+        tv_success_last_name9 = findViewById(R.id.iv_success_last_name9);
+        tv_success_last_name10 = findViewById(R.id.iv_success_last_name10);
+        tvs[0] = tv_success_last_name1;
+        tvs[1] = tv_success_last_name2;
+        tvs[2] = tv_success_last_name3;
+        tvs[3] = tv_success_last_name4;
+        tvs[4] = tv_success_last_name5;
+        tvs[5] = tv_success_last_name6;
+        tvs[6] = tv_success_last_name7;
+        tvs[7] = tv_success_last_name8;
+        tvs[8] = tv_success_last_name9;
+        tvs[9] = tv_success_last_name10;
         //初始化surfaceview
         sf = findViewById(R.id.surface_presentation);
         sf.getHolder().addCallback(this);
@@ -90,13 +196,6 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
         if (bShowModel == MODEL_DAHUA) {
             iv_camera.setVisibility(View.INVISIBLE);
         }
-
-        iv_success_curr.post(new Runnable() {
-            @Override
-            public void run() {
-                iv_success_curr.setImageBitmap(bitmap);
-            }
-        });
     }
 
     @Override

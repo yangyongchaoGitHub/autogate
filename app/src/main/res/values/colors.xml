@@ -14,4 +14,6 @@
     <color name="blue">#0000FF</color>
     <color name="grey">#E2E2E2</color>
     <color name="white">#FFFFFF</color>
+
+    <color name="presentationbg">#AD616060</color>
 </resources>

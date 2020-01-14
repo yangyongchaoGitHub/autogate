@@ -53,6 +53,8 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
     private static final int PREFER_WIDTH = 1280;
     private static final int PERFER_HEIGH = 720;
 
+    private SecondaryPhoneCameraPresentation presentation = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,7 +127,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         displays = mDisplayManager.getDisplays();
         Log.i(TAG, "display: " + displays.length);
 
-        Presentation presentation = null;
+
         Window window = null;
 
         if (displays.length > 1) {
@@ -281,14 +283,18 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
 
                     if (res != null) {
                         //有此用户
-                        final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(res.image_name));
-                        Log.i(TAG, " responseData image path: " + FileUtils.getUserPic(res.image_name));
+                        String path = FileUtils.getUserPic(res.image_name);
+                        final Bitmap bitmap = BitmapFactory.decodeFile(path);
+                        Log.i(TAG, " responseData image path: " + path);
 
                         iv_head.setImageBitmap(bitmap);
                         iv_head.setVisibility(View.VISIBLE);
                         tv_direction.setVisibility(View.VISIBLE);
                         tv_direction.setText("In".equals(mReports.getDirection()) ? "进" : "出");
                         tv_name.setText(res.name);
+
+                        //调用分屏的显示接口
+                        presentation.setCurrImage(bitmap, res);
 
                     } else {
                         iv_head.setVisibility(View.INVISIBLE);

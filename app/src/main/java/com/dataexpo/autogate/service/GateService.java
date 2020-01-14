@@ -158,6 +158,30 @@ public class GateService extends GateSubject {
     public void start() {
         mGetReportThrd = new Thread(new GetReportThrd());
         mGetReportThrd.start();
+
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                int i = 0;
+//                while (i++ < 15) {
+//                    try {
+//                        Thread.sleep(3000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    ReportData data;
+//                    if (i == 0) {
+//                        data = new ReportData("E0040150C71459F3", 123, "123");
+//                    } else if (i == 1) {
+//                        data = new ReportData("E0040150C715D092", 123, "123");
+//                    } else {
+//                        data = new ReportData("E0040150C714EA6A", 123, "123");
+//                    }
+//
+//                    notifyGate(data);
+//                }
+//            }
+//        }).start();
     }
 
     public void ledCtrl(int target) {
@@ -251,6 +275,7 @@ public class GateService extends GateSubject {
 
                                 ReportData report = new ReportData(GFunction.encodeHexStr(byData),
                                         direction, GFunction.encodeHexStr(time));
+
                                 notifyGate(report);
                                 hReport = m_reader
                                         .RDR_GetTagDataReport(RfidDef.RFID_SEEK_NEXT);

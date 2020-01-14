@@ -72,10 +72,10 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
 
             if (res != null) {
                 //有此用户
-                MainApplication.getInstance().getService().ledCtrl(LED_GREEN);
+                ledCtrl(LED_GREEN);
 
             } else {
-                MainApplication.getInstance().getService().ledCtrl(LED_RED);
+                ledCtrl(LED_RED);
             }
         }
     }
