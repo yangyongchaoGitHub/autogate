@@ -169,7 +169,11 @@ public class MQTTService extends MQTTSubject {
                 client = new MqttAndroidClient(mContext, host + ":" + port, clientId);
                 client.setCallback(mqttCallback);
 
-                token = client.connect(options, null, iMqttActionListener);
+                if (token != null) {
+                    client.connect(options);
+                } else {
+                    token = client.connect(options, null, iMqttActionListener);
+                }
 
             } catch (MqttException e) {
                 e.printStackTrace();
@@ -213,7 +217,6 @@ public class MQTTService extends MQTTSubject {
                 try {
                     // 订阅myTopic话题
                     token = client.subscribe(topic, 2);
-
                 } catch (MqttException e) {
                     e.printStackTrace();
                 }
@@ -222,10 +225,10 @@ public class MQTTService extends MQTTSubject {
 
         @Override
         public void onFailure(IMqttToken arg0, Throwable arg1) {
-            //Log.i(TAG, "onFailure " + arg1.getMessage());
+            Log.i(TAG, "onFailure " + arg1.getMessage());
             //TODO: if client not set will set repeat
             if (client != null) {
-                client.setCallback(null);
+                //client.setCallback(null);
                 client = null;
             }
             conn_status = MQTT_CONNECT_INIT;

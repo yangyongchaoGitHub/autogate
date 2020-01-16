@@ -249,4 +249,11 @@
         app:layout_constraintRight_toRightOf="@+id/iv_success_last10"
         app:layout_constraintTop_toBottomOf="@+id/iv_success_last10"
         style="@style/presentNameItem"/>
+
+    <ImageView
+        android:id="@+id/iv_test_snap"
+        android:layout_width="@dimen/x300"
+        android:layout_height="@dimen/x200"
+        android:visibility="invisible"
+        app:layout_constraintRight_toRightOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

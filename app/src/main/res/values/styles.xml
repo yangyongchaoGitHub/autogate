@@ -36,5 +36,7 @@
         <item name="layout_constraintVertical_bias">0.93</item>
         <item name="layout_constraintHeight_percent">0.06</item>
         <item name="android:gravity">center</item>
+        <item name="android:background">@color/presentationbg</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 </resources>

@@ -16,8 +16,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.company.NetSDK.CB_fSnapRev;
 import com.dataexpo.autogate.R;
 import com.dataexpo.autogate.comm.FileUtils;
+import com.dataexpo.autogate.dahuacameracommon.CapturePictureModule;
 import com.dataexpo.autogate.dahuacameracommon.EncodeModule;
 import com.dataexpo.autogate.dahuacameracommon.IPLoginModule;
 import com.dataexpo.autogate.dahuacameracommon.LivePreviewModule;
@@ -77,8 +79,9 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
     private EncodeModule encodeModule;
     private LivePreviewModule mLiveModule;
     private PTZControl ptzControl;
+    private CapturePictureModule mCapturePictureModule;
 
-    private int bottom_show = 0;
+    private ImageView iv_snap;
 
     public SecondaryPhoneCameraPresentation(Context outerContext, Display display) {
         super(outerContext, display);
@@ -87,6 +90,7 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate!! ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.presentation_phone_camera);
         for (int i = 0; i < users.length; i++) {
@@ -111,9 +115,22 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
             public void run() {
                 //set big
                 iv_success_curr.setImageBitmap(bitmap);
+                if (user.cardCode.equals("E0040150C714EA6A")) {
+                    user.name = "孟州";
+                    user.company = "数展科技";
+                    user.position = "深圳代表团";
+                } else if (user.cardCode.equals("E0040150C715D092")) {
+                    user.name = "张红超";
+                    user.company = "数展科技";
+                    user.position = "深圳代表团";
+                } else if (user.cardCode.equals("E0040150C71459F3")) {
+                    user.name = "杨勇朝";
+                    user.company = "数展科技";
+                    user.position = "深圳代表团";
+                }
                 tv_name.setText(user.name);
                 tv_company.setText(user.company);
-                tv_deputation.setText(user.company);
+                tv_deputation.setText(user.position);
 
                 //设置底部轮换
                 int len = users.length;
@@ -188,6 +205,8 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
         tvs[7] = tv_success_last_name8;
         tvs[8] = tv_success_last_name9;
         tvs[9] = tv_success_last_name10;
+
+        iv_snap = findViewById(R.id.iv_test_snap);
         //初始化surfaceview
         sf = findViewById(R.id.surface_presentation);
         sf.getHolder().addCallback(this);
@@ -210,25 +229,30 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
                     iv_camera.setImageBitmap(finalBitmap);
                 }
             });
-//            FaceSDKManager.getInstance().onBitmapDetectCheck(finalBitmap, null, null,
-//                    0, 0, 1, 3, new FaceDetectCallBack() {
-//                        @Override
-//                        public void onFaceDetectCallback(LivenessModel livenessModel) {
-//                            // 输出结果
-//                            checkCloseResult(livenessModel);
-//                        }
-//
-//                        @Override
-//                        public void onTip(int code, String msg) {
-//                            //displayTip(code, msg);
-//                        }
-//
-//                        @Override
-//                        public void onFaceDetectDarwCallback(LivenessModel livenessModel) {
-//                            //showFrame(livenessModel);
-//                        }
-//                    });
+
+            goDetect(finalBitmap);
         }
+    }
+
+    private void goDetect(Bitmap bitmap) {
+        FaceSDKManager.getInstance().onBitmapDetectCheck(bitmap, null, null,
+                0, 0, 1, 3, new FaceDetectCallBack() {
+                    @Override
+                    public void onFaceDetectCallback(LivenessModel livenessModel) {
+                        // 输出结果
+                        checkCloseResult(livenessModel);
+                    }
+
+                    @Override
+                    public void onTip(int code, String msg) {
+                        //displayTip(code, msg);
+                    }
+
+                    @Override
+                    public void onFaceDetectDarwCallback(LivenessModel livenessModel) {
+                        //showFrame(livenessModel);
+                    }
+                });
     }
 
     private void checkCloseResult(final LivenessModel livenessModel) {
@@ -276,12 +300,12 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
         }
         @Override
         protected Boolean doInBackground(String... params) {
+            Log.i(TAG, " LoginTAsk doInBackground!!!");
             return mLoginModule.login("192.168.1.108", "37777", "admin", "dataexpo123");
         }
         @Override
         protected void onPostExecute(Boolean result){
             if (result) {
-
                 app.setLoginHandle(mLoginModule.getLoginHandle());
                 app.setDeviceInfo(mLoginModule.getDeviceInfo());
 
@@ -295,7 +319,32 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
 //                            mSelectChannel.getSelectedItemPosition(),
 //                            mSelectStream.getSelectedItemPosition(),
 //                            mRealView);
+                    Log.i(TAG, "live port = " + mLiveModule.getPlayPort());
                     mLiveModule.startPlay(0, 0, sf);
+
+                    mCapturePictureModule = new CapturePictureModule(context);
+
+                    CapturePictureModule.setSnapRevCallBack(new CB_fSnapRev() {
+                        @Override
+                        public void invoke(long l, byte[] bytes, int i, int i1, int i2) {
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            if (bitmap != null) {
+                                iv_snap.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        iv_snap.setImageBitmap(bitmap);
+                                        if (bShowModel == MODEL_DAHUA) {
+                                            goDetect(bitmap);
+                                        }
+                                    }
+                                });
+//                                Bitmap newBmp = zoomBitmap(bitmap, mPictureView.getWidth(), mPictureView.getHeight());
+//                                mPictureView.setImageBitmap(newBmp);
+//                                savePicture(data, data.length, msg.arg1);
+                            }
+                        }
+                    });
+                    mCapturePictureModule.timerCapturePicture(0);
                 }
             } else {
                 Log.i("IPLoginActivity", "login error");

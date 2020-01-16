@@ -63,7 +63,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         initView();
         DBUtils.getInstance().create(mContext);
         //初始化双屏
-        initDisplay();
+        //initDisplay();
         /**
          * test code add a user
          */
