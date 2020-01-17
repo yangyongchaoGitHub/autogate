@@ -13,6 +13,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Utils {
+
+    public static final String EXTRA_EXPO_USRE = "extra_expo_user";
     //TODO: change config filename
     //public static String USER_XML = "user";
     public static String MQTT_XML = "mqtt";

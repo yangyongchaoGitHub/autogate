@@ -2,22 +2,16 @@ package com.dataexpo.autogate.dahuacameracommon;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.util.Log;
 import android.view.SurfaceView;
 
 import com.company.NetSDK.CB_fRealDataCallBackEx;
 import com.company.NetSDK.INetSDK;
 import com.company.NetSDK.SDK_RealPlayType;
-import com.company.PlaySDK.Constants;
 import com.company.PlaySDK.IPlaySDK;
 import com.dataexpo.autogate.R;
-import com.dataexpo.autogate.comm.FileUtils;
 import com.dataexpo.autogate.service.MainApplication;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,9 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by 29779 on 2017/4/8.
- */
+
 public class LivePreviewModule {
     private static final String TAG = LivePreviewModule.class.getSimpleName();
     private final int STREAM_BUF_SIZE = 1024 * 1024 * 2;
@@ -41,7 +33,6 @@ public class LivePreviewModule {
     boolean isOpenSound = true;
     boolean isDelayPlay = false;
     Map<Integer, Integer> streamTypeMap = new HashMap<Integer, Integer>();
-    SurfaceView surface;
 
     /// for preview date callback
     private CB_fRealDataCallBackEx mRealDataCallBackEx;
@@ -63,7 +54,6 @@ public class LivePreviewModule {
 
     ///视频预览前设置
     public boolean prePlay(SurfaceView sv) {
-        surface = sv;
         boolean isOpened = IPlaySDK.PLAYOpenStream(mPlayPort, null, 0, STREAM_BUF_SIZE) == 0 ? false : true;
         if (!isOpened) {
             Log.d(TAG, "OpenStream Failed");
@@ -139,7 +129,7 @@ public class LivePreviewModule {
                     if (RAW_AUDIO_VIDEO_MIX_DATA == dataType) {
 //                        Log.i(TAG,"dataType == 0");
                         IPlaySDK.PLAYInputData(mPlayPort, buffer, buffer.length);
-                        if (bufSize > 10000 && test++ < 200) {
+//                        if (bufSize > 10000 && test++ < 200) {
 
                             //利用surface进行截图
                             //Bitmap bitmap = Bitmap.createBitmap(700, 570, Bitmap.Config.ARGB_8888);
@@ -154,7 +144,7 @@ public class LivePreviewModule {
 //                            File savePicPath = new File(facePicDir, "test" + test + ".jpg");
 //                            Log.i(TAG, "save to " + savePicPath.getAbsolutePath());
 //                            Log.i(TAG, "snap result:" + IPlaySDK.PLAYCatchPicEx(101, savePicPath.getAbsolutePath(), Constants.PicFormat_JPEG));
-                        }
+//                        }
                     }
                 }
             };
@@ -162,7 +152,6 @@ public class LivePreviewModule {
         }
     }
 
-    static int test = 0;
 
     ///停止预览视频
     public void stopRealPlay() {

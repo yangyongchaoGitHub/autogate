@@ -122,9 +122,9 @@ public class DBUtils {
      * 根据ID修改数据
      * id 修改条码的id
      */
-    public int modifyData(String table, int id, ContentValues contentValues, String name) {
+    public int modifyData(String table, int id, ContentValues contentValues) {
         int index = db.update(table, contentValues, "id = ?", new String[]{String.valueOf(id)});
-        Log.e("--Main--", "修改了===============" + index);
+        //Log.e("--Main--", "修改了===============" + index);
         return index;
     }
 

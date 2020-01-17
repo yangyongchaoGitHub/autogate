@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.dataexpo.autogate.comm.JsonUtil;
 import com.dataexpo.autogate.comm.Utils;
+import com.dataexpo.autogate.face.api.FaceApi;
 import com.dataexpo.autogate.listener.IGetMessageCallBack;
 
 import com.dataexpo.autogate.listener.MQTTObserver;
@@ -375,6 +376,9 @@ public class MQTTService extends MQTTSubject {
                     Log.i(TAG, "ConsumerThread insert sta code number " + number + " " + user.code + " " + (new Date()).getTime());
                     //Log.i(TAG, "user name " + user.name + " cardCode " + user.cardCode + " image:" + user.image);
                     UserService.getInstance().insert(user);
+
+                    //重置人脸库
+                    FaceApi.getInstance().initDatabases(true);
 
 //            Log.i(TAG, String.valueOf(Environment.getExternalStorageDirectory()));
 //            File file = FileUtils.isFileExist(String.valueOf(Environment.getExternalStorageDirectory()), "etstpg");

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_user_info_title"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:text="@string/user_info"
+        android:textColor="@color/black"
+        android:textSize="@dimen/x60"
+        android:textStyle="bold"
+        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_user_details_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/back"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_user_info_title"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_user_info_title" />
+
+    <ImageView
+        android:id="@+id/iv_user_info_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.7"
+        app:layout_constraintStart_toStartOf="@+id/tv_user_info_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_user_info_title" />
+
+    <TextView
+        android:id="@+id/tv_user_info_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="@dimen/x20"
+        android:layout_marginTop="@dimen/x20"
+        android:textSize="@dimen/x35"
+        app:layout_constraintTop_toBottomOf="@+id/iv_user_info_image"
+        android:text="@string/name" />
+
+    <TextView
+        android:id="@+id/tv_user_info_name_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/x35"
+        android:layout_marginStart="@dimen/x20"
+        app:layout_constraintTop_toTopOf="@+id/tv_user_info_name"
+        app:layout_constraintStart_toEndOf="@+id/tv_user_info_name"/>
+
+    <TextView
+        android:id="@+id/tv_user_info_company"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/x35"
+        app:layout_constraintTop_toBottomOf="@+id/tv_user_info_name"
+        app:layout_constraintStart_toStartOf="@+id/tv_user_info_name"
+        android:layout_marginTop="@dimen/x20"
+        android:text="@string/company" />
+
+    <TextView
+        android:id="@+id/tv_user_info_company_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/x35"
+        android:layout_marginStart="@dimen/x20"
+        app:layout_constraintTop_toTopOf="@+id/tv_user_info_company"
+        app:layout_constraintStart_toEndOf="@+id/tv_user_info_company"/>
+
+    <TextView
+        android:id="@+id/tv_user_info_deputation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/x35"
+        app:layout_constraintTop_toBottomOf="@+id/tv_user_info_company"
+        app:layout_constraintStart_toStartOf="@+id/tv_user_info_company"
+        android:layout_marginTop="@dimen/x20"
+        android:text="@string/deputation" />
+
+    <TextView
+        android:id="@+id/tv_user_info_deputation_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/x35"
+        android:layout_marginStart="@dimen/x20"
+        app:layout_constraintTop_toTopOf="@+id/tv_user_info_deputation"
+        app:layout_constraintStart_toEndOf="@+id/tv_user_info_deputation"/>
+
+    <TextView
+        android:id="@+id/tv_user_info_register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/x35"
+        app:layout_constraintTop_toBottomOf="@+id/tv_user_info_deputation"
+        app:layout_constraintStart_toStartOf="@+id/tv_user_info_deputation"
+        android:layout_marginTop="@dimen/x20"
+        android:text="@string/faceregistr" />
+
+    <TextView
+        android:id="@+id/tv_user_info_register_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/x35"
+        android:layout_marginStart="@dimen/x20"
+        app:layout_constraintTop_toTopOf="@+id/tv_user_info_register"
+        app:layout_constraintStart_toEndOf="@+id/tv_user_info_register"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

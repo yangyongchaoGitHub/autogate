@@ -113,7 +113,10 @@ public class FaceSDKManager {
         //在开发板上
         //String licenseOnlineKey = PreferencesUtil.getString("activate_online_key", "");
         //开发板原有的key    3PSM-KOHY-AQLG-BBWI
-        String licenseOnlineKey = PreferencesUtil.getString("activate_online_key", "3PSM-KOHY-AQLG-BBWI");
+        //String licenseOnlineKey = PreferencesUtil.getString("activate_online_key", "3PSM-KOHY-AQLG-BBWI");
+        //43寸大屏板
+        String licenseOnlineKey = PreferencesUtil.getString("activate_online_key", "KB8L-D2LN-E2UN-FGCF");
+        //String licenseOnlineKey = PreferencesUtil.getString("activate_online_key", "");
 
 //        if (!TextUtils.isEmpty(licenseOfflineKey) && TextUtils.isEmpty(licenseOnlineKey)) {
 //            licenseOnlineKey = licenseOfflineKey;
@@ -647,6 +650,8 @@ public class FaceSDKManager {
 
             if (featureResult != null) {
                 Log.i(TAG, "检索结果个数：" + featureResult.size());
+            } else {
+                Log.i(TAG, "人脸库检索为空");
             }
 
             // TODO 返回top num = 1 个数据集合，此处可以任意设置，会返回比对从大到小排序的num 个数据集合

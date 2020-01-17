@@ -81,4 +81,9 @@
 
     <string name="channel">通道</string>
 
+    <string name="user_info">用户信息</string>
+    <string name="company">公司</string>
+    <string name="deputation">团组</string>
+    <string name="faceregistr">人脸是否已注册</string>
+
 </resources>

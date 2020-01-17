@@ -84,12 +84,16 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
 
     @Override
     public void onItemClick(View view, int position) {
-
+        Log.i(TAG, "onItemClick view: " + view + " position " + position);
+        Intent intent  = new Intent(this, UserDetails.class);
+        User u = users.get(position);
+        intent.putExtra(Utils.EXTRA_EXPO_USRE, u);
+        startActivity(intent);
     }
 
     @Override
     public void onLongItemClick(View view, int position) {
-
+        Log.i(TAG, "onLongItemClick view: " + view + " position " + position);
     }
 
     @Override

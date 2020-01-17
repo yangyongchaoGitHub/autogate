@@ -67,6 +67,7 @@
         <activity android:name=".activity.faceset.RecognizeModleThresholdActivity"/>
         <activity android:name=".activity.faceset.ScreensaverActivity"/>
         <activity android:name=".activity.faceset.SettingMainActivity"/>
+        <activity android:name=".activity.UserDetails"/>
 
         <service android:name=".service.MainService"/>
 

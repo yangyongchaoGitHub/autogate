@@ -1,5 +1,7 @@
 package com.dataexpo.autogate.model;
 
-public class BaseModel {
+import java.io.Serializable;
+
+public class BaseModel implements Serializable {
     Integer datatype = 0;
 }

@@ -7,12 +7,15 @@ import android.util.Log;
 import com.dataexpo.autogate.comm.DBUtils;
 import com.dataexpo.autogate.comm.FileUtils;
 import com.dataexpo.autogate.comm.Utils;
+import com.dataexpo.autogate.face.api.FaceApi;
+import com.dataexpo.autogate.face.model.SingleBaseConfig;
 import com.dataexpo.autogate.model.TestData;
 import com.dataexpo.autogate.model.User;
 
 import java.util.ArrayList;
 import java.util.Date;
 
+import static com.dataexpo.autogate.face.manager.ImportFileManager.IMPORT_SUCCESS;
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_JPG;
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_PNG;
 
@@ -64,22 +67,39 @@ public class UserService {
 
             //Log.i(TAG, "save image path:" + path);
             //TODO : 在此进行注册用户人脸
-//            if (SingleBaseConfig.getBaseConfig().getLocal_sync_regist()) {
-//                int result = FaceApi.getInstance().registFaceByImage(user, path);
-//                Log.i(TAG, " registFace result: " + result);
-//                if (result == IMPORT_SUCCESS) {
-//                    user.bregist_face = 1;
-//                    try {
-//                        FaceApi.getInstance().initDatabases(true);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-            //FaceApi.getInstance().initDatabases(true);
+            if (SingleBaseConfig.getBaseConfig().getLocal_sync_regist()) {
+                int result = FaceApi.getInstance().registFaceByImage(user, path);
+                Log.i(TAG, " registFace result: " + result);
+                if (result == IMPORT_SUCCESS) {
+                    user.bregist_face = 1;
+                }
+            }
         }
         //存入数据库
         return insertDB(user);
+    }
+
+    public void updateBase(User user) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("name", user.name);
+        contentValues.put("company", user.company);
+        contentValues.put("position", user.position);
+        contentValues.put("cardcode", user.cardCode);
+        contentValues.put("gender", user.gender);
+        contentValues.put("image_name", user.image_name);
+        contentValues.put("image_type", user.image_type);
+        contentValues.put("update_time", user.updateTime);
+        contentValues.put("userinfo", user.userInfo);
+        contentValues.put("bregist_face", user.bregist_face);
+        DBUtils.getInstance().modifyData(DBUtils.TABLE_USER, user.id, contentValues);
+    }
+
+    public void updateFeature(User user) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("feature", user.feature);
+        contentValues.put("bregist_face", user.bregist_face);
+        contentValues.put("face_token", user.getFaceToken());
+        DBUtils.getInstance().modifyData(DBUtils.TABLE_USER, user.id, contentValues);
     }
 
     public synchronized boolean haveByCode(User user) {

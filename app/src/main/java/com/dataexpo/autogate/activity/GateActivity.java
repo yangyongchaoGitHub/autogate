@@ -62,21 +62,6 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         mContext = this;
         initView();
         DBUtils.getInstance().create(mContext);
-        //初始化双屏
-        //initDisplay();
-        /**
-         * test code add a user
-         */
-
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                for (int i = 10000; i < 40000; i++) {
-//                    UserService.getInstance().insert("test" + i, "dataexpo.Ltd", "development",
-//                            "E0040150C7145" + i, 1, "u23" + i);
-//                }
-//            }
-//        }).start();
 
         mConnection = new ServiceConnection() {
             @Override
@@ -88,6 +73,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                 if (MainApplication.getInstance().getService() != null) {
                     MainApplication.getInstance().getService().removeGateObserver(GateActivity.this);
                     MainApplication.getInstance().getService().addGateObserver(GateActivity.this);
+                    //初始化双屏
                     initDisplay();
                 }
             }

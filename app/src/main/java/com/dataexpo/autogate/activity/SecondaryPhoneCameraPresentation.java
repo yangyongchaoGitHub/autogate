@@ -265,9 +265,7 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
                 final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(user.image_name));
                 Log.i(TAG, " face responseData image path: " + FileUtils.getUserPic(user.image_name));
 
-
                 Log.i(TAG, "识别成功");
-
 
             } else {
                 Log.i(TAG, "识别失败");

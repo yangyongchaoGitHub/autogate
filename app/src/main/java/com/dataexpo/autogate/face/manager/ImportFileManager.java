@@ -97,6 +97,57 @@ public class ImportFileManager {
 //        asyncImport(batchFaceDir, zipFile);
 //    }
 
+
+    /**
+     *
+     * @param bitmap 图片路径
+     * @return 返回注册结果
+     * 通过图片进行人脸注册
+     */
+    public int importByBitMap(User user, Bitmap bitmap) {
+        int result = IMPORT_FILE_EMPTY;
+        float ret;
+
+        if (bitmap != null) {
+            byte[] bytes = new byte[512];
+
+            // 走人脸SDK接口，通过人脸检测、特征提取拿到人脸特征值
+            ret = FaceApi.getInstance().getFeature(bitmap, bytes,
+                    BDFaceSDKCommon.FeatureType.BDFACE_FEATURE_TYPE_LIVE_PHOTO);
+
+            if (ret == -1) {
+                Log.e(TAG, "：未检测到人脸，可能原因：人脸太小 ");
+                //mImportListener.showToastMessage("导入数据的文件夹没有数据");
+                result = IMPORT_FEATURE_FAIL;
+
+            } else if (ret == 128f) {
+                if (faceImport(bitmap, bytes)) {
+                    user.feature = bytes;
+                    user.bregist_face = IMPORT_SUCCESS;
+                    result = IMPORT_SUCCESS;
+                    String lo = "";
+                    for (int i = 0; i<200; i++) {
+                        lo += user.feature[i] + " ";
+                    }
+                    Log.i(TAG, "befor " + lo);
+
+                    boolean importDBSuccess = FaceApi.getInstance().updateUserInfoByRegisterFace(user);
+                    Log.i(TAG, "update feature! end " + importDBSuccess);
+                } else {
+                    result = IMPORT_REPEAT;
+                }
+            } else {
+                result = IMPORT_NOFACE;
+            }
+
+            // 图片回收
+            if (!bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
+        }
+        return result;
+    }
+
     /**
      *
      * @param imagePath 图片路径
@@ -125,6 +176,7 @@ public class ImportFileManager {
             } else if (ret == 128f) {
                 if (faceImport(bitmap, bytes)) {
                     user.feature = bytes;
+                    user.bregist_face = IMPORT_SUCCESS;
                     result = IMPORT_SUCCESS;
                     String lo = "";
                     for (int i = 0; i<200; i++) {
@@ -132,6 +184,8 @@ public class ImportFileManager {
                     }
                     Log.i(TAG, "befor " + lo);
 
+                    //boolean importDBSuccess = FaceApi.getInstance().updateUserInfoByRegisterFace(user);
+                    //Log.i(TAG, "update feature! end " + importDBSuccess);
                 } else {
                     result = IMPORT_REPEAT;
                 }
@@ -439,7 +493,10 @@ public class ImportFileManager {
         //TODO: bug in baidu native!!!!!!!!!   需要重启工程才能检测当前注册的用户
         FaceInfo[] faceInfos = FaceSDKManager.getInstance().getFaceDetect()
                 .track(BDFaceSDKCommon.DetectType.DETECT_VIS, imageInstance);
-        Log.i(TAG, "faceImport getFaceDetect count " + faceInfos.length);
+
+        if (faceInfos!= null && faceInfos.length > 0) {
+            Log.i(TAG, "faceImport getFaceDetect count " + faceInfos.length);
+        }
 
         FaceSDKManager.getInstance().onFeatureCheck(imageInstance, faceInfos[0].landmarks,
                 livenessModel, 3);

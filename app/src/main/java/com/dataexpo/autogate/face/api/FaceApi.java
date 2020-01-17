@@ -243,7 +243,11 @@ public class FaceApi {
         return ret;
     }
 
-
+    public boolean updateUserInfoByRegisterFace(User user) {
+        UserService.getInstance().updateFeature(user);
+        return true;
+    }
+//
 //    public boolean registerUserIntoDBmanager(String groupName, String userName, String picName,
 //                                             String userInfo, byte[] faceFeature) {
 //        boolean isSuccess = false;
@@ -299,6 +303,10 @@ public class FaceApi {
         return ImportFileManager.getInstance().importByImage(user, path);
     }
 
+    public int registFaceByBitmap(User user, Bitmap bitmap) {
+        return ImportFileManager.getInstance().importByBitMap(user, bitmap);
+    }
+
     /**
      * 数据库发现变化时候，重新把数据库中的人脸信息添加到内存中，id+feature
      */
@@ -313,21 +321,27 @@ public class FaceApi {
             public void run() {
                 ArrayList<Feature> features = new ArrayList<>();
                 List<User> listUser = UserService.getInstance().listAll();
+                Log.i(TAG, " all user size: " + listUser.size());
                 for (int j = 0; j < listUser.size(); j++) {
-                    Feature feature = new Feature();
-                    feature.setId(listUser.get(j).id);
-                    feature.setFeature(listUser.get(j).feature);
-
-                    String lo = "";
-                    for (int i = 0; i<200; i++) {
-                        lo += listUser.get(j).feature[i] + " ";
+                    if (listUser.get(j).feature.length > 0) {
+                        Log.i(TAG, "loop 1 ");
+                        Feature feature = new Feature();
+                        Log.i(TAG, "loop 2 ");
+                        feature.setId(listUser.get(j).id);
+                        Log.i(TAG, "loop 3 ");
+                        feature.setFeature(listUser.get(j).feature);
+                        Log.i(TAG, "loop 4 ");
+                        features.add(feature);
+                        Log.i(TAG, "loop 5 ");
+//                    String lo = "";
+//                    for (int i = 0; i<100; i++) {
+//                        lo += listUser.get(j).feature[i] + " ";
+//                    }
+                        Log.i(TAG, "after ");
                     }
-                    Log.i(TAG, "after " + lo);
-
-
-                    features.add(feature);
                 }
-                if (isFeaturePush) {
+                if (isFeaturePush && features.size() > 0) {
+                    Log.i(TAG, "features size : " + features.size());
                     Log.i(TAG, FaceSDKManager.getInstance().getFaceFeature().featurePush(features) + " push result");
                 }
 
