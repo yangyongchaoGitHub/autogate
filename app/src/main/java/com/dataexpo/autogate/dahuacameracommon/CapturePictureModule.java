@@ -53,7 +53,7 @@ public class CapturePictureModule {
      * 定时抓图
      */
     public boolean timerCapturePicture(int chn) {
-        return snapPicture(chn, 1, 2);
+        return snapPicture(chn, 1, 1);
     }
 
     /**

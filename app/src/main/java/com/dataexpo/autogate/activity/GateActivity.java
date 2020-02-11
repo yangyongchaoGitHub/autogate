@@ -9,19 +9,34 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.display.DisplayManager;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Display;
+import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.company.NetSDK.CB_fSnapRev;
 import com.dataexpo.autogate.R;
 import com.dataexpo.autogate.comm.DBUtils;
 import com.dataexpo.autogate.comm.FileUtils;
+import com.dataexpo.autogate.dahuacameracommon.CapturePictureModule;
+import com.dataexpo.autogate.dahuacameracommon.EncodeModule;
+import com.dataexpo.autogate.dahuacameracommon.IPLoginModule;
+import com.dataexpo.autogate.dahuacameracommon.LivePreviewModule;
+import com.dataexpo.autogate.dahuacameracommon.NetSDKLib;
+import com.dataexpo.autogate.dahuacameracommon.OSDModule;
+import com.dataexpo.autogate.dahuacameracommon.PTZControl;
 import com.dataexpo.autogate.face.callback.CameraDataCallback;
 import com.dataexpo.autogate.face.callback.FaceDetectCallBack;
 import com.dataexpo.autogate.face.camera.AutoTexturePreviewView;
@@ -29,6 +44,7 @@ import com.dataexpo.autogate.face.camera.CameraPreviewManager;
 import com.dataexpo.autogate.face.listener.SdkInitListener;
 import com.dataexpo.autogate.face.manager.FaceSDKManager;
 import com.dataexpo.autogate.face.model.LivenessModel;
+import com.dataexpo.autogate.listener.OnFrameCallback;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
 import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.gate.ReportData;
@@ -37,7 +53,7 @@ import com.dataexpo.autogate.service.MainApplication;
 import com.dataexpo.autogate.service.MainService;
 import com.dataexpo.autogate.service.UserService;
 
-public class GateActivity extends BascActivity implements View.OnClickListener {
+public class GateActivity extends BascActivity implements View.OnClickListener, OnFrameCallback, SurfaceHolder.Callback {
     private static final String TAG = GateActivity.class.getSimpleName();
     private Context mContext;
     private ImageView iv_head;
@@ -54,6 +70,16 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
     private static final int PERFER_HEIGH = 720;
 
     private SecondaryPhoneCameraPresentation presentation = null;
+
+    //分屏调试接口  可删除
+    private IPLoginModule mLoginModule;
+    private OSDModule osdModule;
+    private EncodeModule encodeModule;
+    private LivePreviewModule mLiveModule;
+    private PTZControl ptzControl;
+    private CapturePictureModule mCapturePictureModule;
+    private SurfaceView sf;
+    private ImageView iv_snap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +132,22 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
     }
 
     private void initDisplay() {
+        //分屏调试接口  可删除
+        MainApplication app = MainApplication.getInstance();
+        NetSDKLib.getInstance().init();
+        if (app != null && app.getService() != null) {
+            app.getService().setFrameCallback(this);
+        }
+
+        mLoginModule = new IPLoginModule();
+
+        LoginTask loginTask = new LoginTask();
+        loginTask.execute();
+
+        if (1 == 1) {
+            return;
+        }
+
         DisplayManager mDisplayManager;//屏幕管理类
         Display[] displays;//屏幕数组
         mDisplayManager = (DisplayManager) this.getSystemService(Context.DISPLAY_SERVICE);
@@ -126,6 +168,116 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                 window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
                 presentation.show();
             }
+        }
+    }
+
+    //分屏调试接口  可删除
+    @Override
+    public void surfaceCreated(SurfaceHolder surfaceHolder) {
+
+    }
+
+    //分屏调试接口  可删除
+    @Override
+    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+
+    }
+
+    //分屏调试接口  可删除
+    @Override
+    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+
+    }
+
+    //分屏调试接口  可删除
+    /// LoginTask
+    private class LoginTask extends AsyncTask<String, Integer, Boolean> {
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+        }
+        @Override
+        protected Boolean doInBackground(String... params) {
+            Log.i(TAG, " LoginTAsk doInBackground!!!");
+            return mLoginModule.login("192.168.1.108", "37777", "admin", "dataexpo123");
+        }
+        @Override
+        protected void onPostExecute(Boolean result){
+            if (result) {
+                MainApplication app = MainApplication.getInstance();
+                app.setLoginHandle(mLoginModule.getLoginHandle());
+                app.setDeviceInfo(mLoginModule.getDeviceInfo());
+
+                mLiveModule = new LivePreviewModule(mContext);
+                osdModule = new OSDModule(mContext);
+                encodeModule = new EncodeModule(mContext);
+                ptzControl = new PTZControl();
+                mLiveModule.initSurfaceView(sf);
+                if (mLiveModule.getHandle() == 0) {
+//                    mLiveModule.startPlay(
+//                            mSelectChannel.getSelectedItemPosition(),
+//                            mSelectStream.getSelectedItemPosition(),
+//                            mRealView);
+                    Log.i(TAG, "live port = " + mLiveModule.getPlayPort());
+                    mLiveModule.startPlay(0, 0, sf);
+
+                    mCapturePictureModule = new CapturePictureModule(mContext);
+
+                    CapturePictureModule.setSnapRevCallBack(new CB_fSnapRev() {
+                        @Override
+                        public void invoke(long l, byte[] bytes, int i, int i1, int i2) {
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            if (bitmap != null) {
+                                iv_snap.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        iv_snap.setImageBitmap(bitmap);
+                                        //使用回调的图片 进行人脸识别
+                                        Log.i(TAG, "goDetect!!!111 ");
+                                        goDetect(bitmap);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    mCapturePictureModule.timerCapturePicture(0);
+                }
+            } else {
+                Log.i("IPLoginActivity", "login error");
+                //ToolKits.showMessage(IPLoginActivity.this, getErrorCode(getResources(), mLoginModule.errorCode()));
+            }
+        }
+    }
+
+    //分屏调试接口  可删除
+    private void goDetect(Bitmap bitmap) {
+        FaceSDKManager.getInstance().onBitmapDetectCheck(bitmap, null, null,
+                0, 0, 1, 3, new FaceDetectCallBack() {
+                    @Override
+                    public void onFaceDetectCallback(LivenessModel livenessModel) {
+                        // 输出结果
+                        checkCloseResult(livenessModel);
+                    }
+
+                    @Override
+                    public void onTip(int code, String msg) {
+                        //displayTip(code, msg);
+                    }
+
+                    @Override
+                    public void onFaceDetectDarwCallback(LivenessModel livenessModel) {
+                        //showFrame(livenessModel);
+                    }
+                });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(null != mLoginModule) {
+            mLoginModule.logout();
+            mLoginModule = null;
         }
     }
 
@@ -208,6 +360,11 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
         findViewById(R.id.btn_gosetting).setOnClickListener(this);
         findViewById(R.id.btn_exit).setOnClickListener(this);
         mAutoCameraPreviewView = findViewById(R.id.auto_camera_preview_view);
+
+        //分屏调试接口  可删除
+        sf = findViewById(R.id.surface_presentation);
+        sf.getHolder().addCallback(this);
+        iv_snap = findViewById(R.id.iv_test_snap);
     }
 
     @Override
@@ -351,5 +508,11 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                 }
             }
         });
+    }
+
+    //分屏调试接口  可删除
+    @Override
+    public void onFrame(byte[] image) {
+
     }
 }

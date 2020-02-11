@@ -211,7 +211,7 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
         sf = findViewById(R.id.surface_presentation);
         sf.getHolder().addCallback(this);
 
-        final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic("c1000001"));
+        //final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic("c1000001"));
         if (bShowModel == MODEL_DAHUA) {
             iv_camera.setVisibility(View.INVISIBLE);
         }
@@ -332,6 +332,7 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
                                     public void run() {
                                         iv_snap.setImageBitmap(bitmap);
                                         if (bShowModel == MODEL_DAHUA) {
+                                            //使用回调的图片 进行人脸识别
                                             goDetect(bitmap);
                                         }
                                     }

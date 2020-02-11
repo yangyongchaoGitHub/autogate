@@ -104,8 +104,12 @@ public class FaceSDKManager {
     public void init(final Context context, final SdkInitListener listener, int type) {
         PreferencesUtil.initPrefs(context.getApplicationContext());
         String licenseOfflineKey = PreferencesUtil.getString("activate_offline_key", "");
-        //在MI8上
+        //在MI8上 旧码
+        //final String licenseOnlineKey = PreferencesUtil.getString("activate_online_key", "");
         //final String licenseOnlineKey = PreferencesUtil.getString("activate_online_key", "HPYX-AEQ9-PGNU-GQTA");
+        //在MI8上 新码
+        final String licenseOnlineKey = PreferencesUtil.getString("activate_online_key", "ZXPV-VCXA-9JXT-688K");
+
         // 在firework上
         //String licenseOnlineKey = PreferencesUtil.getString("activate_online_key", "ZRHX-HNLO-DWNC-LONJ");
         //在firewpork新设置的key
@@ -115,7 +119,7 @@ public class FaceSDKManager {
         //开发板原有的key    3PSM-KOHY-AQLG-BBWI
         //String licenseOnlineKey = PreferencesUtil.getString("activate_online_key", "3PSM-KOHY-AQLG-BBWI");
         //43寸大屏板
-        String licenseOnlineKey = PreferencesUtil.getString("activate_online_key", "KB8L-D2LN-E2UN-FGCF");
+        //String licenseOnlineKey = PreferencesUtil.getString("activate_online_key", "KB8L-D2LN-E2UN-FGCF");
         //String licenseOnlineKey = PreferencesUtil.getString("activate_online_key", "");
 
 //        if (!TextUtils.isEmpty(licenseOfflineKey) && TextUtils.isEmpty(licenseOnlineKey)) {
