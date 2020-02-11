@@ -80,7 +80,9 @@ public class GateActivity extends BascActivity implements View.OnClickListener, 
     private CapturePictureModule mCapturePictureModule;
     private SurfaceView sf;
     private ImageView iv_snap;
-
+    yangyongchaoGitHub
+    @git/github.com:yangyongchaoGitHub/autogate.git
+    https://gitee.com/yyygitee/autogate.git
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
