@@ -14,6 +14,7 @@ import com.dataexpo.autogate.face.api.FaceApi;
 import com.dataexpo.autogate.face.listener.OnImportListener;
 import com.dataexpo.autogate.face.model.LivenessModel;
 import com.dataexpo.autogate.model.User;
+import com.dataexpo.autogate.service.MainApplication;
 import com.dataexpo.autogate.service.UserService;
 
 import java.io.File;
@@ -24,6 +25,8 @@ import java.util.concurrent.Future;
 
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_JPG;
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_PNG;
+import static com.dataexpo.autogate.service.MainApplication.IMPORT_LOCALFILE;
+import static com.dataexpo.autogate.service.MainApplication.IMPORT_MQTT;
 
 /**
  * 导入相关管理类
@@ -304,6 +307,13 @@ public class ImportFileManager {
         mFuture = mExecutorService.submit(new Runnable() {
             @Override
             public void run() {
+                //TODO: 此处代码应在UI界面进行判断
+                //设置导入状态，避免mqtt和本地导入同时进行导致不必要的数据冲突
+                if (MainApplication.getInstance().getImportStatus() == IMPORT_MQTT) {
+                    //发出当前正在通过MQTT接受用户数据，请求是否进行本地导入
+                    MainApplication.getInstance().setImportStatus(IMPORT_LOCALFILE);
+                }
+
                 try {
                     if (mImportListener != null) {
                         mImportListener.startUnzip();
@@ -409,6 +419,8 @@ public class ImportFileManager {
                             mSuccessCount++;
                             //删除指定目录中的原图片文件  因为已经复制到指定的注册用户目录
                             FileUtils.deleteFile(picFile.getAbsolutePath());
+                            //重置人脸库
+                            FaceApi.getInstance().initDatabases(true);
                         } else {
                             mFailCount++;
                             Log.e(TAG, "失败图片:" + picName);
@@ -433,13 +445,9 @@ public class ImportFileManager {
                     Log.e(TAG, "exception = " + e.getMessage());
                     e.printStackTrace();
                 }
-
-                //重置人脸库
-                FaceApi.getInstance().initDatabases(true);
             }
         });
     }
-
 
     /**
      *  人脸模板特这值获取成功
@@ -452,12 +460,14 @@ public class ImportFileManager {
     private boolean faceImport(Bitmap bitmap, byte[] bytes) {
         BDFaceImageInstance imageInstance = new BDFaceImageInstance(bitmap);
         LivenessModel livenessModel = new LivenessModel();
-        //TODO: bug in baidu native!!!!!!!!!   需要重启工程才能检测当前注册的用户
         FaceInfo[] faceInfos = FaceSDKManager.getInstance().getFaceDetect()
                 .track(BDFaceSDKCommon.DetectType.DETECT_VIS, imageInstance);
 
         if (faceInfos!= null && faceInfos.length > 0) {
             Log.i(TAG, "faceImport getFaceDetect count " + faceInfos.length);
+        } else {
+            Log.i(TAG, "注册时获取特征值出错");
+            return false;
         }
 
         FaceSDKManager.getInstance().onFeatureCheck(imageInstance, faceInfos[0].landmarks,

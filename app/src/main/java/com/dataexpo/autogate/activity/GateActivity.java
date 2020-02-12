@@ -235,7 +235,6 @@ public class GateActivity extends BascActivity implements View.OnClickListener, 
                                     public void run() {
                                         iv_snap.setImageBitmap(bitmap);
                                         //使用回调的图片 进行人脸识别
-                                        Log.i(TAG, "goDetect!!!111 ");
                                         goDetect(bitmap);
                                     }
                                 });

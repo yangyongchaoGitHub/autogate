@@ -621,7 +621,6 @@ public class FaceSDKManager {
                                float[] landmark,
                                LivenessModel livenessModel,
                                final int featureCheckMode) {
-
         // 如果不抽取特征，直接返回
         if (featureCheckMode == 1) {
             return;
@@ -658,23 +657,22 @@ public class FaceSDKManager {
                 Log.i(TAG, "人脸库检索为空");
             }
 
-            // TODO 返回top num = 1 个数据集合，此处可以任意设置，会返回比对从大到小排序的num 个数据集合
             if (featureResult != null && featureResult.size() > 0) {
+                Feature f = featureResult.get(0);
                 // 获取第一个数据
-                Feature topFeature = featureResult.get(0);
                 // 判断第一个阈值是否大于设定阈值，如果大于，检索成功
-                if (topFeature != null) {
-                    Log.i(TAG, "score: " + topFeature.getScore());
+                if (f != null) {
+                    Log.i(TAG, "score: " + f.getScore());
                 }
 
-                if (topFeature != null && topFeature.getScore() >
+                if (f != null && f.getScore() >
                         SingleBaseConfig.getBaseConfig().getThreshold()) {
                     // 当前featureEntity 只有id+feature 索引，在数据库中查到完整信息
-                    Log.i(TAG, "featureResult userid: " + topFeature.getId());
-                    User user = UserService.getInstance().findUserById(topFeature.getId());
+                    Log.i(TAG, "featureResult userid: " + f.getId());
+                    User user = UserService.getInstance().findUserById(f.getId());
                     if (user != null) {
                         livenessModel.setUser(user);
-                        livenessModel.setFeatureScore(topFeature.getScore());
+                        livenessModel.setFeatureScore(f.getScore());
                     }
                 }
             }

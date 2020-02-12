@@ -324,20 +324,14 @@ public class FaceApi {
                 Log.i(TAG, " all user size: " + listUser.size());
                 for (int j = 0; j < listUser.size(); j++) {
                     if (listUser.get(j).feature.length > 0) {
-                        Log.i(TAG, "loop 1 ");
                         Feature feature = new Feature();
-                        Log.i(TAG, "loop 2 ");
                         feature.setId(listUser.get(j).id);
-                        Log.i(TAG, "loop 3 ");
                         feature.setFeature(listUser.get(j).feature);
-                        Log.i(TAG, "loop 4 ");
                         features.add(feature);
-                        Log.i(TAG, "loop 5 ");
 //                    String lo = "";
 //                    for (int i = 0; i<100; i++) {
 //                        lo += listUser.get(j).feature[i] + " ";
 //                    }
-                        Log.i(TAG, "after ");
                     }
                 }
                 if (isFeaturePush && features.size() > 0) {

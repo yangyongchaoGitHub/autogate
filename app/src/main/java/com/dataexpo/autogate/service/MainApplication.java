@@ -5,11 +5,14 @@ import android.app.Application;
 import com.company.NetSDK.NET_DEVICEINFO_Ex;
 
 public class MainApplication extends Application {
+    public static int IMPORT_MQTT = 1;
+    public static int IMPORT_LOCALFILE = 2;
     private static MainApplication application;
     private MainService service;
     private int gateStatus = -1;
     private volatile int MQTTStatus = -1;
     private int faceSDKStatus;
+    private int importStatus = IMPORT_MQTT;
 
     private long mloginHandle;
     private NET_DEVICEINFO_Ex mDeviceInfo;
@@ -70,5 +73,13 @@ public class MainApplication extends Application {
 
     public void setFaceSDKStatus(int faceSDKStatus) {
         this.faceSDKStatus = faceSDKStatus;
+    }
+
+    public int getImportStatus() {
+        return importStatus;
+    }
+
+    public void setImportStatus(int importStatus) {
+        this.importStatus = importStatus;
     }
 }

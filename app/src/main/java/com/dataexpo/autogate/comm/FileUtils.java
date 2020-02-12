@@ -290,7 +290,7 @@ public class FileUtils {
                 int length;
                 while ((byteread = inStream.read(buffer)) != -1) {
                     bytesum += byteread; // 字节数 文件大小
-                    System.out.println(bytesum);
+                    //System.out.println(bytesum);
                     fs.write(buffer, 0, byteread);
                 }
                 result = true;
@@ -415,7 +415,7 @@ public class FileUtils {
                         file = new File(outPathString + File.separator + szName);
                         file.mkdirs();
                     } else {
-                        Log.e("ZipUtils", outPathString + File.separator + szName);
+                        Log.i(TAG, outPathString + File.separator + szName);
                         file = new File(outPathString + File.separator + szName);
                         if (!file.exists()) {
                             file.getParentFile().mkdirs();
@@ -439,9 +439,9 @@ public class FileUtils {
                 flag = true;
                 break;
             }
-        } catch (Exception var10) {
-            Log.e("ZipUtils", "e = " + var10.getMessage());
-            var10.printStackTrace();
+        } catch (Exception e) {
+            Log.e(TAG, "e = " + e.getMessage());
+            e.printStackTrace();
         }
 
         return flag;

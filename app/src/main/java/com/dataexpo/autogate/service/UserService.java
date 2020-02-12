@@ -14,6 +14,7 @@ import com.dataexpo.autogate.model.User;
 
 import java.util.ArrayList;
 
+import static com.dataexpo.autogate.face.manager.ImportFileManager.IMPORT_REPEAT;
 import static com.dataexpo.autogate.face.manager.ImportFileManager.IMPORT_SUCCESS;
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_JPG;
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_PNG;
@@ -100,8 +101,6 @@ public class UserService {
 
             user.image_type = suffix;
 
-            FileUtils.copyFile(path, FileUtils.getRegistedDirectory().getPath() + "/" + fileName);
-
             //Log.i(TAG, "save image path:" + path);
             //TODO : 在此进行注册用户人脸
             if (SingleBaseConfig.getBaseConfig().getLocal_sync_regist()) {
@@ -109,6 +108,10 @@ public class UserService {
                 Log.i(TAG, " registFace result: " + result);
                 if (result == IMPORT_SUCCESS) {
                     user.bregist_face = 1;
+                    FileUtils.copyFile(path, FileUtils.getRegistedDirectory().getPath() + "/" + fileName);
+                } else if (result == IMPORT_REPEAT) {
+                    //人脸注册失败
+                    return 0;
                 }
             }
         }
