@@ -13,7 +13,6 @@ import com.dataexpo.autogate.model.TestData;
 import com.dataexpo.autogate.model.User;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import static com.dataexpo.autogate.face.manager.ImportFileManager.IMPORT_SUCCESS;
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_JPG;
@@ -34,6 +33,7 @@ public class UserService {
         return UserService.HolderClass.instance;
     }
 
+    //注册用户的同时保存用户的照片到指定的目录 用户实体中有图片数据
     public long insert(User user) {
         String suffix = ".jpg";
         //此处也是检测是否有重复code的用户
@@ -61,9 +61,46 @@ public class UserService {
                 suffix = ".png";
             }
             //Log.i(TAG, "insert 3 " + (new Date()).getTime());
-            String path = FileUtils.getBatchImportDirectory().getPath() + "/" + user.image_name + suffix;
+            String path = FileUtils.getRegistedDirectory().getPath() + "/" + user.image_name + suffix;
 
             FileUtils.writeByteFile(images, path);
+
+            //Log.i(TAG, "save image path:" + path);
+            //TODO : 在此进行注册用户人脸
+            if (SingleBaseConfig.getBaseConfig().getLocal_sync_regist()) {
+                int result = FaceApi.getInstance().registFaceByImage(user, path);
+                Log.i(TAG, " registFace result: " + result);
+                if (result == IMPORT_SUCCESS) {
+                    user.bregist_face = 1;
+                }
+            }
+        }
+        //存入数据库
+        return insertDB(user);
+    }
+
+    //注册用户的同时保存用户的照片到指定的目录 用户实体没有图片数据  图片此时存在于其他目录
+
+    /**
+     *
+     * @param user 用户实体
+     * @param path 导入图片的路径
+     * @param suffix 后缀类型
+     * @param fileName 导入的图片文件名
+     * @return
+     */
+    public long insert(User user, String path, int suffix, String fileName) {
+
+        user.ctime = Utils.timeNow_();
+
+        if (path != null && path.length() > 0) {
+            if ("".equals(user.image_name)) {
+                user.image_name = user.code;
+            }
+
+            user.image_type = suffix;
+
+            FileUtils.copyFile(path, FileUtils.getRegistedDirectory().getPath() + "/" + fileName);
 
             //Log.i(TAG, "save image path:" + path);
             //TODO : 在此进行注册用户人脸
@@ -116,7 +153,7 @@ public class UserService {
         byte[] image = FileUtils.base64ToBytes(data.image);
         if (image.length > 0) {
             Log.i(TAG, "insert test data: " + data.code);
-            FileUtils.writeByteFile(image, FileUtils.getBatchImportDirectory().getPath() + "/" + data.code + ".jpg");
+            FileUtils.writeByteFile(image, FileUtils.getRegistedDirectory().getPath() + "/" + data.code + ".jpg");
         }
 
         return 0l;

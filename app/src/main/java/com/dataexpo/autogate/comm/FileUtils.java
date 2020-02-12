@@ -5,21 +5,19 @@ import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
 
-import com.rfid.def.TAG_CMD_CODING;
-
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * description :文件工具类
@@ -143,7 +141,22 @@ public class FileUtils {
      * @return 返回用户图片的uri
      */
     public static String getUserPic(String code) {
-        return getBatchImportDirectory() + "/" + code + ".jpg";
+        return getRegistedDirectory() + "/" + code + ".jpg";
+    }
+
+    /**
+     * 获取导入图片文件的目录信息
+     */
+    public static File getRegistedDirectory() {
+        File sdRootFile = getSDRootFile();
+        File file = null;
+        if (sdRootFile != null && sdRootFile.exists()) {
+            file = new File(sdRootFile, "UserImage-autogate");
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+        }
+        return file;
     }
 
     /**
@@ -153,7 +166,7 @@ public class FileUtils {
         File sdRootFile = getSDRootFile();
         File file = null;
         if (sdRootFile != null && sdRootFile.exists()) {
-            file = new File(sdRootFile, "UserImage-autogate");
+            file = new File(sdRootFile, "dataexpo");
             if (!file.exists()) {
                 file.mkdirs();
             }
@@ -382,5 +395,55 @@ public class FileUtils {
         Log.i(TAG, "toBase64 : " + src.getBytes()[0] + " " + src.getBytes()[1]);
 
         return Base64.encodeToString(src.getBytes(), Base64.NO_WRAP);
+    }
+
+    public static boolean unZipFolder(String zipFileString, String outPathString) {
+        boolean flag = false;
+
+        try {
+            Charset gbk = Charset.forName("GBK");
+            ZipInputStream inZip = new ZipInputStream(new FileInputStream(zipFileString), gbk);
+            String szName = "";
+
+            while(true) {
+                ZipEntry zipEntry;
+                while((zipEntry = inZip.getNextEntry()) != null) {
+                    szName = zipEntry.getName();
+                    File file;
+                    if (zipEntry.isDirectory()) {
+                        szName = szName.substring(0, szName.length() - 1);
+                        file = new File(outPathString + File.separator + szName);
+                        file.mkdirs();
+                    } else {
+                        Log.e("ZipUtils", outPathString + File.separator + szName);
+                        file = new File(outPathString + File.separator + szName);
+                        if (!file.exists()) {
+                            file.getParentFile().mkdirs();
+                            file.createNewFile();
+                        }
+
+                        FileOutputStream out = new FileOutputStream(file);
+                        byte[] buffer = new byte[1024];
+
+                        int len;
+                        while((len = inZip.read(buffer)) != -1) {
+                            out.write(buffer, 0, len);
+                            out.flush();
+                        }
+
+                        out.close();
+                    }
+                }
+
+                inZip.close();
+                flag = true;
+                break;
+            }
+        } catch (Exception var10) {
+            Log.e("ZipUtils", "e = " + var10.getMessage());
+            var10.printStackTrace();
+        }
+
+        return flag;
     }
 }

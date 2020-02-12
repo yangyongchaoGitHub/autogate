@@ -23,6 +23,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,6 +44,7 @@ import com.dataexpo.autogate.face.camera.AutoTexturePreviewView;
 import com.dataexpo.autogate.face.camera.CameraPreviewManager;
 import com.dataexpo.autogate.face.listener.SdkInitListener;
 import com.dataexpo.autogate.face.manager.FaceSDKManager;
+import com.dataexpo.autogate.face.manager.ImportFileManager;
 import com.dataexpo.autogate.face.model.LivenessModel;
 import com.dataexpo.autogate.listener.OnFrameCallback;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
@@ -80,9 +82,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener, 
     private CapturePictureModule mCapturePictureModule;
     private SurfaceView sf;
     private ImageView iv_snap;
-    yangyongchaoGitHub
-    @git/github.com:yangyongchaoGitHub/autogate.git
-    https://gitee.com/yyygitee/autogate.git
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -367,6 +367,8 @@ public class GateActivity extends BascActivity implements View.OnClickListener, 
         sf = findViewById(R.id.surface_presentation);
         sf.getHolder().addCallback(this);
         iv_snap = findViewById(R.id.iv_test_snap);
+
+        findViewById(R.id.btn_import).setOnClickListener(this);
     }
 
     @Override
@@ -377,6 +379,11 @@ public class GateActivity extends BascActivity implements View.OnClickListener, 
                 break;
             case R.id.btn_exit:
                 //finish();
+                break;
+
+            case R.id.btn_import:
+                //通过指定的方式导入压缩的用户数据
+                ImportFileManager.getInstance().batchImport();
                 break;
                 default:
         }

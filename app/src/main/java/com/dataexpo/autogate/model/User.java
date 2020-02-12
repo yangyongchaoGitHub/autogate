@@ -61,6 +61,14 @@ public class User extends BaseModel {
         this.image_md5 = image_md5;
     }
 
+    public User (String name, String company, String position, String cardCode, String code) {
+        this.name = name;
+        this.company = company;
+        this.position = position;
+        this.cardCode = cardCode;
+        this.code = code;
+    }
+
     public boolean isCheck() {
         return check;
     }
