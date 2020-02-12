@@ -415,12 +415,15 @@ public class ImportFileManager {
                         long success = UserService.getInstance().insert(user, picFile.getAbsolutePath(), suffix, picName);
 
                         // 判断成功与否
-                        if (success > 0) {
+                        if (success == 0) {
                             mSuccessCount++;
                             //删除指定目录中的原图片文件  因为已经复制到指定的注册用户目录
                             FileUtils.deleteFile(picFile.getAbsolutePath());
                             //重置人脸库
                             FaceApi.getInstance().initDatabases(true);
+                        } else if (success == 1) {
+                            mSuccessCount++;
+                            Log.e(TAG, "人脸注册失败图片:" + picName);
                         } else {
                             mFailCount++;
                             Log.e(TAG, "失败图片:" + picName);

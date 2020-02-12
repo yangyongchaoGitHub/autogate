@@ -88,35 +88,41 @@ public class UserService {
      * @param path 导入图片的路径
      * @param suffix 后缀类型
      * @param fileName 导入的图片文件名
-     * @return
+     * @return 返回0 注册用户成功并且注册了人脸
+     *         返回1 注册用户成功，注册人脸失败
+     *         返回2 注册用户失败
      */
     public long insert(User user, String path, int suffix, String fileName) {
-
+        long res = 0;
         user.ctime = Utils.timeNow_();
 
         if (path != null && path.length() > 0) {
             if ("".equals(user.image_name)) {
-                user.image_name = user.code;
+                user.image_name = fileName;
             }
 
             user.image_type = suffix;
 
             //Log.i(TAG, "save image path:" + path);
             //TODO : 在此进行注册用户人脸
+            //TODO : 注册时如果人脸识别超过阈值时不会注册人脸并且不会copy图片到注册成功用户的目录
             if (SingleBaseConfig.getBaseConfig().getLocal_sync_regist()) {
                 int result = FaceApi.getInstance().registFaceByImage(user, path);
                 Log.i(TAG, " registFace result: " + result);
                 if (result == IMPORT_SUCCESS) {
                     user.bregist_face = 1;
                     FileUtils.copyFile(path, FileUtils.getRegistedDirectory().getPath() + "/" + fileName);
-                } else if (result == IMPORT_REPEAT) {
-                    //人脸注册失败
-                    return 0;
+                } else {
+                    user.feature = null;
+                    res = 1;
                 }
             }
         }
         //存入数据库
-        return insertDB(user);
+        if (insertDB(user) <= 0) {
+            res = 2;
+        }
+        return res;
     }
 
     public void updateBase(User user) {
