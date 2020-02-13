@@ -210,6 +210,19 @@ public class UserService {
         return list;
     }
 
+    public ArrayList<User> limitList(int start, int size) {
+        ArrayList<User> list = new ArrayList<>();
+        Cursor cursor = DBUtils.getInstance().limitWith(DBUtils.TABLE_USER, start, size);
+        while (cursor.moveToNext()) {
+            User user = resolve(cursor);
+            if (user != null) {
+                list.add(user);
+            }
+        }
+        cursor.close();
+        return list;
+    }
+
     public ArrayList<User> findUserNoFaceRegist() {
         ArrayList<User> list = new ArrayList<>();
         Cursor cursor = DBUtils.getInstance().listAll(DBUtils.TABLE_USER, null, null, null, null, null, null);

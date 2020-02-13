@@ -12,7 +12,7 @@
         android:gravity="center"
         android:text="@string/user_manager"
         android:textColor="@color/c_black"
-        android:textSize="@dimen/x60"
+        android:textSize="@dimen/x30"
         android:textStyle="bold"
         app:layout_constraintHeight_percent="0.08"
         app:layout_constraintHorizontal_bias="1.0"
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:textSize="@dimen/x40"
+        android:textSize="@dimen/x16"
         app:layout_constraintBottom_toBottomOf="@+id/tv_user_manager_title"
         android:text="@string/back"/>
 
@@ -51,7 +51,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/tv_user_manager_title"
         android:text="+"
         android:layout_marginEnd="@dimen/x20"
-        android:textSize="@dimen/x80"/>
+        android:textSize="@dimen/x60"/>
 
     <TextView
         android:id="@+id/btn_user_manager_delete"
@@ -62,7 +62,6 @@
         android:textSize="@dimen/x40"
         app:layout_constraintEnd_toStartOf="@+id/btn_add"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginEnd="@dimen/x20"
         app:layout_constraintBottom_toBottomOf="@+id/tv_user_manager_title"/>
 
     <TextView
@@ -70,11 +69,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/filter"
-        android:textSize="@dimen/x40"
+        android:textSize="@dimen/x20"
         app:layout_constraintEnd_toStartOf="@+id/btn_user_manager_delete"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginEnd="@dimen/x20"
         app:layout_constraintBottom_toBottomOf="@+id/tv_user_manager_title"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/user_info_recyclerview1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_user_manager_title"
+        app:layout_constraintBottom_toBottomOf="parent">
+    </androidx.recyclerview.widget.RecyclerView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/user_info_recyclerview"
@@ -84,5 +91,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_user_manager_title"
         app:layout_constraintBottom_toBottomOf="parent">
     </androidx.recyclerview.widget.RecyclerView>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

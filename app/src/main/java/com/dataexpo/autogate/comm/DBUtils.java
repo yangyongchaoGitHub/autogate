@@ -98,6 +98,17 @@ public class DBUtils {
     }
 
     /**
+     *
+     * @param table_name 表名
+     * @param start 起始索引  2 --》从第3行开始返回
+     * @param size 获取数据长度  5 -- 返回5行数据
+     * @return 查询引用返回
+     */
+    public Cursor limitWith(String table_name, int start, int size) {
+        return db.query(table_name, null, null, null, null, null, null, start + "," + size);
+    }
+
+    /**
      * 根据ID删除数据
      * id 删除id
      */
