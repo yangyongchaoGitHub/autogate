@@ -30,39 +30,39 @@
         app:layout_constraintBottom_toBottomOf="@+id/tv_user_manager_title"
         android:text="@string/back"/>
 
-    <TextView
-        android:id="@+id/btn_user_manager_cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/cancel"
-        android:visibility="invisible"
-        app:layout_constraintStart_toEndOf="@+id/btn_user_manager_back"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="10dp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/btn_user_manager_back"
-        android:textSize="@dimen/x40"/>
+<!--    <TextView-->
+<!--        android:id="@+id/btn_user_manager_cancel"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/cancel"-->
+<!--        android:visibility="invisible"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/btn_user_manager_back"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        android:layout_marginStart="10dp"-->
+<!--        app:layout_constraintBaseline_toBaselineOf="@+id/btn_user_manager_back"-->
+<!--        android:textSize="@dimen/x40"/>-->
 
-    <TextView
-        android:id="@+id/btn_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_user_manager_title"
-        android:text="+"
-        android:layout_marginEnd="@dimen/x20"
-        android:textSize="@dimen/x60"/>
+<!--    <TextView-->
+<!--        android:id="@+id/btn_add"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintRight_toRightOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/tv_user_manager_title"-->
+<!--        android:text="+"-->
+<!--        android:layout_marginEnd="@dimen/x20"-->
+<!--        android:textSize="@dimen/x60"/>-->
 
-    <TextView
-        android:id="@+id/btn_user_manager_delete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/delete"
-        android:visibility="invisible"
-        android:textSize="@dimen/x40"
-        app:layout_constraintEnd_toStartOf="@+id/btn_add"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_user_manager_title"/>
+<!--    <TextView-->
+<!--        android:id="@+id/btn_user_manager_delete"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/delete"-->
+<!--        android:visibility="invisible"-->
+<!--        android:textSize="@dimen/x40"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/btn_add"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/tv_user_manager_title"/>-->
 
     <TextView
         android:id="@+id/btn_user_manager_filter"
@@ -70,18 +70,10 @@
         android:layout_height="wrap_content"
         android:text="@string/filter"
         android:textSize="@dimen/x20"
-        app:layout_constraintEnd_toStartOf="@+id/btn_user_manager_delete"
+        android:layout_marginEnd="@dimen/x20"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="@+id/tv_user_manager_title"/>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/user_info_recyclerview1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_user_manager_title"
-        app:layout_constraintBottom_toBottomOf="parent">
-    </androidx.recyclerview.widget.RecyclerView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/user_info_recyclerview"

@@ -321,7 +321,9 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
                     mLiveModule.startPlay(0, 0, sf);
 
                     mCapturePictureModule = new CapturePictureModule(context);
+                    //CapturePictureModule.localCapturePicture(mLiveModule.getPlayPort(), "123");
 
+                    //设置远程抓图
                     CapturePictureModule.setSnapRevCallBack(new CB_fSnapRev() {
                         @Override
                         public void invoke(long l, byte[] bytes, int i, int i1, int i2) {

@@ -83,14 +83,12 @@ public class GateRecordActivity extends BascActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_add:
-                break;
             case R.id.btn_user_manager_back:
                 finish();
                 break;
-            case R.id.btn_user_manager_cancel:
+            case R.id.btn_gate_record_cancel:
                 break;
-            case R.id.btn_user_manager_delete:
+            case R.id.btn_gate_record_delete:
                 break;
                 default:
         }
