@@ -64,7 +64,7 @@ public class MQTTService extends MQTTSubject {
     //异步处理消息的消息体队列
     private List<User> messages = new ArrayList<>();
 
-    private static final int threadCount = 5;
+    private static final int threadCount = 1;
     private volatile int num = 0;
     private User[] currUsers = new User[threadCount];
     private final Object syncThreadUser = new User();

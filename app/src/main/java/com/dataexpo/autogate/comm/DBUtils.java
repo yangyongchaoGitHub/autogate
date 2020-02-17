@@ -60,6 +60,7 @@ public class DBUtils {
                 "userinfo nchar(64), " +
                 "bregist_face int, " +
                 "face_token varchar(128), " +
+                "auth int, " +
                 "feature blob)";
 
         String sql_card_record = "create table if not exists " + TABLE_CARD_RECORD +

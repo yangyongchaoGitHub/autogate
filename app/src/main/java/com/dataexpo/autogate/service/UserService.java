@@ -137,6 +137,7 @@ public class UserService {
         contentValues.put("update_time", user.updateTime);
         contentValues.put("userinfo", user.userInfo);
         contentValues.put("bregist_face", user.bregist_face);
+        contentValues.put("auth", user.auth);
         DBUtils.getInstance().modifyData(DBUtils.TABLE_USER, user.id, contentValues);
     }
 
@@ -187,6 +188,7 @@ public class UserService {
         contentValues.put("bregist_face", user.bregist_face);
         contentValues.put("feature", user.feature);
         contentValues.put("face_token", user.getFaceToken());
+        contentValues.put("auth", user.auth);
         //Log.i(TAG, user.feature.length + " is length !!!!!!");
         return DBUtils.getInstance().insert(DBUtils.TABLE_USER, null, contentValues);
     }
@@ -291,6 +293,7 @@ public class UserService {
         user_response.bregist_face = cursor.getInt(cursor.getColumnIndex("bregist_face"));
         user_response.feature = cursor.getBlob(cursor.getColumnIndex("feature"));
         user_response.setFaceToken(cursor.getString(cursor.getColumnIndex("face_token")));
+        user_response.auth = cursor.getInt(cursor.getColumnIndex("auth"));
         return user_response;
     }
 }

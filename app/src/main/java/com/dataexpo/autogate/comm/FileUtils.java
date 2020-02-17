@@ -141,7 +141,13 @@ public class FileUtils {
      * @return 返回用户图片的uri
      */
     public static String getUserPic(String code) {
-        return getRegistedDirectory() + "/" + code + ".jpg";
+        String res = "";
+        if (code.endsWith(".jpg")) {
+            res = getRegistedDirectory() + "/" + code;
+        } else {
+            res = getRegistedDirectory() + "/" + code + ".jpg";
+        }
+        return res;
     }
 
     /**
@@ -167,6 +173,21 @@ public class FileUtils {
         File file = null;
         if (sdRootFile != null && sdRootFile.exists()) {
             file = new File(sdRootFile, "dataexpo");
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+        }
+        return file;
+    }
+
+    /**
+     * 获取导入图片文件的目录信息
+     */
+    public static File getBatchImportDatas() {
+        File sdRootFile = getSDRootFile();
+        File file = null;
+        if (sdRootFile != null && sdRootFile.exists()) {
+            file = new File(sdRootFile, "dataexpo/ag-import");
             if (!file.exists()) {
                 file.mkdirs();
             }

@@ -16,6 +16,11 @@ public class User extends BaseModel {
     //不在收到数据后立即注册
     public static final int SYNC_LATER = 1;
 
+    //鉴权字段  表示通过
+    public static final int AUTH_SUCCESS = 1;
+    //鉴权字段  表示未通过
+    public static final int AUTH_FAILT = 2;
+
     public int id;
     public String name = "";
     public String company = "";
@@ -31,6 +36,7 @@ public class User extends BaseModel {
     public long ctime = 0L;
     public long updateTime = 0L;
     public String userInfo = "";
+    public int auth = AUTH_SUCCESS;
     public Integer bregist_face = IMPORT_FILE_EMPTY;
     private String faceToken = "";
     public Integer sync_regist = SYNC_IMMEDIATELY;

@@ -46,6 +46,7 @@ import com.dataexpo.autogate.face.listener.SdkInitListener;
 import com.dataexpo.autogate.face.manager.FaceSDKManager;
 import com.dataexpo.autogate.face.manager.ImportFileManager;
 import com.dataexpo.autogate.face.model.LivenessModel;
+import com.dataexpo.autogate.listener.FaceOnSecCallback;
 import com.dataexpo.autogate.listener.OnFrameCallback;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
 import com.dataexpo.autogate.model.User;
@@ -55,7 +56,7 @@ import com.dataexpo.autogate.service.MainApplication;
 import com.dataexpo.autogate.service.MainService;
 import com.dataexpo.autogate.service.UserService;
 
-public class GateActivity extends BascActivity implements View.OnClickListener {
+public class GateActivity extends BascActivity implements View.OnClickListener, FaceOnSecCallback {
     private static final String TAG = GateActivity.class.getSimpleName();
     private Context mContext;
     private ImageView iv_head;
@@ -168,6 +169,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
             window = presentation.getWindow();
             if (window != null) {
                 window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                presentation.setFaceDataCallback(this);
                 presentation.show();
             }
         }
@@ -517,6 +519,19 @@ public class GateActivity extends BascActivity implements View.OnClickListener {
                 }
             }
         });
+    }
+
+    @Override
+    public void push(Bitmap bitmap, User user) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                iv_head.setImageBitmap(bitmap);
+                iv_head.setVisibility(View.VISIBLE);
+                tv_name.setText(user.name);
+            }
+        });
+
     }
 
     //分屏调试接口  可删除

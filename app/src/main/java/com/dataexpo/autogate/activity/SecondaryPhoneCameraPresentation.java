@@ -29,9 +29,12 @@ import com.dataexpo.autogate.dahuacameracommon.PTZControl;
 import com.dataexpo.autogate.face.callback.FaceDetectCallBack;
 import com.dataexpo.autogate.face.manager.FaceSDKManager;
 import com.dataexpo.autogate.face.model.LivenessModel;
+import com.dataexpo.autogate.listener.FaceOnSecCallback;
 import com.dataexpo.autogate.listener.OnFrameCallback;
 import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.service.MainApplication;
+
+import static com.dataexpo.autogate.model.User.AUTH_SUCCESS;
 
 public class SecondaryPhoneCameraPresentation extends Presentation implements OnFrameCallback, SurfaceHolder.Callback {
     private static final String TAG = SecondaryPhoneCameraPresentation.class.getSimpleName();
@@ -56,6 +59,7 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
     private TextView tv_name;
     private TextView tv_company;
     private TextView tv_deputation;
+    private TextView tv_auth;
     private TextView tv_success_last_name1;
     private TextView tv_success_last_name2;
     private TextView tv_success_last_name3;
@@ -82,6 +86,7 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
     private CapturePictureModule mCapturePictureModule;
 
     private ImageView iv_snap;
+    private FaceOnSecCallback callback;
 
     public SecondaryPhoneCameraPresentation(Context outerContext, Display display) {
         super(outerContext, display);
@@ -115,22 +120,23 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
             public void run() {
                 //set big
                 iv_success_curr.setImageBitmap(bitmap);
-                if (user.cardCode.equals("E0040150C714EA6A")) {
-                    user.name = "孟州";
-                    user.company = "数展科技";
-                    user.position = "深圳代表团";
-                } else if (user.cardCode.equals("E0040150C715D092")) {
-                    user.name = "张红超";
-                    user.company = "数展科技";
-                    user.position = "深圳代表团";
-                } else if (user.cardCode.equals("E0040150C71459F3")) {
-                    user.name = "杨勇朝";
-                    user.company = "数展科技";
-                    user.position = "深圳代表团";
-                }
+//                if (user.cardCode.equals("E0040150C714EA6A")) {
+//                    user.name = "孟州";
+//                    user.company = "数展科技";
+//                    user.position = "深圳代表团";
+//                } else if (user.cardCode.equals("E0040150C715D092")) {
+//                    user.name = "张红超";
+//                    user.company = "数展科技";
+//                    user.position = "深圳代表团";
+//                } else if (user.cardCode.equals("E0040150C71459F3")) {
+//                    user.name = "杨勇朝";
+//                    user.company = "数展科技";
+//                    user.position = "深圳代表团";
+//                }
                 tv_name.setText(user.name);
                 tv_company.setText(user.company);
                 tv_deputation.setText(user.position);
+                tv_auth.setText(AUTH_SUCCESS == user.auth ? "授权通过" : "授权未通过");
 
                 //设置底部轮换
                 int len = users.length;
@@ -185,6 +191,7 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
         tv_name = findViewById(R.id.tv_presentation_name);
         tv_company = findViewById(R.id.tv_presentation_company);
         tv_deputation = findViewById(R.id.tv_presentation_deputation);
+        tv_auth = findViewById(R.id.tv_presentation_auth);
         tv_success_last_name1 = findViewById(R.id.iv_success_last_name1);
         tv_success_last_name2 = findViewById(R.id.iv_success_last_name2);
         tv_success_last_name3 = findViewById(R.id.iv_success_last_name3);
@@ -266,6 +273,20 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
                 Log.i(TAG, " face responseData image path: " + FileUtils.getUserPic(user.image_name));
 
                 Log.i(TAG, "识别成功");
+                User finalUser = user;
+
+                iv_camera.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        String path = FileUtils.getUserPic(finalUser.image_name);
+                        final Bitmap bitmap = BitmapFactory.decodeFile(path);
+                        Log.i(TAG, " responseData image path: " + path);
+                        setCurrImage(bitmap, finalUser);
+                        if (callback != null) {
+                            callback.push(bitmap, finalUser);
+                        }
+                    }
+                });
 
             } else {
                 Log.i(TAG, "识别失败");
@@ -352,5 +373,9 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
                 //ToolKits.showMessage(IPLoginActivity.this, getErrorCode(getResources(), mLoginModule.errorCode()));
             }
         }
+    }
+
+    public void setFaceDataCallback(FaceOnSecCallback callback) {
+        this.callback = callback;
     }
 }

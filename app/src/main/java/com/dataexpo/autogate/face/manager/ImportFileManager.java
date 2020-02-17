@@ -347,11 +347,13 @@ public class ImportFileManager {
                     // 如果该目录下有文件，则判断该文件是目录还是文件
                     File[] picFiles;   // 定义图片文件数组
 
-                    if (files[0].isDirectory()) {
-                        picFiles = files[0].listFiles();
-                    } else {
-                        picFiles = files;
-                    }
+                    File batchPicDirData = FileUtils.getBatchImportDatas();
+                    picFiles = batchPicDirData.listFiles();
+//                    if (files[0].isDirectory()) {
+//                        picFiles = files[0].listFiles();
+//                    } else {
+//                        picFiles = files;
+//                    }
 
                     // 解压并读取图片成功，开始显示进度条
                     if (mImportListener != null) {
@@ -374,8 +376,10 @@ public class ImportFileManager {
                         // 获取图片名
                         String picName = picFile.getName();
                         // 判断图片后缀
+                        Log.i(TAG, "-----------------pic name: " +picName);
                         if (picName.endsWith(".jpg")) {
                             suffix = IMAGE_TYPE_JPG;
+                            Log.i(TAG, " ---------------end with jpg!!!!");
                         } else if (picName.endsWith(".png")) {
                             suffix = IMAGE_TYPE_PNG;
                         }
