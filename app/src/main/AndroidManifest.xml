@@ -75,7 +75,6 @@
         <!-- Mqtt服务 -->
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 
-
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
     </application>
 </manifest>
