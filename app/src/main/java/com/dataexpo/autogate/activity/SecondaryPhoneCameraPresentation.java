@@ -247,7 +247,7 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
                     @Override
                     public void onFaceDetectCallback(LivenessModel livenessModel) {
                         // 输出结果
-                        checkCloseResult(livenessModel);
+                        checkCloseResult(livenessModel, bitmap);
                     }
 
                     @Override
@@ -262,7 +262,7 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
                 });
     }
 
-    private void checkCloseResult(final LivenessModel livenessModel) {
+    private void checkCloseResult(final LivenessModel livenessModel, final Bitmap cameraBitmap) {
         // 当未检测到人脸UI显示
         User user = null;
         if (livenessModel != null && livenessModel.getFaceInfo() != null) {
@@ -283,7 +283,7 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
                         Log.i(TAG, " responseData image path: " + path);
                         setCurrImage(bitmap, finalUser);
                         if (callback != null) {
-                            callback.push(bitmap, finalUser);
+                            callback.push(bitmap, finalUser, cameraBitmap);
                         }
                     }
                 });

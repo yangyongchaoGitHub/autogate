@@ -448,7 +448,9 @@ public class GateActivity extends BascActivity implements View.OnClickListener, 
                         tv_name.setText(res.name);
 
                         //调用分屏的显示接口
-                        presentation.setCurrImage(bitmap, res);
+                        if (presentation != null) {
+                            presentation.setCurrImage(bitmap, res);
+                        }
 
                     } else {
                         iv_head.setVisibility(View.INVISIBLE);
@@ -522,10 +524,11 @@ public class GateActivity extends BascActivity implements View.OnClickListener, 
     }
 
     @Override
-    public void push(Bitmap bitmap, User user) {
+    public void push(Bitmap bitmap, User user, Bitmap cameraBitmap) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                //iv_head.setImageBitmap(FaceSDKManager.getInstance().testCropFace(cameraBitmap));
                 iv_head.setImageBitmap(bitmap);
                 iv_head.setVisibility(View.VISIBLE);
                 tv_name.setText(user.name);

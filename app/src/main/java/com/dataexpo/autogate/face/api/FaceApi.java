@@ -311,38 +311,67 @@ public class FaceApi {
      * 数据库发现变化时候，重新把数据库中的人脸信息添加到内存中，id+feature
      */
     public void initDatabases(final boolean isFeaturePush) {
-        if (future != null && !future.isDone()) {
-            future.cancel(true);
+
+        ArrayList<Feature> features = new ArrayList<>();
+        List<User> listUser = UserService.getInstance().listAll();
+        Log.i(TAG, " all user size: " + listUser.size());
+        for (int i = 0; i < listUser.size(); i++) {
+            User user = listUser.get(i);
+            if (user.feature == null) {
+                Log.i(TAG, "user feature is null " + user.name);
+                continue;
+            }
+            Log.i(TAG, "feature.length " + user.feature.length);
+            if (user.feature.length > 0) {
+                Feature feature = new Feature();
+                feature.setId(user.id);
+                feature.setFeature(user.feature);
+                feature.setFaceToken(user.getFaceToken());
+                Log.i(TAG, "name: " + user.name + " " + user.cardCode);
+                features.add(feature);
+            }
+        }
+        if (isFeaturePush && features.size() > 0) {
+            Log.i(TAG, "features size : " + features.size());
+            Log.i(TAG, FaceSDKManager.getInstance().getFaceFeature().featurePush(features) + " push result");
         }
 
-        isinitSuccess = false;
-        future = es.submit(new Runnable() {
-            @Override
-            public void run() {
-                ArrayList<Feature> features = new ArrayList<>();
-                List<User> listUser = UserService.getInstance().listAll();
-                Log.i(TAG, " all user size: " + listUser.size());
-                for (int j = 0; j < listUser.size(); j++) {
-                    if (listUser.get(j).feature.length > 0) {
-                        Feature feature = new Feature();
-                        feature.setId(listUser.get(j).id);
-                        feature.setFeature(listUser.get(j).feature);
-                        features.add(feature);
-//                    String lo = "";
-//                    for (int i = 0; i<100; i++) {
-//                        lo += listUser.get(j).feature[i] + " ";
-//                    }
-                    }
-                }
-                if (isFeaturePush && features.size() > 0) {
-                    Log.i(TAG, "features size : " + features.size());
-                    Log.i(TAG, FaceSDKManager.getInstance().getFaceFeature().featurePush(features) + " push result");
-                }
+        mUserNum = features.size();
+        isinitSuccess = true;
 
-                mUserNum = features.size();
-                isinitSuccess = true;
-            }
-        });
+//
+//        if (future != null && !future.isDone()) {
+//            future.cancel(true);
+//        }
+//
+//        isinitSuccess = false;
+//        future = es.submit(new Runnable() {
+//            @Override
+//            public void run() {
+//                ArrayList<Feature> features = new ArrayList<>();
+//                List<User> listUser = UserService.getInstance().listAll();
+//                Log.i(TAG, " all user size: " + listUser.size());
+//                for (int i = 0; i < listUser.size(); i++) {
+//                    User user = listUser.get(i);
+//                    Log.i(TAG, "feature.length " + user.feature.length);
+//                    if (user.feature.length > 0) {
+//                        Feature feature = new Feature();
+//                        feature.setId(user.id);
+//                        feature.setFeature(user.feature);
+//                        feature.setFaceToken(user.getFaceToken());
+//                        Log.i(TAG, "name: " + user.name);
+//                        features.add(feature);
+//                    }
+//                }
+//                if (isFeaturePush && features.size() > 0) {
+//                    Log.i(TAG, "features size : " + features.size());
+//                    Log.i(TAG, FaceSDKManager.getInstance().getFaceFeature().featurePush(features) + " push result");
+//                }
+//
+//                mUserNum = features.size();
+//                isinitSuccess = true;
+//            }
+//        });
     }
 
 //    //获取所有图片

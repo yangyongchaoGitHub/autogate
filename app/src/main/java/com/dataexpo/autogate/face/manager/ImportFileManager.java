@@ -411,7 +411,8 @@ public class ImportFileManager {
 
                         User user = new User(picNames[0], picNames[1], picNames[2], picNames[3], picNames[4]);
 
-                        if (UserService.getInstance().haveByCode(user)) {
+                        User localUser = UserService.getInstance().findUserByCode(user);
+                        if (localUser != null) {
                             Log.i(TAG, "用户： " + user.code + " 重复！！！！！");
                             continue;
                         }
@@ -423,8 +424,7 @@ public class ImportFileManager {
                             mSuccessCount++;
                             //删除指定目录中的原图片文件  因为已经复制到指定的注册用户目录
                             FileUtils.deleteFile(picFile.getAbsolutePath());
-                            //重置人脸库
-                            FaceApi.getInstance().initDatabases(true);
+
                         } else if (success == 1) {
                             mSuccessCount++;
                             Log.e(TAG, "人脸注册失败图片:" + picName);
@@ -452,6 +452,8 @@ public class ImportFileManager {
                     Log.e(TAG, "exception = " + e.getMessage());
                     e.printStackTrace();
                 }
+                //重置人脸库
+                FaceApi.getInstance().initDatabases(true);
             }
         });
     }

@@ -67,7 +67,7 @@ public class User extends BaseModel {
         this.image_md5 = image_md5;
     }
 
-    public User (String name, String company, String position, String cardCode, String code) {
+    public User (String name, String company, String position, String code, String cardCode) {
         this.name = name;
         this.company = company;
         this.position = position;
@@ -84,7 +84,7 @@ public class User extends BaseModel {
     }
 
     public String getFaceToken() {
-        if (feature != null) {
+        if (feature != null && "".equals(faceToken)) {
             byte[] base = Base64.encode(feature, Base64.NO_WRAP);
             faceToken = new String(base);
         }

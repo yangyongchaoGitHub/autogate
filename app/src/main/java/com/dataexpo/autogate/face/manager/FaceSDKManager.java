@@ -17,6 +17,7 @@ import com.baidu.idl.main.facesdk.model.BDFaceSDKCommon;
 import com.baidu.idl.main.facesdk.model.BDFaceSDKConfig;
 import com.baidu.idl.main.facesdk.model.Feature;
 import com.baidu.idl.main.facesdk.utils.PreferencesUtil;
+import com.dataexpo.autogate.comm.BitmapUtils;
 import com.dataexpo.autogate.face.api.FaceApi;
 import com.dataexpo.autogate.face.callback.FaceDetectCallBack;
 import com.dataexpo.autogate.face.callback.FaceFeatureCallBack;
@@ -210,6 +211,13 @@ public class FaceSDKManager {
         });
     }
 
+    public Bitmap testCropFace(final Bitmap bitmap) {
+        BDFaceImageInstance rgbInstance = new BDFaceImageInstance(bitmap);
+        float[] landmark = new float[]{80};
+        BDFaceImageInstance rt = faceDetect.cropFace(rgbInstance, landmark);
+        return BitmapUtils.getInstaceBmp(rt);
+    }
+
     /**
      * 检测-活体-特征- 全流程
      *
@@ -246,6 +254,7 @@ public class FaceSDKManager {
 
                 // TODO: getImage() 获取送检图片,如果检测数据有问题，可以通过image view 展示送检图片
                 livenessModel.setBdFaceImageInstance(rgbInstance.getImage());
+
 
                 // 检查函数调用，返回检测结果
                 long startDetectTime = System.currentTimeMillis();

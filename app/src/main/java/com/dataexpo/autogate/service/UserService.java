@@ -115,6 +115,7 @@ public class UserService {
                 } else {
                     user.feature = null;
                     res = 1;
+                    return res;
                 }
             }
         }
@@ -189,7 +190,6 @@ public class UserService {
         contentValues.put("feature", user.feature);
         contentValues.put("face_token", user.getFaceToken());
         contentValues.put("auth", user.auth);
-        //Log.i(TAG, user.feature.length + " is length !!!!!!");
         return DBUtils.getInstance().insert(DBUtils.TABLE_USER, null, contentValues);
     }
 
@@ -244,10 +244,15 @@ public class UserService {
         Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_USER, "code", user.code);
         User user_response = null;
 
-        if (cursor != null && cursor.moveToNext()) {
-            user_response = resolve(cursor);
-            cursor.close();
+        if (cursor == null) {
+            return user_response;
         }
+
+        if (cursor.moveToNext()) {
+            user_response = resolve(cursor);
+        }
+
+        cursor.close();
         return user_response;
     }
 
@@ -255,10 +260,15 @@ public class UserService {
         Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_USER, "id", id + "");
         User user_response = null;
 
-        if (cursor != null && cursor.moveToNext()) {
-            user_response = resolve(cursor);
-            cursor.close();
+        if (cursor == null) {
+            return user_response;
         }
+
+        if (cursor.moveToNext()) {
+            user_response = resolve(cursor);
+        }
+
+        cursor.close();
         return user_response;
     }
 
