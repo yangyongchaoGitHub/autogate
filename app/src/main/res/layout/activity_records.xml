@@ -42,7 +42,7 @@
         android:id="@+id/btn_record_3"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:text="@string/other_records"
+        android:text="@string/back"
         android:textSize="@dimen/x55"
         android:background="@drawable/btn3_rect"
         app:layout_constraintLeft_toLeftOf="parent"

@@ -114,7 +114,7 @@ public class ServiceRegisterActivity extends BascActivity implements View.OnClic
                 }
                 Log.i(TAG, "onResponse" + result.getErrmsg() + " ! " +
                         result.getErrcode() + " " + result.getData());
-
+                Toast.makeText(mContext, "保存成功", Toast.LENGTH_SHORT).show();
             }
 
             @Override

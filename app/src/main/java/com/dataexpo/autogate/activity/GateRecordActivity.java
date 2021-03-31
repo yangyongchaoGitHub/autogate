@@ -78,17 +78,22 @@ public class GateRecordActivity extends BascActivity implements View.OnClickList
         btn_delete.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
         findViewById(R.id.btn_gate_record_filter).setOnClickListener(this);
+        findViewById(R.id.btn_gate_record_back).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_user_manager_back:
-                finish();
+                this.finish();
                 break;
             case R.id.btn_gate_record_cancel:
+                this.finish();
                 break;
             case R.id.btn_gate_record_delete:
+                break;
+            case R.id.btn_gate_record_back:
+                this.finish();
                 break;
                 default:
         }

@@ -171,7 +171,9 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
                 break;
 
             case R.id.tl_3:
+                startActivity(new Intent(mContext, RecordsActivity.class));
                 break;
+
             case R.id.tl_4:
                 break;
             case R.id.bl_1:

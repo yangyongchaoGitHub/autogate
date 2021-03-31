@@ -33,6 +33,7 @@ public class RecordsActivity extends BascActivity implements View.OnClickListene
                 break;
 
             case R.id.btn_record_3:
+                this.finish();
                 break;
                 default:
         }
