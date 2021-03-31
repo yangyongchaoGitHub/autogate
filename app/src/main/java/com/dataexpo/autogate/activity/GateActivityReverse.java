@@ -127,8 +127,6 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
     private static final int PREFER_WIDTH = 1280;
     private static final int PERFER_HEIGH = 720;
 
-
-
     private Retrofit mRetrofit;
 
     @Override
