@@ -72,4 +72,6 @@ dependencies {
     implementation files('libs/libToUProxy.jar')
     implementation files('libs/SmartConfig.jar')
     implementation files('libs/zxing.jar')
+    compile group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.9.0'
+    compile group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.9.0'
 }

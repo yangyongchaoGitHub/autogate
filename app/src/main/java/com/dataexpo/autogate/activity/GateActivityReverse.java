@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.hardware.Camera;
 import android.hardware.display.DisplayManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,8 +17,10 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.company.NetSDK.CB_fSnapRev;
 import com.dataexpo.autogate.R;
@@ -32,7 +33,6 @@ import com.dataexpo.autogate.dahuacameracommon.LivePreviewModule;
 import com.dataexpo.autogate.dahuacameracommon.NetSDKLib;
 import com.dataexpo.autogate.dahuacameracommon.OSDModule;
 import com.dataexpo.autogate.dahuacameracommon.PTZControl;
-import com.dataexpo.autogate.face.callback.CameraDataCallback;
 import com.dataexpo.autogate.face.callback.FaceDetectCallBack;
 import com.dataexpo.autogate.face.camera.AutoTexturePreviewView;
 import com.dataexpo.autogate.face.camera.CameraPreviewManager;
@@ -44,11 +44,17 @@ import com.dataexpo.autogate.listener.FaceOnSecCallback;
 import com.dataexpo.autogate.listener.OnFrameCallback;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
 import com.dataexpo.autogate.model.User;
-import com.dataexpo.autogate.model.gate.ReportData;
-import com.dataexpo.autogate.service.FaceService;
+import com.dataexpo.autogate.retrofitInf.ApiService;
+import com.dataexpo.autogate.retrofitInf.rentity.NetResult;
 import com.dataexpo.autogate.service.MainApplication;
 import com.dataexpo.autogate.service.MainService;
-import com.dataexpo.autogate.service.UserService;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 import static com.dataexpo.autogate.model.User.AUTH_SUCCESS;
 
@@ -93,6 +99,8 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
     private TextView tv_success_last_name9;
     private TextView tv_success_last_name10;
 
+    private ImageButton ib_back;
+
     private ImageView[] ivs = new ImageView[10];
     private TextView[] tvs = new TextView[10];
     private User[] users = new User[10];
@@ -113,13 +121,15 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
     private User faceCurrUser = null;
     private User GateCurrUser = null;
 
-    private ServiceConnection mConnection;
+
     private AutoTexturePreviewView mAutoCameraPreviewView;
 
     private static final int PREFER_WIDTH = 1280;
     private static final int PERFER_HEIGH = 720;
 
-    private SecondaryPhoneCameraPresentationReverse presentation = null;
+
+
+    private Retrofit mRetrofit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,12 +137,11 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         setContentView(R.layout.presentation_phone_camera);
         mContext = this;
         initView();
-        DBUtils.getInstance().create(mContext);
 
         for (int i = 0; i < users.length; i++) {
             users[i] = null;
         }
-        NetSDKLib.getInstance().init();
+
         app = MainApplication.getInstance();
         if (app != null && app.getService() != null) {
             app.getService().setFrameCallback(this);
@@ -142,89 +151,42 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         LoginTask loginTask = new LoginTask();
         loginTask.execute();
 
+        mRetrofit = MainApplication.getmRetrofit();
 
-        mConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                MainService.MsgBinder msgBinder = (MainService.MsgBinder) service;
-                MainApplication.getInstance().setService(msgBinder.getService());
-                msgBinder.getService().setCallback(onServeiceCallback);
 
-                if (MainApplication.getInstance().getService() != null) {
-                    MainApplication.getInstance().getService().removeGateObserver(GateActivityReverse.this);
-                    MainApplication.getInstance().getService().addGateObserver(GateActivityReverse.this);
-                    //初始化双屏
-                    initDisplay();
-                }
-            }
 
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-            }
-        };
-
-        onServeiceCallback = new OnServeiceCallback() {
-            @Override
-            public void onCallback(int action) {
-//                if (action == ACTION_TIMEOUT) {
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            Log.i(TAG, "onServeiceCallback " + MainWindow.this.hasWindowFocus());
+//        ApiService apiService = mRetrofit.create(ApiService.class);
 //
-//                            startActivity(new Intent(mContext, ScreensaverActivity.class));
+//        Call<NetResult<String>> call = apiService.tiktak();
 //
-//                            Toast.makeText(mContext, "this is on long ting", Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
+//        call.enqueue(new Callback<NetResult<String>>() {
+//            @Override
+//            public void onResponse(Call<NetResult<String>> call, Response<NetResult<String>> response) {
+//                NetResult<String> result = response.body();
+//                if (result == null) {
+//                    return;
 //                }
-            }
-        };
+//                Log.i(TAG, "onResponse" + result.getErrmsg() + " ! " +
+//                        result.getErrcode() + " " + result.getData());
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<NetResult<String>> call, Throwable t) {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(mContext, "接口访问失败，请检查网络或联系服务器管理员", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//                Log.i(TAG, "onFailure" + t.toString());
+//            }
+//        });
 
-        bindService(new Intent(getApplicationContext(), MainService.class), mConnection, Context.BIND_AUTO_CREATE);
         initLicense();
     }
 
-    private void initDisplay() {
-        //分屏调试接口  可删除
-//        MainApplication app = MainApplication.getInstance();
-//        NetSDKLib.getInstance().init();
-//        if (app != null && app.getService() != null) {
-//            app.getService().setFrameCallback(this);
-//        }
-//
-//        mLoginModule = new IPLoginModule();
-//
-//        LoginTask loginTask = new LoginTask();
-//        loginTask.execute();
-//
-//        if (1 == 1) {
-//            return;
-//        }
 
-        DisplayManager mDisplayManager;//屏幕管理类
-        Display[] displays;//屏幕数组
-        mDisplayManager = (DisplayManager) this.getSystemService(Context.DISPLAY_SERVICE);
-
-        displays = mDisplayManager.getDisplays();
-        Log.i(TAG, "display: " + displays.length);
-
-
-        Window window = null;
-
-        if (displays.length > 1) {
-            presentation = new SecondaryPhoneCameraPresentationReverse(getApplicationContext(), displays[1]);//displays[1]是副屏
-        }
-
-        if (presentation != null) {
-            window = presentation.getWindow();
-            if (window != null) {
-                window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-                presentation.setFaceDataCallback(this);
-                presentation.show();
-            }
-        }
-    }
 
     @Override
     protected void onStop() {
@@ -328,6 +290,8 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         if (bShowModel == MODEL_DAHUA) {
             iv_camera.setVisibility(View.INVISIBLE);
         }
+
+        findViewById(R.id.ib_back).setOnClickListener(this);
     }
 
     @Override
@@ -343,6 +307,10 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
             case R.id.btn_import:
                 //通过指定的方式导入压缩的用户数据
                 ImportFileManager.getInstance().batchImport();
+                break;
+
+            case R.id.ib_back:
+                this.finish();
                 break;
             default:
         }
@@ -370,7 +338,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(mConnection);
+        //unbindService(mConnection);
     }
 
     private void checkCloseResult(final LivenessModel livenessModel, final Bitmap cameraBitmap) {
@@ -511,7 +479,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
 
     }
 
-    // LoginTask
+    // 摄像头登录
     private class LoginTask extends AsyncTask<String, Integer, Boolean> {
         @Override
         protected void onPreExecute(){

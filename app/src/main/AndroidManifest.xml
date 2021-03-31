@@ -34,7 +34,7 @@
 
         <!--android:launchMode="singleInstance"-->
         <activity
-            android:name=".activity.GateActivityReverse"
+            android:name=".activity.MainSelectActivity"
 
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -43,6 +43,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.GateActivityReverse"/>
         <activity android:name=".activity.GateSetActivity"/>
         <activity android:name=".activity.MainSettingActivity"/>
         <activity android:name=".activity.UsersActivity"/>

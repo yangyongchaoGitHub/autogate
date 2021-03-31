@@ -131,8 +131,10 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
     @Override
     public void onCreate() {
         super.onCreate();
+        //初始化通道门服务
         GateService.getInstance().start();
         GateService.getInstance().setContext(this);
+
         addGateObserver(CardService.getInstance());
         addGateObserver(this);
 

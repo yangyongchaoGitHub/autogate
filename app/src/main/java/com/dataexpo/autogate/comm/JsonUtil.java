@@ -43,29 +43,29 @@ public class JsonUtil {
         return objectMapper.readValue(jsonStr, Map.class);
     }
 
-    public <T> Map<String, T> json2map(String jsonStr, Class<T> clazz)
-            throws Exception {
-        Map<String, Map<String, Object>> map = objectMapper.readValue(jsonStr,
-                new TypeReference<Map<String, T>>() {
-                });
-        Map<String, T> result = new HashMap<String, T>();
-        for (Map.Entry<String, Map<String, Object>> entry : map.entrySet()) {
-            result.put(entry.getKey(), map2obj(entry.getValue(), clazz));
-        }
-        return result;
-    }
-
-    public <T> List<T> json2list(String jsonArrayStr, Class<T> clazz)
-            throws Exception {
-        List<Map<String, Object>> list = objectMapper.readValue(jsonArrayStr,
-                new TypeReference<List<T>>() {
-                });
-        List<T> result = new ArrayList<T>();
-        for (Map<String, Object> map : list) {
-            result.add(map2obj(map, clazz));
-        }
-        return result;
-    }
+//    public <T> Map<String, T> json2map(String jsonStr, Class<T> clazz)
+//            throws Exception {
+//        Map<String, Map<String, Object>> map = objectMapper.readValue(jsonStr,
+//                new TypeReference<Map<String, T>>() {
+//                });
+//        Map<String, T> result = new HashMap<String, T>();
+//        for (Map.Entry<String, Map<String, Object>> entry : map.entrySet()) {
+//            result.put(entry.getKey(), map2obj(entry.getValue(), clazz));
+//        }
+//        return result;
+//    }
+//
+//    public <T> List<T> json2list(String jsonArrayStr, Class<T> clazz)
+//            throws Exception {
+//        List<Map<String, Object>> list = objectMapper.readValue(jsonArrayStr,
+//                new TypeReference<List<T>>() {
+//                });
+//        List<T> result = new ArrayList<T>();
+//        for (Map<String, Object> map : list) {
+//            result.add(map2obj(map, clazz));
+//        }
+//        return result;
+//    }
 
     public <T> T map2obj(Map map, Class<T> clazz) {
         return objectMapper.convertValue(map, clazz);

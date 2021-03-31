@@ -118,6 +118,6 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
 
     }
 
-    public void setFaceDataCallback(GateActivityReverse gateActivityReverse) {
+    public void setFaceDataCallback(MainSelectActivity mainSelectActivity) {
     }
 }

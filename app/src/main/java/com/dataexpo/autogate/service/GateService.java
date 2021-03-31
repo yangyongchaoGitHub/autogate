@@ -132,8 +132,11 @@ public class GateService extends GateSubject {
             return mStatus;
         }
 
-        String ip = Utils.getGATEConfig(mContext, GATE_IP);
-        String port = Utils.getGATEConfig(mContext, GATE_PORT);
+//        String ip = Utils.getGATEConfig(mContext, GATE_IP);
+//        String port = Utils.getGATEConfig(mContext, GATE_PORT);
+        String ip = "192.168.1.222";
+        String port = "6012";
+
 
         if ("".equals(ip) || "".equals(port)) {
             //其中有一个为空则为非法
