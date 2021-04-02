@@ -49,6 +49,12 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    // 海康威视摄像机
+    implementation files('libs\\HCNetSDK.jar')
+    implementation files('libs\\HCNetSDK_E.jar')
+    implementation files('libs\\jna.jar')
+    implementation files('libs\\PlayerSDK_hcnetsdk.jar')
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -67,11 +73,14 @@ dependencies {
     //    implementation 'net.sourceforge.streamsupport:android-retrofuture:1.7.1'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.1'
     implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+
+    //大华摄像机
     implementation files('libs/INetSDK.jar')
     implementation files('libs/IPlaySDK.jar')
     implementation files('libs/libToUProxy.jar')
     implementation files('libs/SmartConfig.jar')
     implementation files('libs/zxing.jar')
+
     compile group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.9.0'
     compile group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.9.0'
 }

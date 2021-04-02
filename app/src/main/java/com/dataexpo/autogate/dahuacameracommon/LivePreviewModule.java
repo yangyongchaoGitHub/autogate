@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class LivePreviewModule {
     private static final String TAG = LivePreviewModule.class.getSimpleName();
     private final int STREAM_BUF_SIZE = 1024 * 1024 * 2;
@@ -38,6 +37,10 @@ public class LivePreviewModule {
     private CB_fRealDataCallBackEx mRealDataCallBackEx;
 
     public LivePreviewModule(Context context) {
+
+/**
+ * 这个jar引用似乎和海康威视的jar冲突，两者只能用其一，所以考虑分开编译
+ */
         this.mContext = context;
         res = mContext.getResources();
         mPlayPort = IPlaySDK.PLAYGetFreePort();

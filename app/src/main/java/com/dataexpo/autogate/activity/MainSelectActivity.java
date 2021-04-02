@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.hardware.display.DisplayManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -91,6 +92,10 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
 
         bindService(new Intent(getApplicationContext(), MainService.class), mConnection, Context.BIND_AUTO_CREATE);
         initView();
+
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        Log.i(TAG, "width: " + dm.widthPixels + " height: " + dm.heightPixels);
     }
 
     private void initDisplay() {
@@ -175,6 +180,7 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
                 break;
 
             case R.id.tl_4:
+                startActivity(new Intent(mContext, OtherActivity.class));
                 break;
             case R.id.bl_1:
                 break;

@@ -6,12 +6,14 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PixelFormat;
 import android.hardware.display.DisplayManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Display;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -40,6 +42,8 @@ import com.dataexpo.autogate.face.listener.SdkInitListener;
 import com.dataexpo.autogate.face.manager.FaceSDKManager;
 import com.dataexpo.autogate.face.manager.ImportFileManager;
 import com.dataexpo.autogate.face.model.LivenessModel;
+import com.dataexpo.autogate.hikvision.control.DevManageGuider;
+import com.dataexpo.autogate.hikvision.control.SDKGuider;
 import com.dataexpo.autogate.listener.FaceOnSecCallback;
 import com.dataexpo.autogate.listener.OnFrameCallback;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
@@ -48,6 +52,8 @@ import com.dataexpo.autogate.retrofitInf.ApiService;
 import com.dataexpo.autogate.retrofitInf.rentity.NetResult;
 import com.dataexpo.autogate.service.MainApplication;
 import com.dataexpo.autogate.service.MainService;
+import com.hikvision.netsdk.HCNetSDK;
+import com.hikvision.netsdk.NET_DVR_PREVIEWINFO;
 
 import java.util.List;
 
@@ -128,6 +134,9 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
     private static final int PERFER_HEIGH = 720;
 
     private Retrofit mRetrofit;
+    //TODO: 海康威视
+    private int hId = -1; //登录返回的id
+    private int playingHandle = -1; //是否播放成功
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,90 +153,86 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         if (app != null && app.getService() != null) {
             app.getService().setFrameCallback(this);
         }
-        mLoginModule = new IPLoginModule();
 
-        LoginTask loginTask = new LoginTask();
-        loginTask.execute();
+
+        //TODO: 大华摄像头
+//        mLoginModule = new IPLoginModule();
+//        LoginTask loginTask = new LoginTask();
+//        loginTask.execute();
 
         mRetrofit = MainApplication.getmRetrofit();
 
+        //initLicense();
 
-
-//        ApiService apiService = mRetrofit.create(ApiService.class);
-//
-//        Call<NetResult<String>> call = apiService.tiktak();
-//
-//        call.enqueue(new Callback<NetResult<String>>() {
-//            @Override
-//            public void onResponse(Call<NetResult<String>> call, Response<NetResult<String>> response) {
-//                NetResult<String> result = response.body();
-//                if (result == null) {
-//                    return;
-//                }
-//                Log.i(TAG, "onResponse" + result.getErrmsg() + " ! " +
-//                        result.getErrcode() + " " + result.getData());
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<NetResult<String>> call, Throwable t) {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Toast.makeText(mContext, "接口访问失败，请检查网络或联系服务器管理员", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//                Log.i(TAG, "onFailure" + t.toString());
-//            }
-//        });
-
-        initLicense();
+        //TODO: 海康威视
+        initeSdk();
+        initHkvs();
+        Log.i(TAG, "onCreate end ");
     }
-
-
 
     @Override
     protected void onStop() {
         super.onStop();
-        if(null != mLoginModule) {
-            mLoginModule.logout();
-            mLoginModule = null;
+        //TODO: 大华摄像头
+//        if(null != mLoginModule) {
+//            mLoginModule.logout();
+//            mLoginModule = null;
+//        }
+    }
+
+    @Override
+    protected void onResume() {
+        Log.i(TAG, "onResume  ");
+        super.onResume();
+        if (MainApplication.getInstance().getService() != null) {
+            MainApplication.getInstance().getService().addGateObserver(this);
+        }
+        //TODO: 海康威视
+        //viewVideo();
+
+        //开启摄像头预览
+        //startCamera();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        CameraPreviewManager.getInstance().waitPreview();
+        if (MainApplication.getInstance().getService() != null) {
+            MainApplication.getInstance().getService().removeGateObserver(this);
         }
     }
 
-    private void initLicense() {
-        Log.i(TAG, "initLicense!!!!");
+    @Override
+    protected void onDestroy() {
+        if(playingHandle != -1){
+            SDKGuider.g_sdkGuider.m_comPreviewGuider.RealPlay_Stop_jni(playingHandle);
+            playingHandle = -1;
+        }
+        super.onDestroy();
+        //unbindService(mConnection);
+    }
 
-        if (FaceSDKManager.initStatus != FaceSDKManager.SDK_MODEL_LOAD_SUCCESS) {
-            FaceSDKManager.getInstance().init(mContext, new SdkInitListener() {
-                @Override
-                public void initStart() {
-                    Log.i(TAG, "init sdk start");
-                }
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_gosetting:
+                //startActivity(new Intent(mContext, MainSettingActivity.class));
+                break;
+            case R.id.btn_exit:
+                //finish();
+                break;
 
-                @Override
-                public void initLicenseSuccess() {
-                    Log.i(TAG, "initLicenseSuccess");
-                }
+            case R.id.btn_import:
+                //通过指定的方式导入压缩的用户数据
+                ImportFileManager.getInstance().batchImport();
+                break;
 
-                @Override
-                public void initLicenseFail(int errorCode, String msg) {
-                    // 如果授权失败，跳转授权页面
-                    //ToastUtils.toast(mContext, errorCode + " " + msg);
-                    // startActivity(new Intent(mContext, FaceAuthActicity.class));
-                    Log.i(TAG, "initLicenseFail");
-                }
-
-                @Override
-                public void initModelSuccess() {
-                    Log.i(TAG, "initModelSuccess");
-                }
-
-                @Override
-                public void initModelFail(int errorCode, String msg) {
-                    Log.i(TAG, "initModelFail");
-                }
-            });
+            case R.id.ib_back:
+                //this.finish();
+                viewVideo();
+                break;
+            default:
         }
     }
 
@@ -283,7 +288,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         //初始化surfaceview
         sf = findViewById(R.id.surface_presentation);
         sf.getHolder().addCallback(this);
-
+        //sf.setZOrderOnTop(true);
         //final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic("c1000001"));
         if (bShowModel == MODEL_DAHUA) {
             iv_camera.setVisibility(View.INVISIBLE);
@@ -292,87 +297,84 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         findViewById(R.id.ib_back).setOnClickListener(this);
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_gosetting:
-                startActivity(new Intent(mContext, MainSettingActivity.class));
-                break;
-            case R.id.btn_exit:
-                //finish();
-                break;
-
-            case R.id.btn_import:
-                //通过指定的方式导入压缩的用户数据
-                ImportFileManager.getInstance().batchImport();
-                break;
-
-            case R.id.ib_back:
-                this.finish();
-                break;
-            default:
+    //TODO: 海康威视
+    private boolean initeSdk() {
+        // init net sdk
+        if (!HCNetSDK.getInstance().NET_DVR_Init()) {
+            Log.e(TAG, "HCNetSDK init is failed!");
+            return false;
         }
+        HCNetSDK.getInstance().NET_DVR_SetLogToFile(3, "/mnt/sdcard/sdklog/",
+                true);
+        return true;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (MainApplication.getInstance().getService() != null) {
-            MainApplication.getInstance().getService().addGateObserver(this);
-        }
-        //开启摄像头预览
-        //startCamera();
-    }
+    //TODO: 海康威视
+    private void initHkvs() {
+        String ip = "192.168.1.64";
+        String port = "8000";
+        String loginName = "admin";
+        String pswd = "dataexpo123";
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        CameraPreviewManager.getInstance().waitPreview();
-        if (MainApplication.getInstance().getService() != null) {
-            MainApplication.getInstance().getService().removeGateObserver(this);
-        }
-    }
+        try {
+            if (hId == -1 && loginDevice(ip, port, loginName, pswd)) {
+                DevManageGuider.DeviceItem deviceInfo = SDKGuider.g_sdkGuider.m_comDMGuider.getCurrSelectDev();
+                if(deviceInfo == null){
+                    Toast.makeText(GateActivityReverse.this,"获取设备失败，请查看摄像头是否联网",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                hId = deviceInfo.m_lUserID;
+                Log.i(TAG, "login id: " + hId);
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //unbindService(mConnection);
-    }
-
-    private void checkCloseResult(final LivenessModel livenessModel, final Bitmap cameraBitmap) {
-        // 当未检测到人脸UI显示
-        User user = null;
-        if (livenessModel != null && livenessModel.getFaceInfo() != null) {
-            user = livenessModel.getUser();
-            if (user != null) {
-                //是否是同一个用户在镜头前
-                final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(user.image_name));
-                Log.i(TAG, " face responseData image path: " + FileUtils.getUserPic(user.image_name));
-
-                Log.i(TAG, "识别成功");
-                User finalUser = user;
-
-                iv_camera.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        String path = FileUtils.getUserPic(finalUser.image_name);
-                        final Bitmap bitmap = BitmapFactory.decodeFile(path);
-                        Log.i(TAG, " responseData image path: " + path);
-                        setCurrImage(bitmap, finalUser);
-                        if (callback != null) {
-                            callback.push(bitmap, finalUser, cameraBitmap);
-                        }
-                    }
-                });
-
-            } else {
-                Log.i(TAG, "识别失败");
             }
-        } else {
-            Log.i(TAG, "识别失败,未检测到人脸");
+        } catch (Exception err) {
+            err.printStackTrace();
+            //Log.e(TAG, "error: " + err.toString());
         }
     }
 
+    private void viewVideo() {
+        if (playingHandle != -1) {
+            SDKGuider.g_sdkGuider.m_comPreviewGuider.RealPlay_Stop_jni(playingHandle);
+        }
+
+        NET_DVR_PREVIEWINFO struPlayInfo = new NET_DVR_PREVIEWINFO();
+        struPlayInfo.lChannel = 1;
+        struPlayInfo.dwStreamType = 0;
+        struPlayInfo.bBlocked = 1;
+        sf = findViewById(R.id.surface_presentation);
+        struPlayInfo.hHwnd = sf.getHolder();
+        playingHandle = SDKGuider.g_sdkGuider.m_comPreviewGuider.RealPlay_V40_jni(hId, struPlayInfo, null);
+        if (playingHandle < 0) {
+            Toast.makeText(GateActivityReverse.this, "播放预览失败, Err:" + SDKGuider.g_sdkGuider.GetLastError_jni(), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Toast.makeText(GateActivityReverse.this, "NET_DVR_RealPlay_V40 Succ ", Toast.LENGTH_SHORT).show();
+    }
+
+    //TODO: 海康威视
+    private boolean loginDevice(String ip, String port, String loginName, String pswd) {
+        DevManageGuider.DeviceItem deviceItem = SDKGuider.g_sdkGuider.m_comDMGuider.new DeviceItem();
+        deviceItem.m_struNetInfo = SDKGuider.g_sdkGuider.m_comDMGuider.new DevNetInfo(
+                ip,
+                port,
+                loginName,
+                pswd);
+
+        deviceItem.m_szDevName = deviceItem.m_struNetInfo.m_szIp;
+
+        if (SDKGuider.g_sdkGuider.m_comDMGuider.login_v40_jna(deviceItem.m_szDevName, deviceItem.m_struNetInfo)) {
+            Toast.makeText(getApplicationContext(), "登录设备成功!", Toast.LENGTH_LONG).show();
+
+            SDKGuider.g_sdkGuider.m_comDMGuider.setCurrSelectDevIndex(0);
+            return true;
+        } else {
+            Toast.makeText(getApplicationContext(), "登录设备失败，请查看设备是否联网 "+ SDKGuider.g_sdkGuider.GetLastError_jni(), Toast.LENGTH_LONG).show();
+        }
+        return false;
+    }
+
+    //设置当前显示的图片
     public void setCurrImage(Bitmap bitmap, User user) {
         iv_success_curr.post(new Runnable() {
             @Override
@@ -417,7 +419,15 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-
+        sf.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+        if (-1 == playingHandle) {
+            return;
+        }
+        Surface surface = holder.getSurface();
+        if (surface.isValid()) {
+            if (-1 == SDKGuider.g_sdkGuider.m_comPreviewGuider.RealPlaySurfaceChanged_jni(playingHandle, 0, holder))
+                Toast.makeText(GateActivityReverse.this,"NET_DVR_PlayBackSurfaceChanged"+ SDKGuider.g_sdkGuider.GetLastError_jni(),Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -427,7 +437,16 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-
+        Log.i(TAG, "Player setVideoWindow release!" + hId);
+        if (-1 == hId) {
+            return;
+        }
+        if (holder.getSurface().isValid()) {
+            if (-1 == SDKGuider.g_sdkGuider.m_comPreviewGuider.RealPlaySurfaceChanged_jni(playingHandle, 0, null))
+            {
+                Toast.makeText(GateActivityReverse.this,"NET_DVR_RealPlaySurfaceChanged"+ SDKGuider.g_sdkGuider.GetLastError_jni(),Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
@@ -435,6 +454,47 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
 
     }
 
+    @Override
+    public void push(Bitmap bitmap, User user, Bitmap cameraBitmap) {
+
+    }
+
+    //TODO: 百度人脸
+    private void checkCloseResult(final LivenessModel livenessModel, final Bitmap cameraBitmap) {
+        // 当未检测到人脸UI显示
+        User user = null;
+        if (livenessModel != null && livenessModel.getFaceInfo() != null) {
+            user = livenessModel.getUser();
+            if (user != null) {
+                //是否是同一个用户在镜头前
+                final Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(user.image_name));
+                Log.i(TAG, " face responseData image path: " + FileUtils.getUserPic(user.image_name));
+
+                Log.i(TAG, "识别成功");
+                User finalUser = user;
+
+                iv_camera.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        String path = FileUtils.getUserPic(finalUser.image_name);
+                        final Bitmap bitmap = BitmapFactory.decodeFile(path);
+                        Log.i(TAG, " responseData image path: " + path);
+                        setCurrImage(bitmap, finalUser);
+                        if (callback != null) {
+                            callback.push(bitmap, finalUser, cameraBitmap);
+                        }
+                    }
+                });
+
+            } else {
+                Log.i(TAG, "识别失败");
+            }
+        } else {
+            Log.i(TAG, "识别失败,未检测到人脸");
+        }
+    }
+
+    //TODO: 百度人脸
     @Override
     public void onFrame(byte[] image) {
         final Bitmap finalBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
@@ -451,6 +511,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         }
     }
 
+    //TODO: 百度人脸
     private void goDetect(Bitmap bitmap) {
         FaceSDKManager.getInstance().onBitmapDetectCheck(bitmap, null, null,
                 0, 0, 1, 3, new FaceDetectCallBack() {
@@ -472,12 +533,44 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
                 });
     }
 
-    @Override
-    public void push(Bitmap bitmap, User user, Bitmap cameraBitmap) {
+    //TODO: 百度人脸识别sdk初始化
+    private void initLicense() {
+        Log.i(TAG, "initLicense!!!!");
 
+        if (FaceSDKManager.initStatus != FaceSDKManager.SDK_MODEL_LOAD_SUCCESS) {
+            FaceSDKManager.getInstance().init(mContext, new SdkInitListener() {
+                @Override
+                public void initStart() {
+                    Log.i(TAG, "init sdk start");
+                }
+
+                @Override
+                public void initLicenseSuccess() {
+                    Log.i(TAG, "initLicenseSuccess");
+                }
+
+                @Override
+                public void initLicenseFail(int errorCode, String msg) {
+                    // 如果授权失败，跳转授权页面
+                    //ToastUtils.toast(mContext, errorCode + " " + msg);
+                    // startActivity(new Intent(mContext, FaceAuthActicity.class));
+                    Log.i(TAG, "initLicenseFail");
+                }
+
+                @Override
+                public void initModelSuccess() {
+                    Log.i(TAG, "initModelSuccess");
+                }
+
+                @Override
+                public void initModelFail(int errorCode, String msg) {
+                    Log.i(TAG, "initModelFail");
+                }
+            });
+        }
     }
 
-    // 摄像头登录
+    //TODO: 大华摄像头登录
     private class LoginTask extends AsyncTask<String, Integer, Boolean> {
         @Override
         protected void onPreExecute(){
@@ -505,6 +598,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
 //                            mSelectStream.getSelectedItemPosition(),
 //                            mRealView);
                     Log.i(TAG, "live port = " + mLiveModule.getPlayPort());
+                    //开始播放
                     mLiveModule.startPlay(0, 0, sf);
 
                     mCapturePictureModule = new CapturePictureModule(mContext);
@@ -535,7 +629,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
                     mCapturePictureModule.timerCapturePicture(0);
                 }
             } else {
-                Log.i("IPLoginActivity", "login error");
+                Log.i(TAG, "login error");
                 //ToolKits.showMessage(IPLoginActivity.this, getErrorCode(getResources(), mLoginModule.errorCode()));
             }
         }
