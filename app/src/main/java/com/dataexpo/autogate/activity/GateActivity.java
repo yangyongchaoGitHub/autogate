@@ -91,7 +91,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener, 
         setContentView(R.layout.activity_gate);
         mContext = this;
         initView();
-        DBUtils.getInstance().create(mContext);
+        //DBUtils.getInstance().create(mContext);
 
         mConnection = new ServiceConnection() {
             @Override

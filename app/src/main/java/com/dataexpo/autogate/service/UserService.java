@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
+import com.baidu.liantian.ac.U;
 import com.dataexpo.autogate.comm.DBUtils;
 import com.dataexpo.autogate.comm.FileUtils;
 import com.dataexpo.autogate.comm.Utils;
@@ -11,8 +12,10 @@ import com.dataexpo.autogate.face.api.FaceApi;
 import com.dataexpo.autogate.face.model.SingleBaseConfig;
 import com.dataexpo.autogate.model.TestData;
 import com.dataexpo.autogate.model.User;
+import com.dataexpo.autogate.model.service.UserEntityVo;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.dataexpo.autogate.face.manager.ImportFileManager.IMPORT_REPEAT;
 import static com.dataexpo.autogate.face.manager.ImportFileManager.IMPORT_SUCCESS;
@@ -142,6 +145,18 @@ public class UserService {
         DBUtils.getInstance().modifyData(DBUtils.TABLE_USER, user.id, contentValues);
     }
 
+    public void updateFromServer(User user) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("name", user.name);
+        contentValues.put("company", user.company);
+        contentValues.put("position", user.position);
+        contentValues.put("cardcode", user.cardCode);
+        contentValues.put("code", user.code);
+        contentValues.put("image_base64", user.image_base64);
+        contentValues.put("update_time", Utils.timeNow_());
+        DBUtils.getInstance().modifyData(DBUtils.TABLE_USER, user.id, contentValues);
+    }
+
     public void updateFeature(User user) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("feature", user.feature);
@@ -175,6 +190,7 @@ public class UserService {
      */
     public synchronized long insertDB(User user) {
         ContentValues contentValues = new ContentValues();
+        contentValues.put("pid", user.pid);
         contentValues.put("name", user.name);
         contentValues.put("company", user.company);
         contentValues.put("position", user.position);
@@ -182,6 +198,7 @@ public class UserService {
         contentValues.put("gender", user.gender);
         contentValues.put("code", user.code);
         contentValues.put("image_name", user.image_name);
+        contentValues.put("image_base64", user.image_base64);
         contentValues.put("image_type", user.image_type);
         contentValues.put("ctime", user.ctime);
         contentValues.put("update_time", user.updateTime);
@@ -289,6 +306,7 @@ public class UserService {
         }
         User user_response = new User();
         user_response.id = cursor.getInt(cursor.getColumnIndex("id"));
+        user_response.pid = cursor.getInt(cursor.getColumnIndex("pid"));
         user_response.name = cursor.getString(cursor.getColumnIndex("name"));
         user_response.company = cursor.getString(cursor.getColumnIndex("company"));
         user_response.position = cursor.getString(cursor.getColumnIndex("position"));
@@ -296,6 +314,7 @@ public class UserService {
         user_response.gender = cursor.getInt(cursor.getColumnIndex("gender"));
         user_response.code = cursor.getString(cursor.getColumnIndex("code"));
         user_response.image_name = cursor.getString(cursor.getColumnIndex("image_name"));
+        user_response.image_base64 = cursor.getString(cursor.getColumnIndex("image_base64"));
         user_response.image_type = cursor.getInt(cursor.getColumnIndex("image_type"));
         user_response.ctime = cursor.getLong(cursor.getColumnIndex("ctime"));
         user_response.updateTime = cursor.getLong(cursor.getColumnIndex("update_time"));
@@ -305,5 +324,117 @@ public class UserService {
         user_response.setFaceToken(cursor.getString(cursor.getColumnIndex("face_token")));
         user_response.auth = cursor.getInt(cursor.getColumnIndex("auth"));
         return user_response;
+    }
+
+    public List<User> findUserByEuId(String minId, String maxId) {
+        Log.i(TAG, "min: " + minId + " " + maxId);
+        Cursor cursor = DBUtils.getInstance().listAll(DBUtils.TABLE_USER, null,
+                "pid>=? and pid<=?", new String[]{minId, maxId}, null, null, null);
+//        Cursor cursor = DBUtils.getInstance().rowSelect("select * from gate_user where pid>=? and pid<=?",
+//                new String[]{minId, maxId});
+
+        List<User> users = new ArrayList<>();
+        User user_response = null;
+
+        while (cursor.moveToNext()) {
+            user_response = resolve(cursor);
+            users.add(user_response);
+        }
+        cursor.close();
+        return users;
+    }
+
+    /**
+     * 添加来自服务器的数据
+     * @param sUpdateList
+     */
+    public void addDataFromService(List<UserEntityVo> sUpdateList) {
+        User user;
+        for (UserEntityVo ue: sUpdateList) {
+            user = new User();
+            ServerUserToLocal(ue, user);
+            insertDB(user);
+        }
+    }
+
+    /**
+     * 修改服务器变更的数据
+     * @param updateList
+     */
+    public void updateFromService(List<User> updateList) {
+        for (User u: updateList) {
+            updateFromServer(u);
+        }
+    }
+
+    /**
+     * 删除服务器中已不存在的数据
+     * @param users
+     */
+    public void removeServiceNoExist(List<User> users) {
+        for (User u: users) {
+            DBUtils.getInstance().delData(DBUtils.TABLE_USER, u.id);
+        }
+    }
+
+    /**
+     * 获取本地用户数据总数
+     */
+    public int countLocal() {
+        return DBUtils.getInstance().count("select count(id) from " + DBUtils.TABLE_USER);
+    }
+
+    /**
+     * 把服务器数据转化为本地数据
+     * @param ue
+     * @param user
+     */
+    private void ServerUserToLocal(UserEntityVo ue, User user) {
+        user.pid = ue.getEuId();
+        user.name = ue.getName();
+        user.company = ue.getCompany();
+        user.position = ue.getPosition();
+        user.cardCode = ue.getCardCode();
+        user.code = ue.getEucode();
+    }
+
+    /**
+     * 检查服务器数据和本地数据是否一致
+     * @param u
+     * @param ue
+     * @return
+     */
+    public boolean compareUser(User u, UserEntityVo ue) {
+        boolean result = true;
+        if (ue.getName() != null && !"".equals(ue.getName()) && !ue.getName().equals(u.name)) {
+            u.name = ue.getName();
+            result = false;
+        }
+
+        if (ue.getCompany() != null && !"".equals(ue.getCompany()) && !ue.getCompany().equals(u.company)) {
+            u.company = ue.getCompany();
+            result = false;
+        }
+
+        if (ue.getPosition() != null && !"".equals(ue.getPosition()) && !ue.getPosition().equals(u.position)) {
+            u.position = ue.getPosition();
+            result = false;
+        }
+
+        if (ue.getCardCode() != null && !"".equals(ue.getCardCode()) && !ue.getCardCode().equals(u.cardCode)) {
+            u.cardCode = ue.getCardCode();
+            result = false;
+        }
+
+        if (ue.getEucode() != null && !"".equals(ue.getEucode()) && !ue.getEucode().equals(u.code)) {
+            u.code = ue.getEucode();
+            result = false;
+        }
+
+        if (ue.getImageBase64() != null && !"".equals(ue.getImageBase64()) && !ue.getImageBase64().equals(u.image_base64)) {
+            u.image_base64 = "";
+            result = false;
+        }
+        return result;
     }
 }

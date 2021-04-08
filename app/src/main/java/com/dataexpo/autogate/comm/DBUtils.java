@@ -47,6 +47,7 @@ public class DBUtils {
 
         String sql_user = "create table if not exists " + TABLE_USER +
                 "(id integer primary key autoincrement," +
+                "pid int, " +
                 "name nchar(64), " +
                 "company nchar(64), " +
                 "position nchar(32), " +
@@ -54,6 +55,7 @@ public class DBUtils {
                 "gender int, " +
                 "code nchar(64), " +
                 "image_name nchar(64), " +
+                "image_base64 nchar(64), " +
                 "image_type int, " +
                 "ctime long, " +
                 "update_time long, " +
@@ -95,9 +97,13 @@ public class DBUtils {
     public Cursor listAll(String table_name, String[] columns, String selection,
                           String[] selectionArgs, String groupBy, String having,
                           String orderBy) {
+
         return db.query(table_name, columns, selection, selectionArgs, groupBy, having, orderBy);
     }
 
+    public Cursor rowSelect(String sql, String[] selectionArgs) {
+        return db.rawQuery(sql, selectionArgs);
+    }
     /**
      *
      * @param table_name 表名
@@ -114,9 +120,9 @@ public class DBUtils {
      * id 删除id
      */
     public int delData(String table, int id) {
-        Log.e(TAG, "id==============" + id);
+        //Log.e(TAG, "id==============" + id);
         int inde = db.delete(table, "id = ?", new String[]{String.valueOf(id)});
-        Log.e(TAG, "删除了==============" + inde);
+        //Log.e(TAG, "删除了==============" + inde);
         return inde;
     }
 
@@ -126,7 +132,7 @@ public class DBUtils {
      */
     public int delDataAll(String table) {
         int inde = db.delete(table,null,null);
-        Log.e("--Main--", "删除了==============" + inde);
+        //Log.e("--Main--", "删除了==============" + inde);
         return inde;
     }
 
@@ -158,4 +164,6 @@ public class DBUtils {
         //查询数据库
        return db.query(table, null, where + where1, selectionArgs, null, null, null);
     }
+
+
 }

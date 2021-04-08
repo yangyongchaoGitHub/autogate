@@ -24,7 +24,7 @@ import com.dataexpo.autogate.service.MainApplication;
 import com.dataexpo.autogate.service.MainService;
 
 /**
- * 主界面 6个选择按钮
+ * 主界面 8个选择按钮
  */
 public class MainSelectActivity extends BascActivity implements View.OnClickListener {
     private static final String TAG = MainSelectActivity.class.getSimpleName();
@@ -42,8 +42,6 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
 
     //分屏实体
     private SecondaryPhoneCameraPresentationReverse presentation = null;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,22 +97,6 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
     }
 
     private void initDisplay() {
-        //分屏调试接口  可删除
-//        MainApplication app = MainApplication.getInstance();
-//        NetSDKLib.getInstance().init();
-//        if (app != null && app.getService() != null) {
-//            app.getService().setFrameCallback(this);
-//        }
-//
-//        mLoginModule = new IPLoginModule();
-//
-//        LoginTask loginTask = new LoginTask();
-//        loginTask.execute();
-//
-//        if (1 == 1) {
-//            return;
-//        }
-
         DisplayManager mDisplayManager;//屏幕管理类
         Display[] displays;//屏幕数组
         mDisplayManager = (DisplayManager) this.getSystemService(Context.DISPLAY_SERVICE);
@@ -172,19 +154,27 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
                 break;
 
             case R.id.tl_2:
+                //到设备注册界面
                 startActivity(new Intent(mContext, ServiceRegisterActivity.class));
                 break;
 
             case R.id.tl_3:
+                //到日志界面
                 startActivity(new Intent(mContext, RecordsActivity.class));
                 break;
 
             case R.id.tl_4:
+                //到网络环境检测界面
                 startActivity(new Intent(mContext, OtherActivity.class));
                 break;
+
             case R.id.bl_1:
+                //到同步界面
+                startActivity(new Intent(mContext, SyncActivity.class));
                 break;
+
             case R.id.bl_2:
+                startActivity(new Intent(mContext, UsersActivity.class));
                 break;
             case R.id.bl_3:
                 break;

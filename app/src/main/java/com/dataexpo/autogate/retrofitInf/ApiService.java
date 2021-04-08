@@ -1,6 +1,9 @@
 package com.dataexpo.autogate.retrofitInf;
 
 import com.dataexpo.autogate.model.service.Device;
+import com.dataexpo.autogate.model.service.PageResult;
+import com.dataexpo.autogate.model.service.UserEntityVo;
+import com.dataexpo.autogate.model.service.UserQueryConditionVo;
 import com.dataexpo.autogate.retrofitInf.rentity.NetResult;
 
 import retrofit2.Call;
@@ -17,4 +20,7 @@ public interface ApiService {
 
     @POST(saveDeviceUrl)
     Call<NetResult<String>> saveDeviceConfig(@Body Device device);
+
+    @POST(queryUserUrl)
+    Call<NetResult<PageResult<UserEntityVo>>> querySyncUser(@Body UserQueryConditionVo vo);
 }

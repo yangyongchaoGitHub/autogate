@@ -106,6 +106,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
     private TextView tv_success_last_name10;
 
     private ImageButton ib_back;
+    private ImageButton ib_play;
 
     private ImageView[] ivs = new ImageView[10];
     private TextView[] tvs = new TextView[10];
@@ -216,6 +217,12 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.ib_play:
+                if (playingHandle == -1) {
+                    viewVideo();
+                }
+                break;
+
             case R.id.btn_gosetting:
                 //startActivity(new Intent(mContext, MainSettingActivity.class));
                 break;
@@ -229,8 +236,8 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
                 break;
 
             case R.id.ib_back:
-                //this.finish();
-                viewVideo();
+                this.finish();
+
                 break;
             default:
         }
@@ -295,6 +302,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         }
 
         findViewById(R.id.ib_back).setOnClickListener(this);
+        findViewById(R.id.ib_play).setOnClickListener(this);
     }
 
     //TODO: 海康威视

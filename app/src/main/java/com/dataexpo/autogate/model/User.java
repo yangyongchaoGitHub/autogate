@@ -22,6 +22,7 @@ public class User extends BaseModel {
     public static final int AUTH_FAILT = 2;
 
     public int id;
+    public int pid; //数据库id
     public String name = "";
     public String company = "";
     public String position = "";
@@ -29,6 +30,7 @@ public class User extends BaseModel {
     public int gender = 0;
     public String code = "";
     public String image_name = "";
+    public String image_base64 = ""; //图片的base64校验值
     public String image = "";
     public Integer image_type = IMAGE_TYPE_JPG;
     public String image_md5 = "";

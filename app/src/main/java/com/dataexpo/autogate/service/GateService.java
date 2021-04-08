@@ -134,7 +134,9 @@ public class GateService extends GateSubject {
 
 //        String ip = Utils.getGATEConfig(mContext, GATE_IP);
 //        String port = Utils.getGATEConfig(mContext, GATE_PORT);
-        String ip = "192.168.1.222";
+        //String ip = "192.168.1.222";
+
+        String ip = "192.168.1.170";
         String port = "6012";
 
 

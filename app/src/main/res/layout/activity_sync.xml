@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- 选择同步数据还是同步记录 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:visibility="gone"
+        android:id="@+id/cl_select"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/btn_sync_user"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.1"
+            app:layout_constraintVertical_bias="0.3"
+            android:text="同步人员数据"
+            />
+
+        <Button
+            android:id="@+id/btn_sync_record"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.1"
+            app:layout_constraintVertical_bias="0.5"
+            android:text="同步记录数据"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 显示任务数据同步界面 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_user"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_local_count"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="@string/local_total"
+            android:gravity="center|right"
+            android:textSize="@dimen/x30"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.08"
+            app:layout_constraintVertical_bias="0.1"
+            app:layout_constraintWidth_percent="0.25"/>
+
+        <TextView
+            android:id="@+id/tv_local_count_value"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center|left"
+            android:textSize="@dimen/x30"
+            app:layout_constraintLeft_toRightOf="@+id/tv_local_count"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.08"
+            app:layout_constraintVertical_bias="0.1"
+            app:layout_constraintWidth_percent="0.2"/>
+
+        <TextView
+            android:id="@+id/tv_server_count_value"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center|left"
+            android:textSize="@dimen/x30"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.08"
+            app:layout_constraintVertical_bias="0.1"
+            app:layout_constraintWidth_percent="0.2"/>
+
+        <TextView
+            android:id="@+id/tv_server_count"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="@string/server_total"
+            android:textSize="@dimen/x30"
+            app:layout_constraintRight_toLeftOf="@+id/tv_server_count_value"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.08"
+            app:layout_constraintVertical_bias="0.1"
+            app:layout_constraintWidth_percent="0.3"/>
+
+        <com.github.rahatarmanahmed.cpv.CircularProgressView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/progress_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.3"
+            app:layout_constraintHeight_percent="0.3"
+            app:layout_constraintVertical_bias="0.4"
+            app:layout_constraintHorizontal_bias="0.45"
+            app:cpv_animAutostart="false"
+            app:cpv_indeterminate="false"
+            app:cpv_maxProgress="100"
+            app:cpv_progress="0"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_curr_count"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="@string/local_total"
+            android:gravity="center|right"
+            android:textSize="@dimen/x30"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintHeight_percent="0.08"
+            app:layout_constraintVertical_bias="0.32"
+            app:layout_constraintWidth_percent="0.25"
+            app:layout_constraintHorizontal_bias="0.56"
+            />
+
+        <Button
+            android:id="@+id/btn_check"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:textSize="@dimen/x30"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.1"
+            app:layout_constraintVertical_bias="0.7"
+            android:text="检查数据完整性"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:visibility="gone"
+        android:id="@+id/cl_record"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
