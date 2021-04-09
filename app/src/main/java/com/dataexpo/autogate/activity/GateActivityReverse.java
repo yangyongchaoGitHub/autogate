@@ -232,7 +232,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
 
             case R.id.btn_import:
                 //通过指定的方式导入压缩的用户数据
-                ImportFileManager.getInstance().batchImport();
+                //ImportFileManager.getInstance().batchImport();
                 break;
 
             case R.id.ib_back:

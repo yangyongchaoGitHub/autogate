@@ -386,7 +386,7 @@ public class GateActivity extends BascActivity implements View.OnClickListener, 
 
             case R.id.btn_import:
                 //通过指定的方式导入压缩的用户数据
-                ImportFileManager.getInstance().batchImport();
+                //ImportFileManager.getInstance().batchImport();
                 break;
             default:
         }

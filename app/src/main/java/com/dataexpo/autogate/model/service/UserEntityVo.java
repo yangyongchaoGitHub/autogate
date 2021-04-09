@@ -38,7 +38,7 @@ public class UserEntityVo implements Serializable{
 	private Date updateTime;
 	
 	//图像数据
-	private String[] img;
+	private String img;
 
 	public int getEuId() {
 		return euId;
@@ -120,11 +120,11 @@ public class UserEntityVo implements Serializable{
 		this.updateTime = updateTIme;
 	}
 
-	public String[] getImg() {
+	public String getImg() {
 		return img;
 	}
 
-	public void setImg(String[] img) {
+	public void setImg(String img) {
 		this.img = img;
 	}
 	

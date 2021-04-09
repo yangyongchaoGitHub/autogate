@@ -57,6 +57,7 @@ public class DBUtils {
                 "image_name nchar(64), " +
                 "image_base64 nchar(64), " +
                 "image_type int, " +
+                "image_sync int, " +
                 "ctime long, " +
                 "update_time long, " +
                 "userinfo nchar(64), " +
@@ -101,7 +102,7 @@ public class DBUtils {
         return db.query(table_name, columns, selection, selectionArgs, groupBy, having, orderBy);
     }
 
-    public Cursor rowSelect(String sql, String[] selectionArgs) {
+    public Cursor rowQuery(String sql, String[] selectionArgs) {
         return db.rawQuery(sql, selectionArgs);
     }
     /**
@@ -146,8 +147,22 @@ public class DBUtils {
         return index;
     }
 
+    public int update(String table, ContentValues contentValues, String whereClause, String[] args) {
+        int index = db.update(table, contentValues, whereClause, args);
+        //Log.e("--Main--", "修改了===============" + index);
+        return index;
+    }
+
     public int count(String sql) {
         Cursor cursor = db.rawQuery(sql, null);
+        cursor.moveToFirst();
+        int res = Integer.parseInt(cursor.getString(0));
+        cursor.close();
+        return res;
+    }
+
+    public int count(String sql, String[] args) {
+        Cursor cursor = db.rawQuery(sql, args);
         cursor.moveToFirst();
         int res = Integer.parseInt(cursor.getString(0));
         cursor.close();

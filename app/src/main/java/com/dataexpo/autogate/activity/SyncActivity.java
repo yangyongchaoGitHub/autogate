@@ -1,15 +1,19 @@
 package com.dataexpo.autogate.activity;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.dataexpo.autogate.R;
+import com.dataexpo.autogate.comm.FileUtils;
 import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.service.PageResult;
 import com.dataexpo.autogate.model.service.UserEntityVo;
@@ -20,10 +24,13 @@ import com.dataexpo.autogate.service.MainApplication;
 import com.dataexpo.autogate.service.UserService;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,6 +54,8 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
     private TextView tv_local_count_value;
     private TextView tv_curr_count;
 
+    private ImageView iv_sync_curr;
+
     private Retrofit mRetrofit;
 
     //同步用户数据时的参数
@@ -58,6 +67,8 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
 
     //同步线程
     UserSyncThread ust = null;
+
+    UserImgSyncThread uist = null;
 
     //请求参数
     List<UserQueryConditionVo> requestList = new ArrayList<>();
@@ -91,6 +102,8 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
         tv_server_count_value = findViewById(R.id.tv_server_count_value);
         tv_local_count_value = findViewById(R.id.tv_local_count_value);
         tv_curr_count = findViewById(R.id.tv_curr_count);
+
+        iv_sync_curr = findViewById(R.id.iv_sync_curr);
     }
 
     @Override
@@ -104,6 +117,14 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                     }
                     return;
                 }
+                if (btn_check.getText().toString().equals("取消同步人像")) {
+                    btn_check.setText("检查数据完整性");
+                    if (uist != null) {
+                        uist.setRunningStop();
+                    }
+                    return;
+                }
+
 
                 if (ust != null && ust.running) {
                     Toast.makeText(mContext, "正在同步", Toast.LENGTH_SHORT).show();
@@ -112,7 +133,6 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                     ust.start();
                     btn_check.setText("取消");
                 }
-
 
                 break;
 
@@ -148,7 +168,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                 if (result == null) {
                     return;
                 }
-                
+
                 fixLocal(result.getData());
             }
 
@@ -172,6 +192,88 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
         });
         requestList.add(vo);
         return vo;
+    }
+
+    //获取用户数据
+    private UserQueryConditionVo queryUserImage(UserQueryConditionVo vo) {
+        Log.i(TAG, "queryUserImage " + vo.getPageNo());
+        ApiService apiService = mRetrofit.create(ApiService.class);
+
+        vo.setRequestStatus(UserQueryConditionVo.STATUS_REQUESTING);
+
+        Call<ResponseBody> call = apiService.querySyncUserImage(vo.getEucode() + ".jpg");
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.i(TAG, "onResponse" + response);
+
+                ResponseBody result = response.body();
+
+                UserQueryConditionVo queryConditionVo = null;
+
+                for (UserQueryConditionVo u: requestList) {
+                    if (u.getRequestId() == requestNo) {
+                        queryConditionVo = u;
+                        break;
+                    }
+                }
+
+                if (queryConditionVo == null) {
+                    Toast.makeText(mContext, "请求过期", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (result != null) {
+                    // 获取图片
+                    Bitmap bitmap = BitmapFactory.decodeStream(result.byteStream());
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            iv_sync_curr.setImageBitmap(bitmap);
+                        }
+                    });
+
+                    fixImgLocal(bitmap, queryConditionVo);
+                } else {
+                    Log.i(TAG, "图像不存在 " + queryConditionVo.getEucode() + " euid: " +queryConditionVo.getStartEuId());
+                    //取消待同步状态
+                    int res = UserService.getInstance().updateToNoSyncImg(queryConditionVo.getStartEuId());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                for (UserQueryConditionVo u: requestList) {
+                    if (u.getRequestId() == requestNo) {
+                        u.setRequestStatus(UserQueryConditionVo.STATUS_FAIL);
+                        break;
+                    }
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mContext, "接口访问失败，请检查网络或联系服务器管理员", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                Log.i(TAG, "onFailure" + t.toString());
+            }
+        });
+        return vo;
+    }
+
+    //将请求到的图像
+    private void fixImgLocal(Bitmap bitmap, UserQueryConditionVo queryConditionVo) {
+        //把bitmap存到本地文件中
+        File rootFile = FileUtils.getRegistedDirectory();
+        File file = new File(rootFile.getPath() + "/" + queryConditionVo.getEucode() + ".jpg");
+
+        if (FileUtils.saveBitmap(file, bitmap)) {
+            UserService.getInstance().updateToSyncOk(queryConditionVo.getStartEuId(), queryConditionVo.getEucode());
+            queryConditionVo.setRequestStatus(UserQueryConditionVo.STATUS_RESPONSE);
+        }
     }
 
     //将请求到的数据和本地的数据进行比较
@@ -310,16 +412,28 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
 
                 } else if (conditionVo.getRequestStatus() == UserQueryConditionVo.STATUS_RESPONSE) {
                     //已经取完
-                    if ((pageNo + 1)*100 > totalServiceSize) {
+                    if ((pageNo + 1) * 100 > totalServiceSize) {
                         setRunningStop();
 
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                btn_check.setText("检查数据完整性");
-                                Toast.makeText(mContext, "同步结束", Toast.LENGTH_SHORT).show();
+                                btn_check.setText("取消同步人像");
+                                Toast.makeText(mContext, "基础数据同步结束", Toast.LENGTH_SHORT).show();
                                 totalLocalSize = UserService.getInstance().countLocal();
                                 tv_local_count_value.setText(totalLocalSize + "");
+
+                                int syncCount = UserService.getInstance().countImageLocalNoSync();
+                                if (syncCount > 0) {
+                                    if (uist == null) {
+                                        uist = new UserImgSyncThread();
+                                        uist.start();
+                                    }
+                                } else {
+                                    btn_check.setText("检查数据完整性");
+                                    Toast.makeText(mContext, "同步结束", Toast.LENGTH_SHORT).show();
+                                    setRunningStop();
+                                }
                             }
                         });
                         return;
@@ -335,6 +449,72 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
 
                 } else if (conditionVo.getRequestStatus() == UserQueryConditionVo.STATUS_FAIL) {
                     conditionVo = queryUser(conditionVo);
+                }
+
+                try {
+                    sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        public boolean isRunning() {
+            return running;
+        }
+
+        public void setRunningStop() {
+            running = false;
+        }
+    }
+
+    //用户图像数据同步线程
+    class UserImgSyncThread extends Thread {
+        private boolean running = true;
+
+        @Override
+        public void run() {
+            totalServiceSize = 0;
+            currChange = 0;
+            totalLocalSize = UserService.getInstance().countImageLocalNoSync();
+
+            int pageNo = 0;
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progress_view.setProgress(0);
+                    tv_local_count_value.setText(totalLocalSize + "");
+                }
+            });
+
+            UserQueryConditionVo conditionVo = null;
+            while (running) {
+                if (conditionVo == null || conditionVo.getRequestStatus() == UserQueryConditionVo.STATUS_RESPONSE) {
+                    //一条一条进行查询
+                    User user = UserService.getInstance().findNoSyncImgOne();
+                    if (user != null) {
+                        conditionVo = new UserQueryConditionVo();
+                        conditionVo.setEucode(user.code);
+                        conditionVo.setStartEuId(user.pid);
+                        conditionVo.setRequestId(++requestNo);
+                        conditionVo.setThreadName(this.getName());
+                        queryUserImage(conditionVo);
+                        requestList.add(conditionVo);
+
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                btn_check.setText("检查数据完整性");
+                                Toast.makeText(mContext, "同步结束", Toast.LENGTH_SHORT).show();
+                                setRunningStop();
+                            }
+                        });
+
+                    }
+                } else if (conditionVo.getRequestStatus() == UserQueryConditionVo.STATUS_FAIL) {
+                    queryUserImage(conditionVo);
                 }
 
                 try {

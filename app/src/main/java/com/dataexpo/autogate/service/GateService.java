@@ -270,8 +270,15 @@ public class GateService extends GateSubject {
                                 }
 
                                 byte[] byData = new byte[dataLen];
+
+
                                 System.arraycopy(reportBuf, 9, byData, 0,
                                         dataLen);
+
+                                for (byte b:byData) {
+                                    System.out.print(b + " ");
+                                }
+                                System.out.println("-");
                                 //获取是否取反通过方向
                                 String dire = Utils.getGATEConfig(mContext, GATE_DIRECTION_SET);
 

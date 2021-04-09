@@ -134,6 +134,19 @@
             app:layout_constraintHorizontal_bias="0.56"
             />
 
+        <ImageView
+            android:id="@+id/iv_sync_curr"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center|right"
+            android:textSize="@dimen/x30"
+            app:layout_constraintBottom_toTopOf="@+id/btn_check"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintHeight_percent="0.13"
+            app:layout_constraintWidth_percent="0.13"
+            app:layout_constraintHorizontal_bias="0.56"
+            />
+
         <Button
             android:id="@+id/btn_check"
             android:layout_width="0dp"

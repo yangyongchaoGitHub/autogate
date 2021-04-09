@@ -6,10 +6,13 @@ import com.dataexpo.autogate.model.service.UserEntityVo;
 import com.dataexpo.autogate.model.service.UserQueryConditionVo;
 import com.dataexpo.autogate.retrofitInf.rentity.NetResult;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 import static com.dataexpo.autogate.retrofitInf.URLs.*;
 
@@ -23,4 +26,7 @@ public interface ApiService {
 
     @POST(queryUserUrl)
     Call<NetResult<PageResult<UserEntityVo>>> querySyncUser(@Body UserQueryConditionVo vo);
+
+    @GET(queryUserImageUrl)
+    Call<ResponseBody> querySyncUserImage(@Path("eucode") String eucode);
 }

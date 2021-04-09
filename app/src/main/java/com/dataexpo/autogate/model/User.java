@@ -21,6 +21,10 @@ public class User extends BaseModel {
     //鉴权字段  表示未通过
     public static final int AUTH_FAILT = 2;
 
+    public static final int IMG_SYNC_NONE = 0;
+    public static final int IMG_SYNC_CHANGE = 1;
+    public static final int IMG_SYNC_END = 2;
+
     public int id;
     public int pid; //数据库id
     public String name = "";
@@ -33,7 +37,7 @@ public class User extends BaseModel {
     public String image_base64 = ""; //图片的base64校验值
     public String image = "";
     public Integer image_type = IMAGE_TYPE_JPG;
-    public String image_md5 = "";
+    public int image_sync = IMG_SYNC_NONE;
     public boolean check;
     public long ctime = 0L;
     public long updateTime = 0L;
@@ -57,7 +61,7 @@ public class User extends BaseModel {
         this.code = code;
     }
 
-    public User (int id, String name, String company, String position, String cardCode, int gender, String code, String image, String image_md5) {
+    public User (int id, String name, String company, String position, String cardCode, int gender, String code, String image, int image_md5) {
         this.id = id;
         this.name = name;
         this.company = company;
@@ -66,7 +70,7 @@ public class User extends BaseModel {
         this.gender = gender;
         this.code = code;
         this.image = image;
-        this.image_md5 = image_md5;
+        this.image_sync = image_md5;
     }
 
     public User (String name, String company, String position, String code, String cardCode) {

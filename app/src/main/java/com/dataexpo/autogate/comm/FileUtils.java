@@ -166,7 +166,7 @@ public class FileUtils {
     }
 
     /**
-     * 获取导入图片文件的目录信息
+     * 获取批量导入压缩图片文件的目录信息
      */
     public static File getBatchImportDirectory() {
         File sdRootFile = getSDRootFile();
@@ -181,7 +181,7 @@ public class FileUtils {
     }
 
     /**
-     * 获取导入图片文件的目录信息
+     * 获取批量导入压缩图片文件的解压文件夹目录信息
      */
     public static File getBatchImportDatas() {
         File sdRootFile = getSDRootFile();
@@ -231,6 +231,21 @@ public class FileUtils {
      */
     public static File isFileExist(String fileDirectory, String fileName) {
         File file = new File(fileDirectory + "/" + fileName);
+        try {
+            if (!file.exists()) {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return file;
+    }
+
+    /**
+     * 判断文件是否存在
+     */
+    public static File isFileExist(String filePath) {
+        File file = new File(filePath);
         try {
             if (!file.exists()) {
                 return null;

@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
-import com.baidu.liantian.ac.U;
 import com.dataexpo.autogate.comm.DBUtils;
 import com.dataexpo.autogate.comm.FileUtils;
 import com.dataexpo.autogate.comm.Utils;
@@ -17,10 +16,11 @@ import com.dataexpo.autogate.model.service.UserEntityVo;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.dataexpo.autogate.face.manager.ImportFileManager.IMPORT_REPEAT;
 import static com.dataexpo.autogate.face.manager.ImportFileManager.IMPORT_SUCCESS;
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_JPG;
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_PNG;
+import static com.dataexpo.autogate.model.User.IMG_SYNC_CHANGE;
+import static com.dataexpo.autogate.model.User.IMG_SYNC_NONE;
 
 public class UserService {
     private static final String TAG = UserService.class.getSimpleName();
@@ -153,6 +153,7 @@ public class UserService {
         contentValues.put("cardcode", user.cardCode);
         contentValues.put("code", user.code);
         contentValues.put("image_base64", user.image_base64);
+        contentValues.put("image_sync", user.image_sync);
         contentValues.put("update_time", Utils.timeNow_());
         DBUtils.getInstance().modifyData(DBUtils.TABLE_USER, user.id, contentValues);
     }
@@ -200,6 +201,7 @@ public class UserService {
         contentValues.put("image_name", user.image_name);
         contentValues.put("image_base64", user.image_base64);
         contentValues.put("image_type", user.image_type);
+        contentValues.put("image_sync", user.image_sync);
         contentValues.put("ctime", user.ctime);
         contentValues.put("update_time", user.updateTime);
         contentValues.put("userinfo", user.userInfo);
@@ -316,6 +318,7 @@ public class UserService {
         user_response.image_name = cursor.getString(cursor.getColumnIndex("image_name"));
         user_response.image_base64 = cursor.getString(cursor.getColumnIndex("image_base64"));
         user_response.image_type = cursor.getInt(cursor.getColumnIndex("image_type"));
+        user_response.image_sync = cursor.getInt(cursor.getColumnIndex("image_sync"));
         user_response.ctime = cursor.getLong(cursor.getColumnIndex("ctime"));
         user_response.updateTime = cursor.getLong(cursor.getColumnIndex("update_time"));
         user_response.userInfo = cursor.getString(cursor.getColumnIndex("userinfo"));
@@ -352,6 +355,11 @@ public class UserService {
         User user;
         for (UserEntityVo ue: sUpdateList) {
             user = new User();
+
+            if (ue.getImageBase64() != null && !"".equals(ue.getImageBase64())) {
+                user.image_sync = IMG_SYNC_CHANGE;
+            }
+
             ServerUserToLocal(ue, user);
             insertDB(user);
         }
@@ -378,10 +386,54 @@ public class UserService {
     }
 
     /**
+     * 获取一个未同步人像的数据
+     */
+    public User findNoSyncImgOne() {
+        Cursor cursor = DBUtils.getInstance().rowQuery("select * from gate_user where image_sync = ? limit 1", new String[]{"1"});
+        User user_response = null;
+
+        if (cursor.moveToNext()) {
+            user_response = resolve(cursor);
+        }
+        cursor.close();
+        return user_response;
+    }
+
+    /**
      * 获取本地用户数据总数
      */
     public int countLocal() {
         return DBUtils.getInstance().count("select count(id) from " + DBUtils.TABLE_USER);
+    }
+
+    /**
+     * 获取未同步人像的数量
+     * @return
+     */
+    public int countImageLocalNoSync() {
+        return DBUtils.getInstance().count("select count(id) from " +
+                DBUtils.TABLE_USER + " where image_sync = ?", new String[]{"1"});
+    }
+
+    /**
+     * 取消同步图片状态
+     * @param startEuId
+     */
+    public int updateToNoSyncImg(Integer startEuId) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("image_sync", 0);
+        return DBUtils.getInstance().update(DBUtils.TABLE_USER, contentValues, "pid = ?", new String[]{startEuId+ ""});
+    }
+
+    /**
+     * 取消同步图片状态
+     * @param startEuId
+     */
+    public int updateToSyncOk(Integer startEuId, String imageName) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("image_sync", 0);
+        contentValues.put("image_name", imageName);
+        return DBUtils.getInstance().update(DBUtils.TABLE_USER, contentValues, "pid = ?", new String[]{startEuId+ ""});
     }
 
     /**
@@ -431,8 +483,16 @@ public class UserService {
             result = false;
         }
 
-        if (ue.getImageBase64() != null && !"".equals(ue.getImageBase64()) && !ue.getImageBase64().equals(u.image_base64)) {
-            u.image_base64 = "";
+        if (u.image_sync == IMG_SYNC_NONE && ue.getImageBase64() != null && !"".equals(ue.getImageBase64()) && !ue.getImageBase64().equals(u.image_base64)) {
+            //TODO: 要删除原来的图片    如果本地有，服务器没有，那也要删除
+            Log.i(TAG, "compareUser" + ue.getImageBase64());
+            u.image_base64 = ue.getImageBase64();
+            u.image_name = "";
+            u.image_sync = IMG_SYNC_CHANGE;
+
+            if (FileUtils.isFileExist(FileUtils.getUserPic(ue.getEucode())) != null) {
+                FileUtils.deleteFile(FileUtils.getUserPic(ue.getEucode()));
+            }
             result = false;
         }
         return result;

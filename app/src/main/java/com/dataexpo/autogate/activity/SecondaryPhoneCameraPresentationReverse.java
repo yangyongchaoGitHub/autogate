@@ -32,16 +32,19 @@ import com.dataexpo.autogate.face.manager.FaceSDKManager;
 import com.dataexpo.autogate.face.manager.ImportFileManager;
 import com.dataexpo.autogate.face.model.LivenessModel;
 import com.dataexpo.autogate.listener.FaceOnSecCallback;
+import com.dataexpo.autogate.listener.GateObserver;
 import com.dataexpo.autogate.listener.OnFrameCallback;
 import com.dataexpo.autogate.model.User;
+import com.dataexpo.autogate.model.gate.ReportData;
 import com.dataexpo.autogate.service.MainApplication;
+import com.dataexpo.autogate.service.UserService;
 
 import static com.dataexpo.autogate.model.User.AUTH_SUCCESS;
 
 /**
  * 原分屏是小屏，现分屏是大屏，所以做次调整
  */
-public class SecondaryPhoneCameraPresentationReverse extends Presentation implements View.OnClickListener {
+public class SecondaryPhoneCameraPresentationReverse extends Presentation implements View.OnClickListener, GateObserver {
     private static final String TAG = SecondaryPhoneCameraPresentationReverse.class.getSimpleName();
     private Context mContext;
 
@@ -71,6 +74,9 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
 
         initView();
 
+        //注册消费者
+        MainApplication.getInstance().getService().removeGateObserver(SecondaryPhoneCameraPresentationReverse.this);
+        MainApplication.getInstance().getService().addGateObserver(SecondaryPhoneCameraPresentationReverse.this);
     }
 
     private void initView() {
@@ -98,7 +104,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
 
             case R.id.btn_import:
                 //通过指定的方式导入压缩的用户数据
-                ImportFileManager.getInstance().batchImport();
+                //ImportFileManager.getInstance().batchImport();
                 break;
             default:
         }
@@ -119,5 +125,51 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
     }
 
     public void setFaceDataCallback(MainSelectActivity mainSelectActivity) {
+    }
+
+
+    @Override
+    public void responseData(final ReportData mReports) {
+        iv_head.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mReports != null) {
+                    Log.i(TAG, "responseData card: " + mReports.getNumber() + " time " + mReports.getTime());
+                    User user = new User();
+                    user.cardCode = mReports.getNumber();
+
+                    if ("FFFFFFFFFFFFFFFF".equals(mReports.getNumber())) {
+                        iv_head.setVisibility(View.INVISIBLE);
+                        iv_head.setImageResource(R.drawable.err);
+                        tv_name.setText("非法通过！");
+                        return;
+                    }
+
+                    User res = UserService.getInstance().findUserByCardCode(user);
+
+                    if (res != null) {
+                        //有此用户
+                        String path = FileUtils.getUserPic(res.image_name);
+                        final Bitmap bitmap = BitmapFactory.decodeFile(path);
+                        Log.i(TAG, " responseData image path: " + path);
+
+                        iv_head.setImageBitmap(bitmap);
+                        iv_head.setVisibility(View.VISIBLE);
+
+                        tv_name.setText(res.name);
+
+                    } else {
+                        iv_head.setVisibility(View.INVISIBLE);
+                        tv_name.setText("未注册！");
+                    }
+                    tv_direction.setText("In".equals(mReports.getDirection()) ? "进" : "出");
+                }
+            }
+        });
+    }
+
+    @Override
+    public void responseStatus(int status) {
+
     }
 }
