@@ -48,10 +48,12 @@ import com.dataexpo.autogate.listener.FaceOnSecCallback;
 import com.dataexpo.autogate.listener.OnFrameCallback;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
 import com.dataexpo.autogate.model.User;
+import com.dataexpo.autogate.model.gate.ReportData;
 import com.dataexpo.autogate.retrofitInf.ApiService;
 import com.dataexpo.autogate.retrofitInf.rentity.NetResult;
 import com.dataexpo.autogate.service.MainApplication;
 import com.dataexpo.autogate.service.MainService;
+import com.dataexpo.autogate.service.UserService;
 import com.hikvision.netsdk.HCNetSDK;
 import com.hikvision.netsdk.NET_DVR_PREVIEWINFO;
 
@@ -305,6 +307,52 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         findViewById(R.id.ib_play).setOnClickListener(this);
     }
 
+    @Override
+    public void responseData(ReportData mReports) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                User user = new User();
+                user.cardCode = mReports.getNumber();
+
+                if ("FFFFFFFFFFFFFFFF".equals(mReports.getNumber())) {
+                    return;
+                }
+
+                User res = UserService.getInstance().findUserByCardCode(user);
+
+                if (res != null) {
+                    //有此用户
+                    String path = FileUtils.getUserPic(res.image_name);
+                    final Bitmap bitmap = BitmapFactory.decodeFile(path);
+                    Log.i(TAG, " responseData image path: " + path);
+                    iv_success_curr.setImageBitmap(bitmap);
+
+                    tv_name.setText(res.name);
+                    tv_company.setText(res.company);
+                    tv_deputation.setText(res.position);
+                    tv_auth.setText(AUTH_SUCCESS == res.auth ? "授权通过" : "授权未通过");
+                    int len = users.length;
+
+                    for (int i = len - 1; i > 0; i--) {
+                        users[i] = users[i - 1];
+                    }
+
+                    users[0] = res;
+
+                    for (int i = 0; i < len; i++) {
+                        if (users[i] != null) {
+                            ivs[i].setImageBitmap(BitmapFactory.decodeFile(FileUtils.getUserPic(users[i].image_name)));
+                            tvs[i].setText(users[i].name);
+                        }
+                    }
+                } else {
+//                    tv_name.setText("未注册！");
+                }
+            }
+        });
+    }
+
     //TODO: 海康威视
     private boolean initeSdk() {
         // init net sdk
@@ -507,16 +555,16 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
     public void onFrame(byte[] image) {
         final Bitmap finalBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
 
-        if (bShowModel == MODEL_CAMERA_STEAM) {
-            iv_camera.post(new Runnable() {
-                @Override
-                public void run() {
-                    iv_camera.setImageBitmap(finalBitmap);
-                }
-            });
-
-            goDetect(finalBitmap);
-        }
+//        if (bShowModel == MODEL_CAMERA_STEAM) {
+//            iv_camera.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    iv_camera.setImageBitmap(finalBitmap);
+//                }
+//            });
+//
+//            goDetect(finalBitmap);
+//        }
     }
 
     //TODO: 百度人脸

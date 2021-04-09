@@ -73,6 +73,7 @@ public class UDPClient extends UdpChannelInboundHandler implements Runnable {
         //Log.d(TAG, "client rcv size : " + data.length());
 //        Log.d(TAG, "client rcv : " + data);
         //Log.d(TAG, "callbacks size : " + callbacks.size());
+
         Frame frame = null;
         try {
             frame = JsonUtil.getInstance().json2obj(data, Frame.class);
