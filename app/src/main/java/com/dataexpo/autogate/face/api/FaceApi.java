@@ -1,11 +1,6 @@
 package com.dataexpo.autogate.face.api;
 
-import android.content.ContentResolver;
-import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.provider.MediaStore;
-import android.text.TextUtils;
 import android.util.Log;
 
 
@@ -13,17 +8,13 @@ import com.baidu.idl.main.facesdk.FaceInfo;
 import com.baidu.idl.main.facesdk.model.BDFaceImageInstance;
 import com.baidu.idl.main.facesdk.model.BDFaceSDKCommon;
 import com.baidu.idl.main.facesdk.model.Feature;
-import com.dataexpo.autogate.comm.DBUtils;
 import com.dataexpo.autogate.face.manager.FaceSDKManager;
 import com.dataexpo.autogate.face.manager.ImportFileManager;
-import com.dataexpo.autogate.face.model.Group;
-import com.dataexpo.autogate.face.service.FaceGroupService;
 import com.dataexpo.autogate.model.User;
-import com.dataexpo.autogate.service.UserService;
+import com.dataexpo.autogate.service.data.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;

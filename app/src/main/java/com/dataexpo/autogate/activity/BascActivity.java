@@ -3,29 +3,20 @@ package com.dataexpo.autogate.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
-
-import androidx.core.content.PermissionChecker;
 
 import com.dataexpo.autogate.listener.GateObserver;
 import com.dataexpo.autogate.listener.MQTTObserver;
 import com.dataexpo.autogate.listener.OnGateServiceCallback;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
+import com.dataexpo.autogate.model.Rfid;
 import com.dataexpo.autogate.model.gate.ReportData;
-import com.dataexpo.autogate.service.UserService;
 
-import java.security.Permission;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
 
 public class BascActivity extends Activity implements GateObserver, MQTTObserver {
     public Context mContext;
@@ -105,7 +96,7 @@ public class BascActivity extends Activity implements GateObserver, MQTTObserver
     }
 
     @Override
-    public void responseStatus(int status) {
+    public void responseStatus(Rfid rfid) {
     }
 
     @Override

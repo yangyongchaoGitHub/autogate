@@ -26,7 +26,7 @@ import com.dataexpo.autogate.face.model.GlobalSet;
 import com.dataexpo.autogate.face.model.LivenessModel;
 import com.dataexpo.autogate.face.model.SingleBaseConfig;
 import com.dataexpo.autogate.model.User;
-import com.dataexpo.autogate.service.UserService;
+import com.dataexpo.autogate.service.data.UserService;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;

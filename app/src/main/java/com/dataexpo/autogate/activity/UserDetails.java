@@ -12,7 +12,6 @@ import com.dataexpo.autogate.comm.FileUtils;
 import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.face.api.FaceApi;
 import com.dataexpo.autogate.model.User;
-import com.dataexpo.autogate.service.UserService;
 
 import static com.dataexpo.autogate.face.manager.ImportFileManager.IMPORT_SUCCESS;
 

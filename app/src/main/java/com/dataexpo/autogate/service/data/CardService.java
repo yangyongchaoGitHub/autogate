@@ -1,17 +1,15 @@
-package com.dataexpo.autogate.service;
+package com.dataexpo.autogate.service.data;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Log;
 
 import com.dataexpo.autogate.comm.DBUtils;
 import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.listener.GateObserver;
+import com.dataexpo.autogate.model.Rfid;
 import com.dataexpo.autogate.model.gate.ReportData;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
 
 public class CardService implements GateObserver {
     private static final String TAG = CardService.class.getSimpleName();
@@ -40,7 +38,7 @@ public class CardService implements GateObserver {
     }
 
     @Override
-    public void responseStatus(int status) {
+    public void responseStatus(Rfid rfid) {
 
     }
 

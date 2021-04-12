@@ -22,7 +22,7 @@ public class TestActivity extends BascActivity {
             public void onClick(View v) {
                 byte b1 = Byte.parseByte(et_1.getText().toString());
                 byte b2 = Byte.parseByte(et_2.getText().toString());
-                MainApplication.getInstance().getService().testOption(b1, b2);
+                //MainApplication.getInstance().getService().testOption(b1, b2);
             }
         });
     }

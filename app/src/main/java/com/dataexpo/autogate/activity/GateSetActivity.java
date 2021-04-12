@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.dataexpo.autogate.R;
 import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.listener.OnGateServiceCallback;
+import com.dataexpo.autogate.model.Rfid;
 import com.dataexpo.autogate.model.gate.ReportData;
 import com.dataexpo.autogate.service.MainApplication;
 
@@ -84,15 +85,12 @@ public class GateSetActivity extends BascActivity implements View.OnClickListene
         if (MainApplication.getInstance().getService() != null) {
             MainApplication.getInstance().getService().addGateObserver(this);
         }
-        int status = MainApplication.getInstance().getGateStatus();
-        responseStatus(status);
     }
 
     @Override
-    public void responseStatus(int status) {
-        super.responseStatus(status);
+    public void responseStatus(Rfid rfid) {
         String statuValue = "";
-        switch (status) {
+        switch (rfid.status) {
             case GATE_STATUS_INIT_NULL_SETTING:
                 statuValue = "设置的端口或者ip为空";
                 break;
@@ -179,9 +177,9 @@ public class GateSetActivity extends BascActivity implements View.OnClickListene
             case R.id.btn_gate_set_confirm:
                 if (checkValue()) {
                     saveConfig();
-                    if (MainApplication.getInstance().getService().getGateServiceStatus() == GATE_STATUS_RUN) {
-                        MainApplication.getInstance().getService().restartGateService();
-                    }
+//                    if (MainApplication.getInstance().getService().getGateServiceStatus() == GATE_STATUS_RUN) {
+//                        MainApplication.getInstance().getService().restartGateService();
+//                    }
                 }
 
                 break;

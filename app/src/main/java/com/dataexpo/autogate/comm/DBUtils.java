@@ -18,6 +18,7 @@ public class DBUtils {
     public final static String TABLE_USER = "gate_user";
     public final static String TABLE_CARD_RECORD = "gate_card_record";
     public final static String TABLE_FACE_RECORD = "gate_face_record";
+    public final static String TABLE_RFID_GATE = "gate_rfid";
 
     private final String dbnamePath = "/gate.db";
     private SQLiteDatabase db;
@@ -82,9 +83,17 @@ public class DBUtils {
                 "cardcode nchar(32)," +
                 "name nchar(64))";
 
+        String sql_rfid_gate = "create table if not exists " + TABLE_RFID_GATE +
+                "(id integer primary key autoincrement," +
+                "ip char(32), " +
+                "name char(64), " +
+                "remark nchar(512), " +
+                "port char(32))";
+
         db.execSQL(sql_user);//创建表 user
         db.execSQL(sql_card_record);//创建表 card_record
         db.execSQL(sql_face_record);//创建表 face_record
+        db.execSQL(sql_rfid_gate);//创建表 rfid_gate
     }
 
     //添加数据基础方法

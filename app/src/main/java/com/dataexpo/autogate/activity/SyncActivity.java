@@ -21,11 +21,10 @@ import com.dataexpo.autogate.model.service.UserQueryConditionVo;
 import com.dataexpo.autogate.retrofitInf.ApiService;
 import com.dataexpo.autogate.retrofitInf.rentity.NetResult;
 import com.dataexpo.autogate.service.MainApplication;
-import com.dataexpo.autogate.service.UserService;
+import com.dataexpo.autogate.service.data.UserService;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

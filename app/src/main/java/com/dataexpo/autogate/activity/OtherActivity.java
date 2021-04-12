@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.dataexpo.autogate.R;
+import com.dataexpo.autogate.model.Rfid;
 import com.dataexpo.autogate.model.gate.ReportData;
 import com.dataexpo.autogate.service.MainApplication;
 
@@ -34,7 +35,7 @@ public class OtherActivity extends BascActivity implements View.OnClickListener 
             MainApplication.getInstance().getService().addMQTTObserver(this);
         }
         int status = MainApplication.getInstance().getGateStatus();
-        responseStatus(status);
+        //responseStatus(status);
         status = MainApplication.getInstance().getMQTTStatus();
         responseMQTTStatus(status);
     }
@@ -56,10 +57,9 @@ public class OtherActivity extends BascActivity implements View.OnClickListener 
     }
 
     @Override
-    public void responseStatus(int status) {
-        super.responseStatus(status);
+    public void responseStatus(Rfid rfid) {
         String statuValue = "";
-        switch (status) {
+        switch (rfid.status) {
             case GATE_STATUS_INIT_NULL_SETTING:
                 statuValue = "设置的端口或者ip为空";
                 break;

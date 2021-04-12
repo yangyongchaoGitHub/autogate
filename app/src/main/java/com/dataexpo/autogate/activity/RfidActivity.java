@@ -1,15 +1,11 @@
 package com.dataexpo.autogate.activity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -18,67 +14,73 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dataexpo.autogate.R;
-import com.dataexpo.autogate.comm.FileUtils;
 import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.listener.OnItemClickListener;
 import com.dataexpo.autogate.listener.OnItemLongClickListener;
-import com.dataexpo.autogate.model.User;
-import com.dataexpo.autogate.service.data.UserService;
-import com.dataexpo.autogate.view.CircleImageView;
+import com.dataexpo.autogate.model.Rfid;
+import com.dataexpo.autogate.model.RfidVo;
+import com.dataexpo.autogate.service.GateService;
+import com.dataexpo.autogate.service.MainApplication;
+import com.dataexpo.autogate.service.data.RfidService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static android.widget.NumberPicker.OnScrollListener.SCROLL_STATE_IDLE;
+import static com.dataexpo.autogate.service.GateService.*;
 
-public class UsersActivity extends BascActivity implements OnItemClickListener, OnItemLongClickListener, View.OnClickListener {
-    private static final String TAG = UsersActivity.class.getSimpleName();
-    private UserAdapter mUserAdapter;
-    private TextView btn_cancel;
-    private TextView btn_delete;
-
-    private Bitmap bitmap = null;
-
-    private boolean isShowCheck = false;
-    private List<User> users = new ArrayList<>();
-
+public class RfidActivity extends BascActivity implements OnItemClickListener, OnItemLongClickListener, View.OnClickListener {
+    private static final String TAG = RfidActivity.class.getSimpleName();
+    private RfidAdapter mAdapter;
     private int index = 0;
     private int pageSize = 10;
     //加载更多数据时最后一项的索引
     private int lastLoadDataItemPosition;
 
+    private List<Rfid> rfids = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user);
+        setContentView(R.layout.activity_rfid);
         mContext = this;
         initView();
-        //test();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        rfids.clear();
+        index = 0;
         initData();
+        if (MainApplication.getInstance().getService() != null) {
+            MainApplication.getInstance().getService().addGateObserver(this);
+        }
     }
 
-    private void initData() {
-        ArrayList<User> list = UserService.getInstance().limitList(index, pageSize);
-        Log.i(TAG, "limitList end size: " + list.size() + " user size: " + users.size() +
-                " lastLoadDataItemPosition " + lastLoadDataItemPosition);
-        if (list.size() > 0) {
-            index += list.size();
-            users.addAll(list);
-            mUserAdapter.setDataList(users);
-            mUserAdapter.notifyDataSetChanged();
-
-        } else {
-            //隐藏底部
-            if (mUserAdapter.footVh != null) {
-                mUserAdapter.footVh.pb.setVisibility(View.INVISIBLE);
-                mUserAdapter.footVh.tv.setVisibility(View.INVISIBLE);
-            }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (MainApplication.getInstance().getService() != null) {
+            MainApplication.getInstance().getService().removeGateObserver(this);
         }
+    }
+
+    @Override
+    public void responseStatus(final Rfid rfid) {
+        Log.i(TAG, "responseStatus ------ " + rfid.status);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (Rfid r: rfids) {
+                    if (r.getId() == rfid.getId()) {
+                        r.status = rfid.status;
+                        mAdapter.notifyDataSetChanged();
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     private void initView() {
@@ -88,15 +90,15 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
         //RecyclerView.LayoutManager layoutManager = new GridLayoutManager(mContext, 4);
         recyclerView.setLayoutManager(layoutManager);
 
-        mUserAdapter = new UserAdapter();
+        mAdapter = new RfidAdapter();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 if (newState == SCROLL_STATE_IDLE &&
-                        lastLoadDataItemPosition == mUserAdapter.getItemCount()){
-                    if (mUserAdapter.footVh != null) {
-                        mUserAdapter.footVh.pb.setVisibility(View.VISIBLE);
-                        mUserAdapter.footVh.tv.setVisibility(View.VISIBLE);
+                        lastLoadDataItemPosition == mAdapter.getItemCount()){
+                    if (mAdapter.footVh != null) {
+                        mAdapter.footVh.pb.setVisibility(View.VISIBLE);
+                        mAdapter.footVh.tv.setVisibility(View.VISIBLE);
                     }
                     new LoadDataThread().start();
                 }
@@ -114,67 +116,56 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
             }
         });
 
-        recyclerView.setAdapter(mUserAdapter);
-        mUserAdapter.setItemClickListener(this);
-        mUserAdapter.setOnItemLongClickListener(this);
+        recyclerView.setAdapter(mAdapter);
+        mAdapter.setItemClickListener(this);
+        mAdapter.setOnItemLongClickListener(this);
 
-        findViewById(R.id.btn_user_manager_back).setOnClickListener(this);
-
-//        btn_cancel = findViewById(R.id.btn_user_manager_cancel);
-////        btn_delete = findViewById(R.id.btn_user_manager_delete);
-////        btn_delete.setOnClickListener(this);
-//        btn_cancel.setOnClickListener(this);
-        findViewById(R.id.btn_user_manager_filter).setOnClickListener(this);
+        findViewById(R.id.btn_add).setOnClickListener(this);
+        findViewById(R.id.btn_back).setOnClickListener(this);
     }
 
     @Override
     public void onItemClick(View view, int position) {
         Log.i(TAG, "onItemClick view: " + view + " position " + position);
-        Intent intent  = new Intent(this, UserDetails.class);
-        User u = users.get(position);
-        intent.putExtra(Utils.EXTRA_EXPO_USRE, u);
+        //点击item时进入详情界面
+        Intent intent  = new Intent(mContext, RfidInfoActivity.class);
+        Rfid rfid = rfids.get(position);
+        RfidVo transf = new RfidVo(rfid.getId(), rfid.getIp(), rfid.getPort(), rfid.getName(), rfid.getRemark(), rfid.status);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Utils.EXTRA_RFID_INFO, transf);
+        intent.putExtras(bundle);
         startActivity(intent);
     }
 
     @Override
     public void onLongItemClick(View view, int position) {
-        Log.i(TAG, "onLongItemClick view: " + view + " position " + position);
+
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_user_manager_filter:
-                Intent intent = new Intent(mContext, UserFilterActivity.class);
-                startActivityForResult(intent, 1);
+            case R.id.btn_back:
+                this.finish();
                 break;
 
-            case R.id.btn_user_manager_back:
-                finish();
+            case R.id.btn_add:
+                startActivity(new Intent(mContext, RfidAddActivity.class));
                 break;
-
-                default:
+            default:
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.i(TAG, "onActityResult!!!! ");
-        users = UserService.getInstance().findUserNoFaceRegist();
-        mUserAdapter.notifyDataSetChanged();
-    }
-
-    public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener {
+    public class RfidAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener {
         private static final int ITEM_FOOTER = 0x1;
         private static final int ITEM_DATA = 0x2;
-        private List<User> mList;
+        private List<Rfid> mList;
         private boolean mShowCheckBox;
         private OnItemClickListener mItemClickListener;
         private OnItemLongClickListener mItemLongClickListener;
         private FooterViewHolder footVh = null;
 
-        private void setDataList(List<User> list) {
+        private void setDataList(List<Rfid> list) {
             mList = list;
         }
 
@@ -184,6 +175,7 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
 
         @Override
         public void onClick(View v) {
+            Log.i(TAG, "------------------------------- " + v);
             if (mItemClickListener != null) {
                 mItemClickListener.onItemClick(v, (Integer) v.getTag());
             }
@@ -205,9 +197,10 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
             Log.i(TAG, "viewType: ------------------ " + viewType);
             switch (viewType){
                 case ITEM_DATA:
-                    view = LayoutInflater.from(mContext).inflate(R.layout.item_user_info_list, parent, false);
+                    view = LayoutInflater.from(mContext).inflate(R.layout.item_rfid_info_list, parent, false);
                     view.setOnClickListener(this);
                     vh = new DataViewHolder(view);
+
                     //使用代码设置宽高（xml布局设置无效时）
                     view.setLayoutParams(new ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -252,43 +245,64 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
                 DataViewHolder dataViewHolder = (DataViewHolder) holder;
 
                 dataViewHolder.itemView.setTag(position);
-                if (mShowCheckBox) {
-                    dataViewHolder.check_btn.setVisibility(View.VISIBLE);
-                    if (mList.get(position).isCheck()) {
-                        dataViewHolder.check_btn.setChecked(true);
-                    } else {
-                        dataViewHolder.check_btn.setChecked(false);
-                    }
-                } else {
-                    dataViewHolder.check_btn.setVisibility(View.GONE);
-                }
+
                 // 添加数据
-                User user = mList.get(position);
-                dataViewHolder.text_name.setText(user.name);
-                String code = user.code;
-                String cardcode = user.cardCode;
+                Rfid rfid = mList.get(position);
+                dataViewHolder.tv_name.setText(rfid.getName());
 
-                dataViewHolder.text_code.setText(code);
-                dataViewHolder.text_cardcode.setText(cardcode);
+                dataViewHolder.tv_ip.setText(rfid.getIp());
+                dataViewHolder.tv_port.setText(rfid.getPort());
 
-                Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(user.image_name));
-                Log.i(TAG, "bitmap: " + bitmap);
-                if (bitmap == null) {
-                    bitmap = getWhite();
+                if (rfid.status == 0) {
+                    rfid.status = GateService.getInstance().getmStatus(rfid.getId());
                 }
-                dataViewHolder.image.setImageBitmap(bitmap);
+
+                Log.i(TAG, " status: " + rfid.status);
+                String statuValue = "··· ···";
+                switch (rfid.status) {
+                    case GATE_STATUS_INIT_NULL_SETTING:
+                        statuValue = "设置的端口或者ip为空";
+                        break;
+
+                    case GATE_STATUS_START:
+                        statuValue = "接口open成功,尝试通讯中，如未成功，需要检查端口是否正确";
+                        break;
+
+                    case GATE_STATUS_RUN:
+                        statuValue = "正常运行中";
+                        break;
+
+                    case GATE_STATUS_INIT_OPEN_FAIL:
+                        statuValue = "打开接口错误";
+                        break;
+
+                    case GATE_STATUS_INIT_NULL_CONTEXT:
+                        statuValue = "上下文为空";
+                        break;
+
+                    case GATE_STATUS_READ_ERROR:
+                        statuValue = "和设备通信失败";
+                        break;
+
+                    case GATE_STATUS_NULL:
+                        statuValue = "设备不存在";
+                        break;
+                    default:
+                }
+                dataViewHolder.tv_status.setText(statuValue);
 
                 dataViewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        if  (mItemLongClickListener != null) {
+                        if (mItemLongClickListener != null) {
                             mItemLongClickListener.onLongItemClick(v, position);
                             return true;
                         }
                         return false;
                     }
                 });
-            }else if (holder instanceof FooterViewHolder){
+
+            }else if (holder instanceof UsersActivity.UserAdapter.FooterViewHolder){
 
             }
         }
@@ -303,20 +317,18 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
          */
         public class DataViewHolder extends RecyclerView.ViewHolder{
             private View itemView;
-            private TextView text_name;
-            private TextView text_code;
-            private TextView text_cardcode;
-            private CircleImageView image;
-            private CheckBox check_btn;
+            private TextView tv_name;
+            private TextView tv_ip;
+            private TextView tv_port;
+            private TextView tv_status;
 
             public DataViewHolder(@NonNull View itemView) {
                 super(itemView);
                 this.itemView = itemView;
-                image = itemView.findViewById(R.id.user_info_image);
-                text_name = itemView.findViewById(R.id.text_user_name);
-                text_code = itemView.findViewById(R.id.text_user_code);
-                text_cardcode = itemView.findViewById(R.id.text_user_cardcode);
-                check_btn = itemView.findViewById(R.id.check_btn);
+                tv_name = itemView.findViewById(R.id.tv_name);
+                tv_ip = itemView.findViewById(R.id.tv_ip);
+                tv_port = itemView.findViewById(R.id.tv_port);
+                tv_status = itemView.findViewById(R.id.tv_status);
             }
         }
 
@@ -330,10 +342,15 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
                 super(itemView);
                 pb = itemView.findViewById(R.id.progressBar);
                 tv = itemView.findViewById(R.id.textView);
+                pb.setVisibility(View.INVISIBLE);
+                tv.setVisibility(View.INVISIBLE);
             }
         }
     }
 
+    /**
+     * 动态加载数据线程
+     */
     class LoadDataThread extends Thread{
         @Override
         public void run() {
@@ -346,11 +363,22 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
         }
     }
 
-    //获取一个白底bitmap white1是一个一像素白点
-    private Bitmap getWhite() {
-        if (bitmap == null) {
-            bitmap = ((BitmapDrawable)getResources().getDrawable(R.drawable.white1)).getBitmap();
+    private void initData() {
+        ArrayList<Rfid> list = RfidService.getInstance().limitList(index, pageSize);
+        Log.i(TAG, "limitList end size: " + list.size() + " rfids size: " + rfids.size() +
+                " lastLoadDataItemPosition " + lastLoadDataItemPosition);
+        if (list.size() > 0) {
+            index += list.size();
+            rfids.addAll(list);
+            mAdapter.setDataList(rfids);
+            mAdapter.notifyDataSetChanged();
+
+        } else {
+            //隐藏底部
+            if (mAdapter.footVh != null) {
+                mAdapter.footVh.pb.setVisibility(View.INVISIBLE);
+                mAdapter.footVh.tv.setVisibility(View.INVISIBLE);
+            }
         }
-        return bitmap;
     }
 }

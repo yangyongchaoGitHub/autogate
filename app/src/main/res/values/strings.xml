@@ -87,5 +87,6 @@
     <string name="faceregistr">人脸是否已注册</string>
     <string name="local_total">本地数据总数</string>
     <string name="server_total">服务器数据总数</string>
+    <string name="backStr"><![CDATA[<]]></string>
 
 </resources>

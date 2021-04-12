@@ -1,4 +1,4 @@
-package com.dataexpo.autogate.service;
+package com.dataexpo.autogate.service.data;
 
 import android.content.ContentValues;
 import android.database.Cursor;

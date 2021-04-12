@@ -2,44 +2,25 @@ package com.dataexpo.autogate.activity;
 
 import android.app.Presentation;
 import android.content.Context;
-import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.company.NetSDK.CB_fSnapRev;
 import com.dataexpo.autogate.R;
 import com.dataexpo.autogate.comm.FileUtils;
-import com.dataexpo.autogate.dahuacameracommon.CapturePictureModule;
-import com.dataexpo.autogate.dahuacameracommon.EncodeModule;
-import com.dataexpo.autogate.dahuacameracommon.IPLoginModule;
-import com.dataexpo.autogate.dahuacameracommon.LivePreviewModule;
-import com.dataexpo.autogate.dahuacameracommon.NetSDKLib;
-import com.dataexpo.autogate.dahuacameracommon.OSDModule;
-import com.dataexpo.autogate.dahuacameracommon.PTZControl;
-import com.dataexpo.autogate.face.callback.FaceDetectCallBack;
 import com.dataexpo.autogate.face.camera.AutoTexturePreviewView;
-import com.dataexpo.autogate.face.manager.FaceSDKManager;
-import com.dataexpo.autogate.face.manager.ImportFileManager;
-import com.dataexpo.autogate.face.model.LivenessModel;
-import com.dataexpo.autogate.listener.FaceOnSecCallback;
 import com.dataexpo.autogate.listener.GateObserver;
-import com.dataexpo.autogate.listener.OnFrameCallback;
+import com.dataexpo.autogate.model.Rfid;
 import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.gate.ReportData;
 import com.dataexpo.autogate.service.MainApplication;
-import com.dataexpo.autogate.service.UserService;
-
-import static com.dataexpo.autogate.model.User.AUTH_SUCCESS;
+import com.dataexpo.autogate.service.data.UserService;
 
 /**
  * 原分屏是小屏，现分屏是大屏，所以做次调整
@@ -169,7 +150,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
     }
 
     @Override
-    public void responseStatus(int status) {
+    public void responseStatus(Rfid rfid) {
 
     }
 }

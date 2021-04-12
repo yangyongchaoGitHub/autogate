@@ -43,6 +43,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.RfidActivity"/>
+        <activity android:name=".activity.RfidInfoActivity"/>
+        <activity android:name=".activity.RfidAddActivity"/>
         <activity android:name=".activity.SyncActivity"/>
         <activity android:name=".activity.ServiceRegisterActivity"/>
         <activity android:name=".activity.GateActivityReverse"/>

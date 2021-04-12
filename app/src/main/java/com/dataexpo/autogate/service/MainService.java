@@ -11,9 +11,12 @@ import com.dataexpo.autogate.listener.MQTTObserver;
 import com.dataexpo.autogate.listener.OnFrameCallback;
 import com.dataexpo.autogate.listener.OnGateServiceCallback;
 import com.dataexpo.autogate.listener.OnServeiceCallback;
+import com.dataexpo.autogate.model.Rfid;
 import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.gate.ReportData;
 import com.dataexpo.autogate.netty.UDPClient;
+import com.dataexpo.autogate.service.data.CardService;
+import com.dataexpo.autogate.service.data.UserService;
 
 import static com.dataexpo.autogate.service.GateService.LED_GREEN;
 import static com.dataexpo.autogate.service.GateService.LED_RED;
@@ -49,9 +52,9 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
         this.callback = onServeiceCallback;
     }
 
-    public int getGateServiceStatus() {
-        return GateService.getInstance().getmStatus();
-    }
+//    public int getGateServiceStatus() {
+//        return GateService.getInstance().getmStatus();
+//    }
 
     public void restartGateService() {
         GateService.getInstance().restart();
@@ -72,18 +75,18 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
 
             if (res != null) {
                 //有此用户
-                ledCtrl(LED_GREEN);
+                ledCtrl(LED_GREEN, mReports.getRfid());
 
             } else {
-                ledCtrl(LED_RED);
+                ledCtrl(LED_RED, mReports.getRfid());
             }
         }
     }
 
     @Override
-    public void responseStatus(int status) {
-        Log.i(TAG, "responseStatus: " + status);
-        MainApplication.getInstance().setGateStatus(status);
+    public void responseStatus(Rfid rfid) {
+        //Log.i(TAG, "responseStatus: " + status);
+        //MainApplication.getInstance().setGateStatus(status);
     }
 
     @Override
@@ -120,28 +123,25 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
         GateService.getInstance().setCallback(callback);
     }
 
-    public void testOption(byte b1, byte b2) {
-        GateService.ledOption(b1, b2);
-    }
-
-    public void ledCtrl(int target) {
-        GateService.getInstance().ledCtrl(target);
+    public void ledCtrl(int target, Rfid rfid) {
+        GateService.getInstance().ledCtrl(target, rfid);
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         //初始化通道门服务
-        GateService.getInstance().start();
         GateService.getInstance().setContext(this);
+        GateService.getInstance().start();
+
 
         addGateObserver(CardService.getInstance());
         addGateObserver(this);
 
 //        MQTTHiveMQService.getInstance().init(this);
 //        MQTTHiveMQService.getInstance().add(this);
-        MQTTService.getInstance().init(this);
-        MQTTService.getInstance().add(this);
+//        MQTTService.getInstance().init(this);
+//        MQTTService.getInstance().add(this);
         client= new UDPClient();
     }
 

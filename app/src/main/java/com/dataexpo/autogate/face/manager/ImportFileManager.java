@@ -8,17 +8,15 @@ import android.util.Log;
 import com.baidu.idl.main.facesdk.FaceInfo;
 import com.baidu.idl.main.facesdk.model.BDFaceImageInstance;
 import com.baidu.idl.main.facesdk.model.BDFaceSDKCommon;
-import com.baidu.idl.main.facesdk.utils.ZipUtils;
 import com.dataexpo.autogate.comm.FileUtils;
 import com.dataexpo.autogate.face.api.FaceApi;
 import com.dataexpo.autogate.face.listener.OnImportListener;
 import com.dataexpo.autogate.face.model.LivenessModel;
 import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.service.MainApplication;
-import com.dataexpo.autogate.service.UserService;
+import com.dataexpo.autogate.service.data.UserService;
 
 import java.io.File;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;

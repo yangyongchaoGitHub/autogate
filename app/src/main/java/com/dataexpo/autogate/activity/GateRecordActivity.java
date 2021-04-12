@@ -1,10 +1,8 @@
 package com.dataexpo.autogate.activity;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,18 +14,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dataexpo.autogate.R;
-import com.dataexpo.autogate.comm.FileUtils;
 import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.listener.OnItemClickListener;
 import com.dataexpo.autogate.listener.OnItemLongClickListener;
 import com.dataexpo.autogate.model.gate.ReportData;
-import com.dataexpo.autogate.service.CardService;
-import com.dataexpo.autogate.service.GateService;
-import com.dataexpo.autogate.view.CircleImageView;
+import com.dataexpo.autogate.service.data.CardService;
 
 import java.util.List;
-
-import static com.dataexpo.autogate.comm.Utils.GATE_DIRECTION_SET;
 
 public class GateRecordActivity extends BascActivity implements View.OnClickListener, OnItemClickListener, OnItemLongClickListener {
     private static String TAG = GateRecordActivity.class.getSimpleName();

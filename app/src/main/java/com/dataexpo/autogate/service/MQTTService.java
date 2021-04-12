@@ -13,6 +13,7 @@ import com.dataexpo.autogate.listener.IGetMessageCallBack;
 import com.dataexpo.autogate.listener.MQTTObserver;
 import com.dataexpo.autogate.listener.MQTTSubject;
 import com.dataexpo.autogate.model.User;
+import com.dataexpo.autogate.service.data.UserService;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;

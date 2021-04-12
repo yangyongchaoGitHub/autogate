@@ -1,7 +1,10 @@
 package com.dataexpo.autogate.model.gate;
 
+import com.dataexpo.autogate.model.Rfid;
+
 public class ReportData {
     private int id;
+    private Rfid rfid;
     private String number = "";
     private int direction = 0;
     private String time = "";
@@ -14,6 +17,14 @@ public class ReportData {
         this.direction = direction;
         this.time = time;
     }
+
+    public ReportData(Rfid rfid, String number, int direction, String time) {
+        this.rfid = rfid;
+        this.number = number;
+        this.direction = direction;
+        this.time = time;
+    }
+
 
     public ReportData(String sData, int sDir, String sTime) {
         super();
@@ -68,5 +79,13 @@ public class ReportData {
 
     public void setDirection(int direction) {
         this.direction = direction;
+    }
+
+    public Rfid getRfid() {
+        return rfid;
+    }
+
+    public void setRfid(Rfid rfid) {
+        this.rfid = rfid;
     }
 }

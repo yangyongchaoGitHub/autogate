@@ -7,7 +7,9 @@ import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.listener.GateObserver;
 import com.dataexpo.autogate.listener.OnGateServiceCallback;
 import com.dataexpo.autogate.listener.GateSubject;
+import com.dataexpo.autogate.model.Rfid;
 import com.dataexpo.autogate.model.gate.ReportData;
+import com.dataexpo.autogate.service.data.RfidService;
 import com.rfid.api.ADReaderInterface;
 import com.rfid.api.GFunction;
 import com.rfid.def.ApiErrDefinition;
@@ -37,19 +39,26 @@ public class GateService extends GateSubject {
     public static final int GATE_STATUS_INIT_NULL_CONTEXT = 5;
     //和设备通信失败
     public static final int GATE_STATUS_READ_ERROR = 6;
+    //设备不存在
+    public static final int GATE_STATUS_NULL = 7;
 
     //红灯
     public static final int LED_RED = 1;
     //绿灯
     public static final int LED_GREEN = 2;
 
-    private boolean bGetReportThrd = true;
-    private Thread mGetReportThrd = null;
-    private int mStatus;
+    private GetReportThrd mGetReportThrd = null;
+    private InitThrd initThrd = null;
+    private boolean rStatus = false;
+    private boolean rStatus_i = false;
+
     private Context mContext;
     private OnGateServiceCallback callback;
 
-    static ADReaderInterface m_reader = new ADReaderInterface();
+    //通道门实体
+    static List<Rfid> rfids= null;
+
+    //static ADReaderInterface m_reader = new ADReaderInterface();
 
     private static class HolderClass {
         private static final GateService instance = new GateService();
@@ -73,33 +82,51 @@ public class GateService extends GateSubject {
      * @param no 控制命令中的端口编号
      * @param model 控制模式（暂时不知道是干嘛用的）
      */
-    public static void ledOption(byte no, byte model) {
-        Object dnOutputOper = m_reader.RDR_CreateSetOutputOperations();
-        m_reader.RDR_AddOneOutputOperation(dnOutputOper, no, model,1,
-                100, 100);
-        int iret = m_reader.RDR_SetOutput(dnOutputOper);
-        Log.i(TAG, "setOption result" + iret);
+    public static void ledOption(byte no, byte model, Rfid rfid) {
+        //TODO: 还要更改多个门
+        if (rfid != null) {
+            try {
+                Object dnOutputOper = rfid.m_reader.RDR_CreateSetOutputOperations();
+                rfid.m_reader.RDR_AddOneOutputOperation(dnOutputOper, no, model,1,
+                        100, 100);
+                int iret = rfid.m_reader.RDR_SetOutput(dnOutputOper);
+                Log.i(TAG, "setOption result" + iret);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void restart() {
-        bGetReportThrd = false;
         try {
-            mGetReportThrd.join();
-        } catch (InterruptedException e) {
+            mGetReportThrd.closeThread();
+            initThrd.closeThread();
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        mGetReportThrd = null;
-
-        if (m_reader.isReaderOpen()) {
-            m_reader.RDR_Close();
+        Log.i(TAG, "restart 0" + rStatus + " " + rStatus_i);
+        while (rStatus && rStatus_i) {
+            break;
         }
+        mGetReportThrd = null;
+        initThrd = null;
+
+        Log.i(TAG, "restart 1" + rStatus + " " + rStatus_i);
+        for (Rfid r: rfids) {
+            Log.i(TAG, "close --- " + r.getId());
+            if (r.m_reader.isReaderOpen()) {
+                r.m_reader.RDR_Close();
+            }
+        }
+
+        Log.i(TAG, "restart 2");
         start();
     }
 
     //获取设备信息
-    private boolean getDeviceInfo() {
+    private boolean getDeviceInfo(Rfid rfid) {
         StringBuffer buffer = new StringBuffer();
-        int iret = m_reader.RDR_GetReaderInfor(buffer);
+        int iret = rfid.m_reader.RDR_GetReaderInfor(buffer);
         //获取设备信息成功，说明正常通信
         return iret == ApiErrDefinition.NO_ERROR;
     }
@@ -112,9 +139,9 @@ public class GateService extends GateSubject {
     }
 
     @Override
-    public void notifyStatus(int status) {
+    public void notifyStatus(Rfid rfid) {
         for(Object obs: gateObservers) {
-            ((GateObserver)obs).responseStatus(mStatus);
+            ((GateObserver)obs).responseStatus(rfid);
         }
     }
 
@@ -122,186 +149,217 @@ public class GateService extends GateSubject {
         callback = onGateServiceCallback;
     }
 
-    public int getmStatus() {
-        return mStatus;
+    public int getmStatus(int id) {
+        int result = GATE_STATUS_NULL;
+        for (int i = 0; i < rfids.size(); i++) {
+            if (rfids.get(i).getId() == id) {
+                result = rfids.get(i).status;
+                break;
+            }
+        }
+        return result;
     }
 
-    int init() {
+    int init(Rfid rfid) {
         if (mContext == null) {
-            mStatus = GATE_STATUS_INIT_NULL_CONTEXT;
-            return mStatus;
+            return GATE_STATUS_INIT_NULL_CONTEXT;
         }
 
 //        String ip = Utils.getGATEConfig(mContext, GATE_IP);
 //        String port = Utils.getGATEConfig(mContext, GATE_PORT);
         //String ip = "192.168.1.222";
 
-        String ip = "192.168.1.170";
-        String port = "6012";
+//        String ip = "192.168.1.170";
+//        String port = "6012";
 
+        String ip = rfid.getIp();
+        String port = rfid.getPort();
 
         if ("".equals(ip) || "".equals(port)) {
             //其中有一个为空则为非法
-            mStatus = GATE_STATUS_INIT_NULL_SETTING;
-            return mStatus;
+            return GATE_STATUS_INIT_NULL_SETTING;
         }
 
         String conStr = String.format(
                 "RDType=G302;CommType=NET;RemoteIp=%s;RemotePort=%s",
                 ip, port);
-        int iret = m_reader.RDR_Open(conStr);
+        Log.i(TAG, " connect: " + conStr);
+        int iret = rfid.m_reader.RDR_Open(conStr);
 
         if (iret != ApiErrDefinition.NO_ERROR) {
-            mStatus = GATE_STATUS_INIT_OPEN_FAIL;
+            return GATE_STATUS_INIT_OPEN_FAIL;
         } else {
-            mStatus = GATE_STATUS_START;
+            return GATE_STATUS_START;
         }
-
-        return mStatus;
     }
 
     public void start() {
-        mGetReportThrd = new Thread(new GetReportThrd());
-        mGetReportThrd.start();
+        rfids = RfidService.getInstance().listAll();
 
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                int i = 0;
-//                while (i++ < 15) {
-//                    try {
-//                        Thread.sleep(3000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                    ReportData data;
-//                    if (i == 0) {
-//                        data = new ReportData("E0040150C71459F3", 123, "123");
-//                    } else if (i == 1) {
-//                        data = new ReportData("E0040150C715D092", 123, "123");
-//                    } else {
-//                        data = new ReportData("E0040150C714EA6A", 123, "123");
-//                    }
-//
-//                    notifyGate(data);
-//                }
-//            }
-//        }).start();
+        initThrd = new InitThrd();
+        rStatus_i = true;
+        initThrd.start();
+
+        mGetReportThrd = new GetReportThrd();
+        rStatus = true;
+        mGetReportThrd.start();
     }
 
-    public void ledCtrl(int target) {
+    public void ledCtrl(int target, Rfid rfid) {
         if (target == LED_RED) {
-            ledOption((byte)2,(byte)3);
+            ledOption((byte)2,(byte)3, rfid);
         } else if (target == LED_GREEN) {
-            ledOption((byte)3,(byte)3);
+            ledOption((byte)3,(byte)3, rfid);
         }
     }
 
-    private class GetReportThrd implements Runnable
-    {
+    private class InitThrd extends Thread {
+        private boolean bGetReportThrd = true;
+
+        public void closeThread() {
+            bGetReportThrd = false;
+        }
+        @Override
         public void run() {
-            bGetReportThrd = true;
-            int iret;
+            int statusChange;
+
+            while (bGetReportThrd) {
+                for (Rfid r: rfids) {
+                    statusChange = r.status;
+                    if (System.currentTimeMillis() - r.lastConnect > 1000 && r.status != GATE_STATUS_RUN) {
+                        if (r.status == GATE_STATUS_START) {
+                            if (getDeviceInfo(r)) {
+                                r.status = GATE_STATUS_RUN;
+                                Log.i(TAG, "----  1 GATE_STATUS_RUNGATE_STATUS_RUNGATE_STATUS_RUNGATE_STATUS_RUN");
+                            }
+                        } else {
+                            r.status = init(r);
+                        }
+
+                        r.lastConnect = System.currentTimeMillis();
+
+//                        initResult = init(r);
+//                        if (initResult == GATE_STATUS_START) {
+//                            //获取设备信息，获取到说明通信正常
+//                            if (getDeviceInfo(r)) {
+//                                r.status = GATE_STATUS_RUN;
+//                                Log.i(TAG, "---- GATE_STATUS_RUNGATE_STATUS_RUNGATE_STATUS_RUNGATE_STATUS_RUN");
+//                            } else {
+//                                r.status = initResult;
+//                            }
+//                        } else {
+//                            r.status = initResult;
+//                        }
+                    }
+                    if (statusChange != r.status) {
+                        Log.i(TAG, "---- GATE_STATUS_RUNGATE_STATUS_RUNGATE_STATUS_RUNGATE_STATUS_RUN notifyStatus");
+                        notifyStatus(r);
+                    }
+                }
+            }
+            rStatus_i = false;
+        }
+    }
+
+    private class GetReportThrd extends Thread {
+        private boolean bGetReportThrd = true;
+
+        public void closeThread() {
+            bGetReportThrd = false;
+        }
+
+        public void run() {
+            int iret, initResult;
+
             byte flag = 0;
 
             while (bGetReportThrd) {
-                if (init() == GATE_STATUS_START) {
-                    if (getDeviceInfo()) {
-                        break;
-                    }
-                    mStatus = GATE_STATUS_READ_ERROR;
-                }
-
-                //notifyObserver(mStatus, null);
-                notifyStatus(mStatus);
-
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            mStatus = GATE_STATUS_RUN;
-
-            notifyStatus(mStatus);
-            //notifyObserver(mStatus, null);
-
-            while (bGetReportThrd) {
-                iret = m_reader.RDR_BuffMode_FetchRecords(flag);
-                if (iret == 0) {
-                    flag = 1;
-                    int nCount = m_reader.RDR_GetTagReportCount();
-
-                    if (nCount > 0) {
-                        Object hReport = m_reader.RDR_GetTagDataReport(RfidDef.RFID_SEEK_FIRST);
-
-                        while (hReport != null) {
-                            byte[] reportBuf = new byte[64];
-                            int[] nSize = new int[1];
-                            iret = ADReaderInterface.RDR_ParseTagDataReportRaw(
-                                    hReport, reportBuf, nSize);
-
-                            if (iret == 0) {
-                                if (nSize[0] < 9) {
-                                    hReport = m_reader
-                                            .RDR_GetTagDataReport(RfidDef.RFID_SEEK_NEXT);
-                                    continue;
-                                }
-                                // byte evntType;
-                                byte direction;
-                                byte[] time = new byte[6];
-                                int dataLen;
-
-                                // evntType = reportBuf[0];
-                                direction = reportBuf[1];
-                                for (int i = 0; i < 6; i++) {
-                                    time[i] = reportBuf[2 + i];
-                                }
-                                dataLen = reportBuf[8];
-                                if (dataLen < 0) {
-                                    dataLen += 256;
-                                }
-                                nSize[0] -= 9;
-                                if (nSize[0] < dataLen) {
-                                    hReport = m_reader
-                                            .RDR_GetTagDataReport(RfidDef.RFID_SEEK_NEXT);
-                                    continue;
-                                }
-
-                                byte[] byData = new byte[dataLen];
-
-
-                                System.arraycopy(reportBuf, 9, byData, 0,
-                                        dataLen);
-
-                                for (byte b:byData) {
-                                    System.out.print(b + " ");
-                                }
-                                System.out.println("-");
-                                //获取是否取反通过方向
-                                String dire = Utils.getGATEConfig(mContext, GATE_DIRECTION_SET);
-
-                                direction = (byte)("".equals(dire) ? 1 : Integer.parseInt(dire) == 2 ?
-                                        (direction == 1 ? 2 : 1) : direction);
-
-                                ReportData report = new ReportData(GFunction.encodeHexStr(byData),
-                                        direction, GFunction.encodeHexStr(time));
-
-                                notifyGate(report);
-                                hReport = m_reader
-                                        .RDR_GetTagDataReport(RfidDef.RFID_SEEK_NEXT);
-                            }
+                for (Rfid r: rfids) {
+                    if (r.status == GATE_STATUS_RUN) {
+                        if (r.m_reader == null) {
+                            continue;
                         }
+
+                        try {
+                            iret = r.m_reader.RDR_BuffMode_FetchRecords(flag);
+                            if (iret == 0) {
+                                flag = 1;
+                                int nCount = r.m_reader.RDR_GetTagReportCount();
+
+                                if (nCount > 0) {
+                                    Object hReport = r.m_reader.RDR_GetTagDataReport(RfidDef.RFID_SEEK_FIRST);
+
+                                    while (hReport != null) {
+                                        byte[] reportBuf = new byte[64];
+                                        int[] nSize = new int[1];
+                                        iret = ADReaderInterface.RDR_ParseTagDataReportRaw(
+                                                hReport, reportBuf, nSize);
+
+                                        if (iret == 0) {
+                                            if (nSize[0] < 9) {
+                                                hReport = r.m_reader
+                                                        .RDR_GetTagDataReport(RfidDef.RFID_SEEK_NEXT);
+                                                continue;
+                                            }
+                                            // byte evntType;
+                                            byte direction;
+                                            byte[] time = new byte[6];
+                                            int dataLen;
+
+                                            // evntType = reportBuf[0];
+                                            direction = reportBuf[1];
+                                            for (int i = 0; i < 6; i++) {
+                                                time[i] = reportBuf[2 + i];
+                                            }
+                                            dataLen = reportBuf[8];
+                                            if (dataLen < 0) {
+                                                dataLen += 256;
+                                            }
+                                            nSize[0] -= 9;
+                                            if (nSize[0] < dataLen) {
+                                                hReport = r.m_reader
+                                                        .RDR_GetTagDataReport(RfidDef.RFID_SEEK_NEXT);
+                                                continue;
+                                            }
+
+                                            byte[] byData = new byte[dataLen];
+
+
+                                            System.arraycopy(reportBuf, 9, byData, 0,
+                                                    dataLen);
+
+                                            for (byte b:byData) {
+                                                System.out.print(b + " ");
+                                            }
+                                            System.out.println("-");
+                                            //获取是否取反通过方向
+                                            String dire = Utils.getGATEConfig(mContext, GATE_DIRECTION_SET);
+
+                                            direction = (byte)("".equals(dire) ? 1 : Integer.parseInt(dire) == 2 ?
+                                                    (direction == 1 ? 2 : 1) : direction);
+
+                                            ReportData report = new ReportData(r, GFunction.encodeHexStr(byData),
+                                                    direction, GFunction.encodeHexStr(time));
+
+                                            notifyGate(report);
+                                            hReport = r.m_reader
+                                                    .RDR_GetTagDataReport(RfidDef.RFID_SEEK_NEXT);
+                                        }
+                                    }
+                                }
+                            } else {
+                                r.status = GATE_STATUS_READ_ERROR;
+                                Log.i(TAG, "？？？？？？？？？？？？？？ ");
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }
-//                else {
-//                    notifyGate(null);
-//                }
             }
-            /**
-             * 可以发送反馈数据
-             */
+            Log.i(TAG, "GetReportThrd end" + this.getName());
+            rStatus = false;
         }
     }
 }

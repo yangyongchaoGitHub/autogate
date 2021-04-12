@@ -25,6 +25,9 @@ import java.util.Enumeration;
 public class Utils {
 
     public static final String EXTRA_EXPO_USRE = "extra_expo_user";
+
+    public static final String EXTRA_RFID_INFO = "extra_rfid_info";
+
     //TODO: change config filename
     //public static String USER_XML = "user";
     public static String MQTT_XML = "mqtt";

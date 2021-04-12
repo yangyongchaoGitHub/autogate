@@ -1,24 +1,16 @@
 package com.dataexpo.autogate.activity;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
-import android.hardware.display.DisplayManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
-import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,13 +18,11 @@ import android.widget.Toast;
 
 import com.company.NetSDK.CB_fSnapRev;
 import com.dataexpo.autogate.R;
-import com.dataexpo.autogate.comm.DBUtils;
 import com.dataexpo.autogate.comm.FileUtils;
 import com.dataexpo.autogate.dahuacameracommon.CapturePictureModule;
 import com.dataexpo.autogate.dahuacameracommon.EncodeModule;
 import com.dataexpo.autogate.dahuacameracommon.IPLoginModule;
 import com.dataexpo.autogate.dahuacameracommon.LivePreviewModule;
-import com.dataexpo.autogate.dahuacameracommon.NetSDKLib;
 import com.dataexpo.autogate.dahuacameracommon.OSDModule;
 import com.dataexpo.autogate.dahuacameracommon.PTZControl;
 import com.dataexpo.autogate.face.callback.FaceDetectCallBack;
@@ -40,28 +30,18 @@ import com.dataexpo.autogate.face.camera.AutoTexturePreviewView;
 import com.dataexpo.autogate.face.camera.CameraPreviewManager;
 import com.dataexpo.autogate.face.listener.SdkInitListener;
 import com.dataexpo.autogate.face.manager.FaceSDKManager;
-import com.dataexpo.autogate.face.manager.ImportFileManager;
 import com.dataexpo.autogate.face.model.LivenessModel;
 import com.dataexpo.autogate.hikvision.control.DevManageGuider;
 import com.dataexpo.autogate.hikvision.control.SDKGuider;
 import com.dataexpo.autogate.listener.FaceOnSecCallback;
 import com.dataexpo.autogate.listener.OnFrameCallback;
-import com.dataexpo.autogate.listener.OnServeiceCallback;
 import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.gate.ReportData;
-import com.dataexpo.autogate.retrofitInf.ApiService;
-import com.dataexpo.autogate.retrofitInf.rentity.NetResult;
 import com.dataexpo.autogate.service.MainApplication;
-import com.dataexpo.autogate.service.MainService;
-import com.dataexpo.autogate.service.UserService;
+import com.dataexpo.autogate.service.data.UserService;
 import com.hikvision.netsdk.HCNetSDK;
 import com.hikvision.netsdk.NET_DVR_PREVIEWINFO;
 
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 
 import static com.dataexpo.autogate.model.User.AUTH_SUCCESS;
