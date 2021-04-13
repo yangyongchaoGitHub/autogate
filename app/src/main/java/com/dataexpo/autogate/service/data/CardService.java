@@ -54,12 +54,28 @@ public class CardService implements GateObserver {
     }
 
     /**
+     * 获取全部闸机通过记录的总数
+     * @return
+     */
+    public int countOfTotalGate() {
+        return DBUtils.getInstance().count("select count(id) from " +
+                DBUtils.TABLE_CARD_RECORD);
+    }
+
+    /**
+     * 清空全部日志
+     */
+    public void clearAllData() {
+        DBUtils.getInstance().delDataAll(DBUtils.TABLE_CARD_RECORD);
+    }
+
+    /**
      * 查询全部通过记录
      * 返回List
      */
     public ArrayList<ReportData> listAll() {
         ArrayList<ReportData> list = new ArrayList<>();
-        Cursor cursor = DBUtils.getInstance().listAll(DBUtils.TABLE_CARD_RECORD, null, null, null, null, null, null);
+        Cursor cursor = DBUtils.getInstance().listAll(DBUtils.TABLE_CARD_RECORD, null, null, null, null, null, "id desc");
 
         while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex("id"));

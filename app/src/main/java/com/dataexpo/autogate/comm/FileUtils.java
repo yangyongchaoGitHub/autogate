@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -135,6 +136,44 @@ public class FileUtils {
         }
     }
 
+    public static int getImgCount() {
+        File file = getRegistedDirectory();
+        if (file != null && file.exists()) {
+            File[] files = file.listFiles();
+            if (files == null) {
+                return 0;
+            }
+
+            return files.length;
+        }
+        return 0;
+    }
+
+    public static void clearImg() {
+        File file = getRegistedDirectory();
+
+        if (file != null) {
+            deleteFiles(file);
+        }
+    }
+
+    public static void deleteFiles(File path) {
+        if (path.exists()) {
+            File[] files = path.listFiles();
+            if (files == null) {
+                return;
+            }
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isDirectory()) {
+                    deleteFiles(files[i]);
+                } else {
+                    files[i].delete();
+                }
+            }
+        }
+        path.delete();
+    }
+
     /**
      *
      * @param code 图片名称
@@ -151,7 +190,7 @@ public class FileUtils {
     }
 
     /**
-     * 获取导入图片文件的目录信息
+     * 获取服务器人像数据文件的目录信息
      */
     public static File getRegistedDirectory() {
         File sdRootFile = getSDRootFile();

@@ -1,11 +1,13 @@
 package com.dataexpo.autogate.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,11 +67,18 @@ public class ServiceRegisterActivity extends BascActivity implements View.OnClic
 
         tv_expo_name.setText(expoName);
         tv_address.setText(address);
+
+        findViewById(R.id.btn_go_rfid).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.btn_go_rfid:
+                //到rfid配置界面
+                startActivity(new Intent(mContext, RfidActivity.class));
+                break;
+
             case R.id.tv_back:
                 this.finish();
                 break;

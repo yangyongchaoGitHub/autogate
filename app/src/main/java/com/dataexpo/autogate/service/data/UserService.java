@@ -406,6 +406,10 @@ public class UserService {
         return DBUtils.getInstance().count("select count(id) from " + DBUtils.TABLE_USER);
     }
 
+    public int countOfImg() {
+        return FileUtils.getImgCount();
+    }
+
     /**
      * 获取未同步人像的数量
      * @return
@@ -423,6 +427,13 @@ public class UserService {
         ContentValues contentValues = new ContentValues();
         contentValues.put("image_sync", 0);
         return DBUtils.getInstance().update(DBUtils.TABLE_USER, contentValues, "pid = ?", new String[]{startEuId+ ""});
+    }
+
+    /**
+     * 情况所有人像
+     */
+    public void clearAllImg() {
+        FileUtils.clearImg();
     }
 
     /**

@@ -274,6 +274,12 @@ public class GateService extends GateSubject {
             byte flag = 0;
 
             while (bGetReportThrd) {
+                try {
+                    sleep(20);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 for (Rfid r: rfids) {
                     if (r.status == GATE_STATUS_RUN) {
                         if (r.m_reader == null) {

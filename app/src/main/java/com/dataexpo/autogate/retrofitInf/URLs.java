@@ -1,7 +1,7 @@
 package com.dataexpo.autogate.retrofitInf;
 
 public class URLs {
-    public static final String baseUrl = "http://192.168.1.14:8080/Doors/";
+    public static final String baseUrl = "http://192.168.1.17:8080/Doors/";
 
     private static final String postfix = ".do";
 

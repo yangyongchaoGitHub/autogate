@@ -37,6 +37,7 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
     private ImageButton ib_net;
     private ImageButton ib_mode;
     private ImageButton ib_clear;
+    private ImageButton ib_8;
 
     private ServiceConnection mConnection;
 
@@ -129,6 +130,7 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
         ib_net = findViewById(R.id.bl_1);
         ib_mode = findViewById(R.id.bl_2);
         ib_clear = findViewById(R.id.bl_3);
+        ib_8 = findViewById(R.id.bl_4);
 
         ib_monitor.setOnClickListener(this);
         ib_register.setOnClickListener(this);
@@ -137,6 +139,7 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
         ib_net.setOnClickListener(this);
         ib_mode.setOnClickListener(this);
         ib_clear.setOnClickListener(this);
+        ib_8.setOnClickListener(this);
     }
 
     @Override
@@ -179,7 +182,13 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
                 break;
 
             case R.id.bl_3:
-                startActivity(new Intent(mContext, RfidActivity.class));
+                //模式选择
+
+                break;
+
+            case R.id.bl_4:
+                //到清理数据界面
+                startActivity(new Intent(mContext, ClearDataActivity.class));
                 break;
             default:
         }
