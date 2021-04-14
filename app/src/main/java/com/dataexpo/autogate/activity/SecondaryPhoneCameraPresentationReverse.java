@@ -11,16 +11,40 @@ import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dataexpo.autogate.R;
 import com.dataexpo.autogate.comm.FileUtils;
+import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.face.camera.AutoTexturePreviewView;
 import com.dataexpo.autogate.listener.GateObserver;
 import com.dataexpo.autogate.model.Rfid;
 import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.gate.ReportData;
+import com.dataexpo.autogate.model.service.Device;
+import com.dataexpo.autogate.model.service.MsgBean;
+import com.dataexpo.autogate.model.service.Permissions;
+import com.dataexpo.autogate.model.service.RegStatus;
+import com.dataexpo.autogate.model.service.UserAndPermission;
+import com.dataexpo.autogate.retrofitInf.ApiService;
+import com.dataexpo.autogate.retrofitInf.rentity.NetResult;
+import com.dataexpo.autogate.service.GateService;
 import com.dataexpo.autogate.service.MainApplication;
+import com.dataexpo.autogate.service.data.CardService;
 import com.dataexpo.autogate.service.data.UserService;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+
+import static com.dataexpo.autogate.service.GateService.LED_GREEN;
+import static com.dataexpo.autogate.service.GateService.LED_RED;
 
 /**
  * 原分屏是小屏，现分屏是大屏，所以做次调整
@@ -36,15 +60,23 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
     private User faceCurrUser = null;
     private User GateCurrUser = null;
 
+    private ImageView iv_pass_status;
+    private CircularProgressView progress_view;
+
     private ServiceConnection mConnection;
     private AutoTexturePreviewView mAutoCameraPreviewView;
 
     private static final int PREFER_WIDTH = 1280;
     private static final int PERFER_HEIGH = 720;
 
+    private Retrofit mRetrofit;
+    private Integer requestNum = 0;
+    private Map<Integer, ReportData> requestMap = new HashMap<>();
+
     public SecondaryPhoneCameraPresentationReverse(Context outerContext, Display display) {
         super(outerContext, display);
         mContext = outerContext;
+        mRetrofit = MainApplication.getmRetrofit();
     }
 
     @Override
@@ -71,6 +103,9 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
         mAutoCameraPreviewView = findViewById(R.id.auto_camera_preview_view);
 
         findViewById(R.id.btn_import).setOnClickListener(this);
+
+        iv_pass_status = findViewById(R.id.iv_pass_status);
+        progress_view = findViewById(R.id.progress_view);
     }
 
     @Override
@@ -115,6 +150,9 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
             @Override
             public void run() {
                 if (mReports != null) {
+                    boolean bQuery = false;
+
+                    iv_pass_status.setVisibility(View.INVISIBLE);
                     Log.i(TAG, "responseData card: " + mReports.getNumber() + " time " + mReports.getTime());
                     User user = new User();
                     user.cardCode = mReports.getNumber();
@@ -137,13 +175,31 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                         iv_head.setImageBitmap(bitmap);
                         iv_head.setVisibility(View.VISIBLE);
 
-                        tv_name.setText(res.name);
+                        if (MainApplication.getInstance().getpModel() == 1 &&
+                                MainApplication.getInstance().getPermissions() != null) {
+                            //查询权限
+                            queryPermission(mReports);
+                            bQuery = true;
+                        } else {
+                            tv_name.setText(res.name);
+                        }
 
                     } else {
                         iv_head.setVisibility(View.INVISIBLE);
                         tv_name.setText("未注册！");
                     }
                     tv_direction.setText("In".equals(mReports.getDirection()) ? "进" : "出");
+
+                    //没有向服务器查询，则表示不符合
+                    if (MainApplication.getInstance().getpModel() == 1 &&
+                            MainApplication.getInstance().getPermissions() != null && !bQuery) {
+                        mReports.setLtime(Utils.timeNowLong());
+                        mReports.setModel(1);
+                        mReports.setAddress(MainApplication.getInstance().getPermissions().getNames());
+                        mReports.setStatus(1);
+                        mReports.setPermissionid(MainApplication.getInstance().getPermissions().getId());
+                        CardService.getInstance().insert(mReports);
+                    }
                 }
             }
         });
@@ -152,5 +208,120 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
     @Override
     public void responseStatus(Rfid rfid) {
 
+    }
+
+    private void queryPermission(ReportData mReports) {
+        iv_head.post(new Runnable() {
+            @Override
+            public void run() {
+                progress_view.setVisibility(View.VISIBLE);
+            }
+        });
+
+        ApiService apiService = mRetrofit.create(ApiService.class);
+
+        Call<MsgBean> call = apiService.checkCard(mReports.getNumber());
+        requestMap.put(call.hashCode(), mReports);
+
+        call.enqueue(new Callback<MsgBean>() {
+            @Override
+            public void onResponse(Call<MsgBean> call, Response<MsgBean> response) {
+                MsgBean result = response.body();
+                iv_head.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        progress_view.setVisibility(View.INVISIBLE);
+                        ReportData reportData = requestMap.get(call.hashCode());
+
+                        if (reportData == null) {
+                            Toast.makeText(mContext, "接口访问失败，请检查网络或联系服务器管理员", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (result == null) {
+                            Toast.makeText(mContext, "接口访问失败，请检查网络或联系服务器管理员", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        Permissions permissions = MainApplication.getInstance().getPermissions();
+
+                        if (result.data != null) {
+                            UserAndPermission userAndPermission = result.data;
+                            Log.i(TAG, " result.data  " + result.data.toString());
+
+                            //获取这个观众的权限
+                            List<RegStatus> regStatuses = userAndPermission.getRegList();
+                            int status = 1;
+                            for (RegStatus r: regStatuses) {
+                                if (permissions.getId() == r.getRegionId()) {
+                                    status = 2;
+                                    break;
+                                }
+                            }
+
+                            Log.i(TAG, "check  status   " + status);
+
+                            //有权限
+                            if (status == 2) {
+                                tv_name.setText(userAndPermission.getUiName());
+                                iv_pass_status.setImageResource(R.drawable.success);
+                                //发送控制信号
+                                GateService.getInstance().ledCtrl(LED_GREEN, reportData.getRfid());
+                            } else {
+                                iv_pass_status.setImageResource(R.drawable.error);
+                                //发送控制信号
+                                GateService.getInstance().ledCtrl(LED_RED, reportData.getRfid());
+                            }
+
+                            iv_pass_status.setVisibility(View.VISIBLE);
+
+                            //保存日志
+                            mReports.setLtime(Utils.timeNowLong());
+                            mReports.setModel(1);
+                            mReports.setPid(userAndPermission.getEuId());
+                            mReports.setAddress(MainApplication.getInstance().getPermissions().getNames());
+                            mReports.setPermissionid(MainApplication.getInstance().getPermissions().getId());
+                            mReports.setStatus(status);
+                            CardService.getInstance().insert(mReports);
+
+                        } else {
+                            mReports.setLtime(Utils.timeNowLong());
+                            mReports.setModel(1);
+                            mReports.setAddress(MainApplication.getInstance().getPermissions().getNames());
+                            mReports.setStatus(1);
+                            mReports.setPermissionid(MainApplication.getInstance().getPermissions().getId());
+                            CardService.getInstance().insert(mReports);
+                            iv_head.setVisibility(View.INVISIBLE);
+                            iv_head.setImageResource(R.drawable.err);
+                            tv_name.setText("非法通过！");
+                            return;
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Call<MsgBean> call, Throwable t) {
+                iv_head.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        ReportData reportData = requestMap.get(call.hashCode());
+
+                        if (reportData != null) {
+                            mReports.setLtime(Utils.timeNowLong());
+                            mReports.setModel(1);
+                            mReports.setAddress(MainApplication.getInstance().getPermissions().getNames());
+                            mReports.setStatus(1);
+                            mReports.setPermissionid(MainApplication.getInstance().getPermissions().getId());
+                            CardService.getInstance().insert(mReports);
+                        }
+
+                        progress_view.setVisibility(View.INVISIBLE);
+                        Toast.makeText(mContext, "接口访问失败，请检查网络或联系服务器管理员", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                Log.i(TAG, "onFailure" + t.toString());
+            }
+        });
     }
 }

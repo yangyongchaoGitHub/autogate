@@ -1,7 +1,9 @@
 package com.dataexpo.autogate.retrofitInf;
 
 import com.dataexpo.autogate.model.service.Device;
+import com.dataexpo.autogate.model.service.MsgBean;
 import com.dataexpo.autogate.model.service.PageResult;
+import com.dataexpo.autogate.model.service.PermissionBean;
 import com.dataexpo.autogate.model.service.UserEntityVo;
 import com.dataexpo.autogate.model.service.UserQueryConditionVo;
 import com.dataexpo.autogate.retrofitInf.rentity.NetResult;
@@ -29,4 +31,11 @@ public interface ApiService {
 
     @GET(queryUserImageUrl)
     Call<ResponseBody> querySyncUserImage(@Path("eucode") String eucode);
+
+    @GET(queryAccessGroupUrl)
+    Call<PermissionBean> queryAccessGroup(@Query("expoId") String expoId);
+
+    //获取卡号在服务器的信息
+    @GET(checkCardUrl)
+    Call<MsgBean> checkCard(@Query("ICD") String icd);
 }

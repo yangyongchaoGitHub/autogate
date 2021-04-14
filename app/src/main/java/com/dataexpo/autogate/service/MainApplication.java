@@ -1,8 +1,11 @@
 package com.dataexpo.autogate.service;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.company.NetSDK.NET_DEVICEINFO_Ex;
+import com.dataexpo.autogate.comm.Utils;
+import com.dataexpo.autogate.model.service.Permissions;
 import com.dataexpo.autogate.retrofitInf.URLs;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -11,7 +14,12 @@ import java.util.concurrent.Executors;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import static com.dataexpo.autogate.comm.Utils.MODEL_NAME;
+import static com.dataexpo.autogate.comm.Utils.PERMISSION_ID;
+import static com.dataexpo.autogate.comm.Utils.PERMISSION_NAME;
+
 public class MainApplication extends Application {
+    private final static String TAG = MainApplication.class.getSimpleName();
     public static int IMPORT_MQTT = 1;
     public static int IMPORT_LOCALFILE = 2;
     private static MainApplication application;
@@ -20,6 +28,10 @@ public class MainApplication extends Application {
     private volatile int MQTTStatus = -1;
     private int faceSDKStatus;
     private int importStatus = IMPORT_MQTT;
+    //通道权限
+    private Permissions permissions;
+    //当前运行模式  0为普通模式，1为验证识别模式(按不同权限区别可进入区域) 默认是普通模式
+    private int pModel = 0;
 
     //网络框架
     private static Retrofit mRetrofit;
@@ -44,6 +56,22 @@ public class MainApplication extends Application {
         super.onCreate();
         application = this;
         createRetrofit();
+        String model = Utils.getModel(this, MODEL_NAME);
+        if (model.equals("验证识别模式")) {
+            pModel = 1;
+            try {
+                permissions = new Permissions();
+                permissions.setId(Integer.parseInt(Utils.getModel(this, PERMISSION_ID)));
+                permissions.setNames(Utils.getModel(this, PERMISSION_NAME));
+            } catch (Exception e) {
+                permissions = null;
+            }
+        }
+
+        Log.i(TAG, "onCreate " + model + " " + permissions);
+        if (permissions != null) {
+            Log.i(TAG, "onCreate permissions: " + permissions.getId() + "  ||  " + permissions.getNames());
+        }
     }
 
     public long getLoginHandle() {
@@ -103,5 +131,21 @@ public class MainApplication extends Application {
                 .addConverterFactory(JacksonConverterFactory.create(new ObjectMapper()))
                 .callbackExecutor(Executors.newSingleThreadExecutor())
                 .build();
+    }
+
+    public int getpModel() {
+        return pModel;
+    }
+
+    public void setpModel(int pModel) {
+        this.pModel = pModel;
+    }
+
+    public Permissions getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Permissions permissions) {
+        this.permissions = permissions;
     }
 }

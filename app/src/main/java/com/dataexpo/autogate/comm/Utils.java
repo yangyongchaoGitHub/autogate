@@ -32,7 +32,8 @@ public class Utils {
     //public static String USER_XML = "user";
     public static String MQTT_XML = "mqtt";
     public static String GATE_XML = "gate";
-    public static String EXPO_XML = "gate";
+    public static String EXPO_XML = "expo";
+    public static String MODEL_XML = "model";
 
     public static String MQTT_HOST = "host";
     public static String MQTT_PORT = "port";
@@ -47,6 +48,24 @@ public class Utils {
 
     public static String EXPO_NAME = "expo_name";
     public static String EXPO_ADDRESS = "expo_address";
+
+    public static String MODEL_NAME = "model_name";
+    public static String PERMISSION_ID = "permission_id";
+    public static String PERMISSION_NAME = "permission_name";
+
+    public synchronized static String getModel(Context context, String key) {
+        SharedPreferences preferences = context.getSharedPreferences(MODEL_XML,
+                Context.MODE_PRIVATE);
+        return preferences.getString(key, "");
+    }
+
+    public synchronized static void saveModel(Context context, String key, String val) {
+        SharedPreferences preferences = context.getSharedPreferences(MODEL_XML,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(key, val);
+        editor.commit();
+    }
 
     public synchronized static String getEXPOConfig(Context context, String sKey) {
         SharedPreferences preferences = context.getSharedPreferences(EXPO_XML,

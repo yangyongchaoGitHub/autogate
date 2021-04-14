@@ -43,6 +43,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.ModelSelectActivity"/>
         <activity android:name=".activity.ClearDataActivity"/>
         <activity android:name=".activity.RfidActivity"/>
         <activity android:name=".activity.RfidInfoActivity"/>

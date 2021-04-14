@@ -149,6 +149,17 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (ust != null) {
+            ust.setRunningStop();
+        }
+        if (uist != null) {
+            uist.setRunningStop();
+        }
+    }
+
     //获取用户数据
     private UserQueryConditionVo queryUser(UserQueryConditionVo vo) {
         Log.i(TAG, "queryUser " + vo.getPageNo());
@@ -175,6 +186,11 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
             public void onFailure(Call<NetResult<PageResult<UserEntityVo>>> call, Throwable t) {
                 for (UserQueryConditionVo u: requestList) {
                     if (u.getRequestId() == requestNo) {
+                        try {
+                            Thread.sleep(1500);
+                        } catch (Exception e) {
+
+                        }
                         u.setRequestStatus(UserQueryConditionVo.STATUS_FAIL);
                         break;
                     }
@@ -236,6 +252,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
 
                     fixImgLocal(bitmap, queryConditionVo);
                 } else {
+                    queryConditionVo.setRequestStatus(UserQueryConditionVo.STATUS_RESPONSE);
                     Log.i(TAG, "图像不存在 " + queryConditionVo.getEucode() + " euid: " +queryConditionVo.getStartEuId());
                     //取消待同步状态
                     int res = UserService.getInstance().updateToNoSyncImg(queryConditionVo.getStartEuId());
@@ -246,6 +263,11 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 for (UserQueryConditionVo u: requestList) {
                     if (u.getRequestId() == requestNo) {
+                        try {
+                            Thread.sleep(1500);
+                        } catch (Exception e) {
+
+                        }
                         u.setRequestStatus(UserQueryConditionVo.STATUS_FAIL);
                         break;
                     }
@@ -424,11 +446,13 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
 
                                 int syncCount = UserService.getInstance().countImageLocalNoSync();
                                 if (syncCount > 0) {
+                                    Log.i(TAG, "syncCount > 0   goto sync img ");
                                     if (uist == null) {
                                         uist = new UserImgSyncThread();
                                         uist.start();
                                     }
                                 } else {
+                                    Log.i(TAG, "syncCount !> 0   sync end ");
                                     btn_check.setText("检查数据完整性");
                                     Toast.makeText(mContext, "同步结束", Toast.LENGTH_SHORT).show();
                                     setRunningStop();
@@ -477,8 +501,6 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
             currChange = 0;
             totalLocalSize = UserService.getInstance().countImageLocalNoSync();
 
-            int pageNo = 0;
-
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -489,10 +511,18 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
 
             UserQueryConditionVo conditionVo = null;
             while (running) {
+                try {
+                    sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
                 if (conditionVo == null || conditionVo.getRequestStatus() == UserQueryConditionVo.STATUS_RESPONSE) {
                     //一条一条进行查询
                     User user = UserService.getInstance().findNoSyncImgOne();
+
                     if (user != null) {
+                        Log.i(TAG, "user != null " + user.code );
                         conditionVo = new UserQueryConditionVo();
                         conditionVo.setEucode(user.code);
                         conditionVo.setStartEuId(user.pid);
@@ -508,18 +538,13 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                                 btn_check.setText("检查数据完整性");
                                 Toast.makeText(mContext, "同步结束", Toast.LENGTH_SHORT).show();
                                 setRunningStop();
+                                uist = null;
                             }
                         });
 
                     }
                 } else if (conditionVo.getRequestStatus() == UserQueryConditionVo.STATUS_FAIL) {
                     queryUserImage(conditionVo);
-                }
-
-                try {
-                    sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             }
         }

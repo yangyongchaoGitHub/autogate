@@ -183,7 +183,7 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
 
             case R.id.bl_3:
                 //模式选择
-
+                startActivity(new Intent(mContext, ModelSelectActivity.class));
                 break;
 
             case R.id.bl_4:

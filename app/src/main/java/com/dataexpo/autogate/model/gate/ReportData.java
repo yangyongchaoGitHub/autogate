@@ -11,11 +11,23 @@ public class ReportData {
     private String ltime = "";
     public boolean check;
 
-    public ReportData(int id, String number, int direction, String time) {
+    //新加的验证模式的属性
+    private int model;
+    private int pid;
+    private String address;
+    private int status;
+    private int permissionid;
+
+    public ReportData(int id, String number, int direction, String time, int model, int pid, String address, int status, int permissionid) {
         this.id = id;
         this.number = number;
         this.direction = direction;
         this.time = time;
+        this.model = model;
+        this.pid = pid;
+        this.address = address;
+        this.status = status;
+        this.permissionid = permissionid;
     }
 
     public ReportData(Rfid rfid, String number, int direction, String time) {
@@ -87,5 +99,45 @@ public class ReportData {
 
     public void setRfid(Rfid rfid) {
         this.rfid = rfid;
+    }
+
+    public int getModel() {
+        return model;
+    }
+
+    public void setModel(int model) {
+        this.model = model;
+    }
+
+    public int getPid() {
+        return pid;
+    }
+
+    public void setPid(int pid) {
+        this.pid = pid;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public int getPermissionid() {
+        return permissionid;
+    }
+
+    public void setPermissionid(int permissionid) {
+        this.permissionid = permissionid;
     }
 }

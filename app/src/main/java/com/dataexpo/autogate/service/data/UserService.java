@@ -20,6 +20,7 @@ import static com.dataexpo.autogate.face.manager.ImportFileManager.IMPORT_SUCCES
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_JPG;
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_PNG;
 import static com.dataexpo.autogate.model.User.IMG_SYNC_CHANGE;
+import static com.dataexpo.autogate.model.User.IMG_SYNC_END;
 import static com.dataexpo.autogate.model.User.IMG_SYNC_NONE;
 
 public class UserService {
@@ -442,7 +443,7 @@ public class UserService {
      */
     public int updateToSyncOk(Integer startEuId, String imageName) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put("image_sync", 0);
+        contentValues.put("image_sync", 2);
         contentValues.put("image_name", imageName);
         return DBUtils.getInstance().update(DBUtils.TABLE_USER, contentValues, "pid = ?", new String[]{startEuId+ ""});
     }
@@ -494,18 +495,27 @@ public class UserService {
             result = false;
         }
 
-        if (u.image_sync == IMG_SYNC_NONE && ue.getImageBase64() != null && !"".equals(ue.getImageBase64()) && !ue.getImageBase64().equals(u.image_base64)) {
-            //TODO: 要删除原来的图片    如果本地有，服务器没有，那也要删除
+        //服务器端存在图片
+        if (ue.getImageBase64() != null && !"".equals(ue.getImageBase64())) {
             Log.i(TAG, "compareUser" + ue.getImageBase64());
-            u.image_base64 = ue.getImageBase64();
-            u.image_name = "";
-            u.image_sync = IMG_SYNC_CHANGE;
-
-            if (FileUtils.isFileExist(FileUtils.getUserPic(ue.getEucode())) != null) {
-                FileUtils.deleteFile(FileUtils.getUserPic(ue.getEucode()));
+            //本地无图片 或者本地图片和服务器图片base64不一致
+            if (u.image_sync == IMG_SYNC_NONE || !ue.getImageBase64().equals(u.image_base64)) {
+                u.image_base64 = ue.getImageBase64();
+                u.image_name = "";
+                u.image_sync = IMG_SYNC_CHANGE;
+                result = false;
             }
-            result = false;
         }
+
+        if (ue.getImageBase64() != null && "".equals(ue.getImageBase64())) {
+            if (u.image_sync == IMG_SYNC_END) {
+                //如果本地有，服务器没有，那也要删除
+                if (FileUtils.isFileExist(FileUtils.getUserPic(ue.getEucode())) != null) {
+                    FileUtils.deleteFile(FileUtils.getUserPic(ue.getEucode()));
+                }
+            }
+        }
+
         return result;
     }
 }

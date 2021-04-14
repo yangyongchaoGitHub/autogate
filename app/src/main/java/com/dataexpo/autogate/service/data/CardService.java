@@ -2,12 +2,14 @@ package com.dataexpo.autogate.service.data;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.dataexpo.autogate.comm.DBUtils;
 import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.listener.GateObserver;
 import com.dataexpo.autogate.model.Rfid;
 import com.dataexpo.autogate.model.gate.ReportData;
+import com.dataexpo.autogate.service.MainApplication;
 
 import java.util.ArrayList;
 
@@ -34,7 +36,11 @@ public class CardService implements GateObserver {
             return;
         }
 
-        insert(mReports.getNumber(), mReports.getDirection(), Utils.timeNowLong());
+        //当模式是普通模式时保存记录，如果是校验模式则由界面统一控制门控制和记录保存
+
+        if (MainApplication.getInstance().getpModel() == 0) {
+            insert(mReports.getNumber(), mReports.getDirection(), Utils.timeNowLong());
+        }
     }
 
     @Override
@@ -46,10 +52,30 @@ public class CardService implements GateObserver {
      * 添加数据
      */
     public long insert(String number, int direction, String time) {
+        Log.i(TAG, "insert 1  " + number);
         ContentValues contentValues = new ContentValues();
         contentValues.put("number", number);
         contentValues.put("direction", direction);
         contentValues.put("time", time);
+        contentValues.put("model", 0);
+        return DBUtils.getInstance().insert(DBUtils.TABLE_CARD_RECORD, null, contentValues);
+    }
+
+    /**
+     * 添加数据
+     */
+    public long insert(ReportData reportData) {
+        Log.i(TAG, "insert 2  " + reportData.getNumber());
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("number", reportData.getNumber());
+        contentValues.put("direction", reportData.getDirection());
+        contentValues.put("time", reportData.getLtime());
+        contentValues.put("model", reportData.getModel());
+        contentValues.put("pid", reportData.getPid());
+        contentValues.put("address", reportData.getAddress());
+        contentValues.put("status", reportData.getStatus());
+        contentValues.put("permissionid", reportData.getPermissionid());
+
         return DBUtils.getInstance().insert(DBUtils.TABLE_CARD_RECORD, null, contentValues);
     }
 
@@ -82,7 +108,12 @@ public class CardService implements GateObserver {
             String number = cursor.getString(cursor.getColumnIndex("number"));
             int direction = cursor.getInt(cursor.getColumnIndex("direction"));
             String time = cursor.getString(cursor.getColumnIndex("time"));
-            list.add(new ReportData(id, number, direction, time));
+            int model = cursor.getInt(cursor.getColumnIndex("model"));
+            int pid = cursor.getInt(cursor.getColumnIndex("pid"));
+            String address = cursor.getString(cursor.getColumnIndex("address"));
+            int status = cursor.getInt(cursor.getColumnIndex("status"));
+            int permissionid = cursor.getInt(cursor.getColumnIndex("permissionid"));
+            list.add(new ReportData(id, number, direction, time, model, pid, address, status, permissionid));
         }
 
         cursor.close();
@@ -90,7 +121,7 @@ public class CardService implements GateObserver {
     }
 
     /**
-     * 查询全部用户数据
+     * 查询一个卡号的全部数据
      * 返回List
      */
     public ArrayList<ReportData> queryByNumber(String number) {
@@ -102,7 +133,12 @@ public class CardService implements GateObserver {
             String n = cursor.getString(cursor.getColumnIndex("number"));
             int direction = cursor.getInt(cursor.getColumnIndex("direction"));
             String time = cursor.getString(cursor.getColumnIndex("time"));
-            list.add(new ReportData(id, n, direction, time));
+            int model = cursor.getInt(cursor.getColumnIndex("model"));
+            int pid = cursor.getInt(cursor.getColumnIndex("pid"));
+            String address = cursor.getString(cursor.getColumnIndex("address"));
+            int status = cursor.getInt(cursor.getColumnIndex("status"));
+            int permissionid = cursor.getInt(cursor.getColumnIndex("permissionid"));
+            list.add(new ReportData(id, number, direction, time, model, pid, address, status, permissionid));
         }
 
         cursor.close();

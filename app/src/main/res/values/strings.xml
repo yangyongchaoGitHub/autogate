@@ -91,5 +91,6 @@
     <string name="dataclear">数据清理</string>
     <string name="clear_face_data">清空人像数据</string>
     <string name="clear_gate_record">清空识别记录</string>
+    <string name="model_select">模式选择</string>
 
 </resources>

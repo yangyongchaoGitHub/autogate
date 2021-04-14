@@ -67,7 +67,8 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
     @Override
     public void responseData(ReportData mReports) {
         if (mReports != null) {
-            Log.i(TAG, "responseData card: " + mReports.getNumber() + " time " + mReports.getTime());
+            Log.i(TAG, "responseData card: " + mReports.getNumber() + " time " + mReports.getTime() + " " +
+                    MainApplication.getInstance().getpModel() + " " + MainApplication.getInstance().getPermissions());
             User user = new User();
             user.cardCode = mReports.getNumber();
 
@@ -75,7 +76,11 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
 
             if (res != null) {
                 //有此用户
-                ledCtrl(LED_GREEN, mReports.getRfid());
+                //检查权限：
+                if (MainApplication.getInstance().getpModel() == 0) {
+                    //验证模式要进行权限验证, 普通模式直接存数据
+                    ledCtrl(LED_GREEN, mReports.getRfid());
+                }
 
             } else {
                 ledCtrl(LED_RED, mReports.getRfid());

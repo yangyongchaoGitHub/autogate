@@ -68,10 +68,16 @@ public class DBUtils {
                 "feature blob)";
 
         String sql_card_record = "create table if not exists " + TABLE_CARD_RECORD +
-                "(id integer primary key autoincrement," +
-                "number char(32), " +
-                "direction int, " +
-                "time char(32))";
+                "(id integer primary key autoincrement," + // id
+                "number char(32), " +                      // 卡号
+                "direction int, " +                        // 进出方向
+                "model int, " +                            // 通道模式 0:普通模式; 1验证模式
+                "time char(32), " +                        // 记录的日期
+                "pid int, " +                              // 用户的euid
+                "permissionid int, " +                     // 权限id
+                "address char(32), " +                     // 门禁地址
+                "status int" +                             // 是否成功通过 1失败， 2通过
+                ")";
 
         String sql_face_record = "create table if not exists " + TABLE_FACE_RECORD +
                 "(id integer primary key autoincrement," +
