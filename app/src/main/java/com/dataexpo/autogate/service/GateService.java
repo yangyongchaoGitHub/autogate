@@ -251,6 +251,11 @@ public class GateService extends GateSubject {
 //                            r.status = initResult;
 //                        }
                     }
+                    try {
+                        sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     if (statusChange != r.status) {
                         Log.i(TAG, "---- GATE_STATUS_RUNGATE_STATUS_RUNGATE_STATUS_RUNGATE_STATUS_RUN notifyStatus");
                         notifyStatus(r);

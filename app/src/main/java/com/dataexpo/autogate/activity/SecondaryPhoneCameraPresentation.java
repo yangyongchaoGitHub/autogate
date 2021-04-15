@@ -53,8 +53,6 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
     private ImageView iv_success_last6;
     private ImageView iv_success_last7;
     private ImageView iv_success_last8;
-    private ImageView iv_success_last9;
-    private ImageView iv_success_last10;
 
     private TextView tv_name;
     private TextView tv_company;
@@ -68,12 +66,10 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
     private TextView tv_success_last_name6;
     private TextView tv_success_last_name7;
     private TextView tv_success_last_name8;
-    private TextView tv_success_last_name9;
-    private TextView tv_success_last_name10;
 
-    private ImageView[] ivs = new ImageView[10];
-    private TextView[] tvs = new TextView[10];
-    private User[] users = new User[10];
+    private ImageView[] ivs = new ImageView[8];
+    private TextView[] tvs = new TextView[8];
+    private User[] users = new User[8];
     private SurfaceView sf;
 
     private int bShowModel = MODEL_DAHUA;
@@ -176,8 +172,6 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
         iv_success_last6 = findViewById(R.id.iv_success_last6);
         iv_success_last7 = findViewById(R.id.iv_success_last7);
         iv_success_last8 = findViewById(R.id.iv_success_last8);
-        iv_success_last9 = findViewById(R.id.iv_success_last9);
-        iv_success_last10 = findViewById(R.id.iv_success_last10);
         ivs[0] = iv_success_last1;
         ivs[1] = iv_success_last2;
         ivs[2] = iv_success_last3;
@@ -186,8 +180,6 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
         ivs[5] = iv_success_last6;
         ivs[6] = iv_success_last7;
         ivs[7] = iv_success_last8;
-        ivs[8] = iv_success_last9;
-        ivs[9] = iv_success_last10;
         tv_name = findViewById(R.id.tv_presentation_name);
         tv_company = findViewById(R.id.tv_presentation_company);
         tv_deputation = findViewById(R.id.tv_presentation_deputation);
@@ -200,8 +192,6 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
         tv_success_last_name6 = findViewById(R.id.iv_success_last_name6);
         tv_success_last_name7 = findViewById(R.id.iv_success_last_name7);
         tv_success_last_name8 = findViewById(R.id.iv_success_last_name8);
-        tv_success_last_name9 = findViewById(R.id.iv_success_last_name9);
-        tv_success_last_name10 = findViewById(R.id.iv_success_last_name10);
         tvs[0] = tv_success_last_name1;
         tvs[1] = tv_success_last_name2;
         tvs[2] = tv_success_last_name3;
@@ -210,8 +200,6 @@ public class SecondaryPhoneCameraPresentation extends Presentation implements On
         tvs[5] = tv_success_last_name6;
         tvs[6] = tv_success_last_name7;
         tvs[7] = tv_success_last_name8;
-        tvs[8] = tv_success_last_name9;
-        tvs[9] = tv_success_last_name10;
 
         iv_snap = findViewById(R.id.iv_test_snap);
         //初始化surfaceview

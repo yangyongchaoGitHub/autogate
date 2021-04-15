@@ -69,8 +69,6 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
     private ImageView iv_success_last6;
     private ImageView iv_success_last7;
     private ImageView iv_success_last8;
-    private ImageView iv_success_last9;
-    private ImageView iv_success_last10;
 
     private TextView tv_name;
     private TextView tv_company;
@@ -84,15 +82,13 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
     private TextView tv_success_last_name6;
     private TextView tv_success_last_name7;
     private TextView tv_success_last_name8;
-    private TextView tv_success_last_name9;
-    private TextView tv_success_last_name10;
 
     private ImageButton ib_back;
-    private ImageButton ib_play;
+    private ImageButton tv_back;
 
-    private ImageView[] ivs = new ImageView[10];
-    private TextView[] tvs = new TextView[10];
-    private User[] users = new User[10];
+    private ImageView[] ivs = new ImageView[8];
+    private TextView[] tvs = new TextView[8];
+    private User[] users = new User[8];
     private SurfaceView sf;
 
     private int bShowModel = MODEL_DAHUA;
@@ -149,7 +145,10 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
 
         //TODO: 海康威视
         initeSdk();
-        initHkvs();
+        //initHkvs();
+
+        LoginHKTask loginTask = new LoginHKTask();
+        loginTask.execute();
         Log.i(TAG, "onCreate end ");
     }
 
@@ -199,12 +198,6 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ib_play:
-                if (playingHandle == -1) {
-                    viewVideo();
-                }
-                break;
-
             case R.id.btn_gosetting:
                 //startActivity(new Intent(mContext, MainSettingActivity.class));
                 break;
@@ -218,6 +211,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
                 break;
 
             case R.id.ib_back:
+            case R.id.tv_back:
                 this.finish();
 
                 break;
@@ -236,8 +230,6 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         iv_success_last6 = findViewById(R.id.iv_success_last6);
         iv_success_last7 = findViewById(R.id.iv_success_last7);
         iv_success_last8 = findViewById(R.id.iv_success_last8);
-        iv_success_last9 = findViewById(R.id.iv_success_last9);
-        iv_success_last10 = findViewById(R.id.iv_success_last10);
         ivs[0] = iv_success_last1;
         ivs[1] = iv_success_last2;
         ivs[2] = iv_success_last3;
@@ -246,8 +238,6 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         ivs[5] = iv_success_last6;
         ivs[6] = iv_success_last7;
         ivs[7] = iv_success_last8;
-        ivs[8] = iv_success_last9;
-        ivs[9] = iv_success_last10;
         tv_name = findViewById(R.id.tv_presentation_name);
         tv_company = findViewById(R.id.tv_presentation_company);
         tv_deputation = findViewById(R.id.tv_presentation_deputation);
@@ -260,8 +250,6 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         tv_success_last_name6 = findViewById(R.id.iv_success_last_name6);
         tv_success_last_name7 = findViewById(R.id.iv_success_last_name7);
         tv_success_last_name8 = findViewById(R.id.iv_success_last_name8);
-        tv_success_last_name9 = findViewById(R.id.iv_success_last_name9);
-        tv_success_last_name10 = findViewById(R.id.iv_success_last_name10);
         tvs[0] = tv_success_last_name1;
         tvs[1] = tv_success_last_name2;
         tvs[2] = tv_success_last_name3;
@@ -270,8 +258,6 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         tvs[5] = tv_success_last_name6;
         tvs[6] = tv_success_last_name7;
         tvs[7] = tv_success_last_name8;
-        tvs[8] = tv_success_last_name9;
-        tvs[9] = tv_success_last_name10;
 
         iv_snap = findViewById(R.id.iv_test_snap);
         //初始化surfaceview
@@ -284,7 +270,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         }
 
         findViewById(R.id.ib_back).setOnClickListener(this);
-        findViewById(R.id.ib_play).setOnClickListener(this);
+        findViewById(R.id.tv_back).setOnClickListener(this);
     }
 
     @Override
@@ -347,26 +333,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
 
     //TODO: 海康威视
     private void initHkvs() {
-        String ip = "192.168.1.64";
-        String port = "8000";
-        String loginName = "admin";
-        String pswd = "dataexpo123";
 
-        try {
-            if (hId == -1 && loginDevice(ip, port, loginName, pswd)) {
-                DevManageGuider.DeviceItem deviceInfo = SDKGuider.g_sdkGuider.m_comDMGuider.getCurrSelectDev();
-                if(deviceInfo == null){
-                    Toast.makeText(GateActivityReverse.this,"获取设备失败，请查看摄像头是否联网",Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                hId = deviceInfo.m_lUserID;
-                Log.i(TAG, "login id: " + hId);
-
-            }
-        } catch (Exception err) {
-            err.printStackTrace();
-            //Log.e(TAG, "error: " + err.toString());
-        }
     }
 
     private void viewVideo() {
@@ -378,14 +345,19 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         struPlayInfo.lChannel = 1;
         struPlayInfo.dwStreamType = 0;
         struPlayInfo.bBlocked = 1;
-        sf = findViewById(R.id.surface_presentation);
-        struPlayInfo.hHwnd = sf.getHolder();
-        playingHandle = SDKGuider.g_sdkGuider.m_comPreviewGuider.RealPlay_V40_jni(hId, struPlayInfo, null);
-        if (playingHandle < 0) {
-            Toast.makeText(GateActivityReverse.this, "播放预览失败, Err:" + SDKGuider.g_sdkGuider.GetLastError_jni(), Toast.LENGTH_SHORT).show();
-            return;
-        }
-        Toast.makeText(GateActivityReverse.this, "NET_DVR_RealPlay_V40 Succ ", Toast.LENGTH_SHORT).show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                sf = findViewById(R.id.surface_presentation);
+                struPlayInfo.hHwnd = sf.getHolder();
+                playingHandle = SDKGuider.g_sdkGuider.m_comPreviewGuider.RealPlay_V40_jni(hId, struPlayInfo, null);
+                if (playingHandle < 0) {
+                    Toast.makeText(GateActivityReverse.this, "播放预览失败, Err:" + SDKGuider.g_sdkGuider.GetLastError_jni(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Toast.makeText(GateActivityReverse.this, "NET_DVR_RealPlay_V40 Succ ", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     //TODO: 海康威视
@@ -400,12 +372,24 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         deviceItem.m_szDevName = deviceItem.m_struNetInfo.m_szIp;
 
         if (SDKGuider.g_sdkGuider.m_comDMGuider.login_v40_jna(deviceItem.m_szDevName, deviceItem.m_struNetInfo)) {
-            Toast.makeText(getApplicationContext(), "登录设备成功!", Toast.LENGTH_LONG).show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), "登录设备成功!", Toast.LENGTH_LONG).show();
+
+                }
+            });
 
             SDKGuider.g_sdkGuider.m_comDMGuider.setCurrSelectDevIndex(0);
             return true;
         } else {
-            Toast.makeText(getApplicationContext(), "登录设备失败，请查看设备是否联网 "+ SDKGuider.g_sdkGuider.GetLastError_jni(), Toast.LENGTH_LONG).show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), "登录设备失败，请查看设备是否联网 "+ SDKGuider.g_sdkGuider.GetLastError_jni(), Toast.LENGTH_LONG).show();
+
+                }
+            });
         }
         return false;
     }
@@ -667,6 +651,44 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
             } else {
                 Log.i(TAG, "login error");
                 //ToolKits.showMessage(IPLoginActivity.this, getErrorCode(getResources(), mLoginModule.errorCode()));
+            }
+        }
+    }
+
+    //TODO: 海康威视摄像头登录
+    private class LoginHKTask extends AsyncTask<String, Integer, Boolean> {
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+        }
+        @Override
+        protected Boolean doInBackground(String... params) {
+            Log.i(TAG, " LoginTAsk doInBackground!!!");
+            String ip = "192.168.1.64";
+            String port = "8000";
+            String loginName = "admin";
+            String pswd = "dataexpo123";
+
+            return loginDevice(ip, port, loginName, pswd);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result){
+            if (result) {
+                DevManageGuider.DeviceItem deviceInfo = SDKGuider.g_sdkGuider.m_comDMGuider.getCurrSelectDev();
+                if(deviceInfo == null){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(GateActivityReverse.this,"获取设备失败，请查看摄像头是否联网",Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+                    return;
+                }
+                hId = deviceInfo.m_lUserID;
+                Log.i(TAG, "login id: " + hId);
+                viewVideo();
             }
         }
     }

@@ -16,7 +16,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintHeight_percent="0.5"
         app:layout_constraintWidth_percent="0.25"
-        android:src="@drawable/monitor"/>
+        android:background="@drawable/monitor"/>
 
     <ImageButton
         android:id="@+id/tl_2"
@@ -26,7 +26,7 @@
         app:layout_constraintLeft_toRightOf="@+id/tl_1"
         app:layout_constraintHeight_percent="0.5"
         app:layout_constraintWidth_percent="0.25"
-        android:src="@drawable/serverregister"
+        android:background="@drawable/serverregister"
         />
 
     <ImageButton
@@ -37,7 +37,7 @@
         app:layout_constraintLeft_toRightOf="@+id/tl_2"
         app:layout_constraintHeight_percent="0.5"
         app:layout_constraintWidth_percent="0.25"
-        android:src="@drawable/record"/>
+        android:background="@drawable/record"/>
 
     <ImageButton
         android:id="@+id/tl_4"
@@ -47,7 +47,8 @@
         app:layout_constraintLeft_toRightOf="@+id/tl_3"
         app:layout_constraintHeight_percent="0.5"
         app:layout_constraintWidth_percent="0.25"
-        android:src="@drawable/netcheck"/>
+        android:background="@drawable/netcheck"
+        />
 
     <ImageButton
         android:id="@+id/bl_1"
@@ -57,7 +58,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintHeight_percent="0.5"
         app:layout_constraintWidth_percent="0.25"
-        android:src="@drawable/datasync"/>
+        android:background="@drawable/datasync"
+        />
 
     <ImageButton
         android:id="@+id/bl_2"
@@ -67,7 +69,8 @@
         app:layout_constraintLeft_toRightOf="@+id/bl_1"
         app:layout_constraintHeight_percent="0.5"
         app:layout_constraintWidth_percent="0.25"
-        android:src="@drawable/userdata"/>
+        android:background="@drawable/userdata"
+        />
 
     <ImageButton
         android:id="@+id/bl_3"
@@ -77,7 +80,8 @@
         app:layout_constraintLeft_toRightOf="@+id/bl_2"
         app:layout_constraintHeight_percent="0.5"
         app:layout_constraintWidth_percent="0.25"
-        android:src="@drawable/modelselect"/>
+        android:background="@drawable/modelselect"
+        />
 
     <ImageButton
         android:id="@+id/bl_4"
@@ -87,5 +91,6 @@
         app:layout_constraintLeft_toRightOf="@+id/bl_3"
         app:layout_constraintHeight_percent="0.5"
         app:layout_constraintWidth_percent="0.25"
-        android:src="@drawable/dataclear"/>
+        android:background="@drawable/dataclear"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

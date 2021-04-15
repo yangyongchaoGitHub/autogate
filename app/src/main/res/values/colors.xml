@@ -15,5 +15,10 @@
     <color name="grey">#E2E2E2</color>
     <color name="white">#FFFFFF</color>
 
-    <color name="presentationbg">#AD616060</color>
+    <color name="font_white">#FFFeFe</color>
+    <color name="font_green">#0fcc68</color>
+
+    <color name="presentationbg">#80808080</color>
+
+    <color name="transbg">#00808080</color>
 </resources>

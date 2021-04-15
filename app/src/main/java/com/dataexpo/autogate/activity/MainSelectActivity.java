@@ -105,7 +105,6 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
         displays = mDisplayManager.getDisplays();
         Log.i(TAG, "display: " + displays.length);
 
-
         Window window = null;
 
         if (displays.length > 1) {
