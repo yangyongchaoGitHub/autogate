@@ -41,7 +41,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/record_gate_image"
         app:layout_constraintStart_toEndOf="@+id/record_gate_image"
         android:layout_marginStart="@dimen/x20"
-        android:textColor="@color/c_black"
+        android:textColor="@color/font_gray"
         android:textSize="@dimen/x25"
         android:visibility="visible" />
 
@@ -67,6 +67,15 @@
         app:layout_constraintTop_toBottomOf="@+id/text_gate_number"
         app:layout_constraintBottom_toBottomOf="@+id/record_gate_image"
         app:layout_constraintStart_toEndOf="@+id/record_gate_image"
-        android:textColor="@color/c_black" />
+        android:textColor="@color/bg_dark_blue" />
 
+    <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/x2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/record_gate_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/line_gray"
+        android:layout_marginEnd="@dimen/x26"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

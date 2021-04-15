@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ public class ServiceRegisterActivity extends BascActivity implements View.OnClic
     private EditText tv_device_name;
     private EditText tv_address;
     private TextView tv_back;
+    private ImageView ib_back;
     private TextView tv_confirm;
 
     private String expoName;
@@ -69,6 +71,7 @@ public class ServiceRegisterActivity extends BascActivity implements View.OnClic
         tv_address.setText(address);
 
         findViewById(R.id.btn_go_rfid).setOnClickListener(this);
+        findViewById(R.id.ib_back).setOnClickListener(this);
     }
 
     @Override
@@ -80,6 +83,7 @@ public class ServiceRegisterActivity extends BascActivity implements View.OnClic
                 break;
 
             case R.id.tv_back:
+            case R.id.ib_back:
                 this.finish();
                 break;
 
@@ -111,7 +115,6 @@ public class ServiceRegisterActivity extends BascActivity implements View.OnClic
         Log.e(TAG, " sn: " + device.getSerialNumber() + " | name " + device.getName() + " | address " +
                 device.getAddress() + " | expoName: " + device.getExpoName() + " | ip " + device.getIp());
 
-
         Call<NetResult<String>> call = apiService.saveDeviceConfig(device);
 
         call.enqueue(new Callback<NetResult<String>>() {
@@ -123,7 +126,12 @@ public class ServiceRegisterActivity extends BascActivity implements View.OnClic
                 }
                 Log.i(TAG, "onResponse" + result.getErrmsg() + " ! " +
                         result.getErrcode() + " " + result.getData());
-                Toast.makeText(mContext, "保存成功", Toast.LENGTH_SHORT).show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mContext, "保存成功", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override

@@ -5,53 +5,127 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <Button
+    <TextView
+        android:id="@+id/tv_top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="记录管理"
+        android:textSize="@dimen/x48"
+        android:background="@color/bg_blue"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHeight_percent="0.138888888"
+        />
+
+    <!--返回按钮-->
+    <ImageButton
+        android:id="@+id/ib_back"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintWidth_percent="0.07"
+        app:layout_constraintHeight_percent="0.138888888"
+        style="@style/nullbg"
+        android:src="@drawable/back"/>
+
+    <TextView
+        android:id="@+id/tv_back"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="返回"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="@dimen/x48"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/ib_back"
+        app:layout_constraintWidth_percent="0.06"
+        app:layout_constraintHeight_percent="0.138888888"
+        style="@style/nullbg"
+        android:src="@drawable/back"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/btn_record_1"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:text="@string/face_records"
-        android:textSize="@dimen/x55"
-        android:background="@drawable/btn1_rect"
+        android:background="@drawable/rect_dark_blue"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHeight_percent="0.3"
-        app:layout_constraintWidth_percent="0.48"
-        app:layout_constraintVertical_bias="0.02"
-        app:layout_constraintHorizontal_bias="0.02"/>
+        app:layout_constraintHeight_percent="0.29629"
+        app:layout_constraintWidth_percent="0.21879"
+        app:layout_constraintVertical_bias="0.475"
+        app:layout_constraintHorizontal_bias="0.2626666">
 
+        <ImageButton
+            android:layout_width="@dimen/x100"
+            android:layout_height="@dimen/x100"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.3681"
+            android:background="@drawable/face_record" />
 
-    <Button
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:text="人脸识别记录"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="@dimen/x48"
+            android:gravity="center"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.4"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/btn_record_2"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@drawable/btn2_rect"
+        android:background="@drawable/rect_dark_blue"
         android:text="@string/gate_records"
-        android:textSize="@dimen/x55"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHeight_percent="0.3"
-        app:layout_constraintHorizontal_bias="0.948"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.019"
-        app:layout_constraintWidth_percent="0.48" />
+        app:layout_constraintHeight_percent="0.29629"
+        app:layout_constraintWidth_percent="0.21879"
+        app:layout_constraintVertical_bias="0.475"
+        app:layout_constraintHorizontal_bias="0.73733333">
 
-    <Button
-        android:id="@+id/btn_record_3"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="@string/back"
-        android:textSize="@dimen/x55"
-        android:background="@drawable/btn3_rect"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHeight_percent="0.3"
-        app:layout_constraintWidth_percent="0.48"
-        app:layout_constraintVertical_bias="0.46"
-        app:layout_constraintHorizontal_bias="0.02"/>
+        <ImageButton
+            android:layout_width="@dimen/x100"
+            android:layout_height="@dimen/x100"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.3681"
+            android:background="@drawable/gate_record" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:text="智能闸通过记录"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="@dimen/x48"
+            android:gravity="center"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.4"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

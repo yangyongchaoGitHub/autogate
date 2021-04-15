@@ -18,7 +18,8 @@ public class RecordsActivity extends BascActivity implements View.OnClickListene
     private void initView() {
         findViewById(R.id.btn_record_1).setOnClickListener(this);
         findViewById(R.id.btn_record_2).setOnClickListener(this);
-        findViewById(R.id.btn_record_3).setOnClickListener(this);
+        findViewById(R.id.ib_back).setOnClickListener(this);
+        findViewById(R.id.tv_back).setOnClickListener(this);
     }
 
     @Override
@@ -32,7 +33,8 @@ public class RecordsActivity extends BascActivity implements View.OnClickListene
                 startActivity(new Intent(mContext, GateRecordActivity.class));
                 break;
 
-            case R.id.btn_record_3:
+            case R.id.ib_back:
+            case R.id.tv_back:
                 this.finish();
                 break;
                 default:

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dataexpo.autogate.R;
@@ -24,7 +25,6 @@ public class RfidAddActivity extends BascActivity implements View.OnClickListene
     private EditText et_remark;
     private TextView tv_back;
     private TextView tv_confirm;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +44,14 @@ public class RfidAddActivity extends BascActivity implements View.OnClickListene
 
         tv_back.setOnClickListener(this);
         tv_confirm.setOnClickListener(this);
+        findViewById(R.id.ib_back).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_back:
+            case R.id.ib_back:
                 this.finish();
                 break;
 

@@ -98,6 +98,10 @@ public class RfidService {
                 contentValues, "id = ?", new String[]{rfid.getId()+ ""});
     }
 
+    public int deleteById(RfidVo rfid) {
+        return DBUtils.getInstance().delData(DBUtils.TABLE_RFID_GATE, rfid.getId());
+    }
+
     private Rfid resolve(Cursor cursor) {
         if (cursor == null) {
             return null;

@@ -8,6 +8,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dataexpo.autogate.R;
 import com.dataexpo.autogate.comm.Utils;
@@ -55,12 +56,24 @@ public class RfidInfoActivity extends BascActivity implements View.OnClickListen
         tv_back.setOnClickListener(this);
         tv_confirm.setOnClickListener(this);
         btn_check.setOnClickListener(this);
+
+        findViewById(R.id.ib_back).setOnClickListener(this);
+        findViewById(R.id.tv_delete).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.tv_delete:
+                if (RfidService.getInstance().deleteById(rfid) > 0) {
+                    Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
+                    GateService.getInstance().restart();
+                    this.finish();
+                }
+                break;
+
             case R.id.tv_back:
+            case R.id.ib_back:
                 this.finish();
                 break;
 

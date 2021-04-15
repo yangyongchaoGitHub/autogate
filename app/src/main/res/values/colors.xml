@@ -17,6 +17,11 @@
 
     <color name="font_white">#FFFeFe</color>
     <color name="font_green">#0fcc68</color>
+    <color name="bg_blue">#a2c7ff</color>
+    <color name="bg_dark_blue">#5297ff</color>
+    <color name="bg_tiny_blue">#F8F9FF</color>
+    <color name="font_gray">#a6a6a6</color>
+    <color name="line_gray">#f5f5f5</color>
 
     <color name="presentationbg">#80808080</color>
 

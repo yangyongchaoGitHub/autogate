@@ -79,6 +79,7 @@ public class FaceRecordActivity extends BascActivity implements OnItemClickListe
         btn_delete.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
         findViewById(R.id.btn_face_record_filter).setOnClickListener(this);
+        findViewById(R.id.ib_back).setOnClickListener(this);
     }
 
     @Override
@@ -95,6 +96,7 @@ public class FaceRecordActivity extends BascActivity implements OnItemClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_face_record_back:
+            case R.id.ib_back:
                 finish();
                 break;
                 default:
