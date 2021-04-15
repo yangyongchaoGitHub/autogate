@@ -101,6 +101,7 @@ public class ClearDataActivity extends BascActivity implements View.OnClickListe
                 break;
 
             case R.id.btn_clear_face_data:
+                UserService.getInstance().updateAllImgNoSync();
                 UserService.getInstance().clearAllImg();
                 int imgCount = UserService.getInstance().countOfImg();
                 tv_face_value.setText(imgCount + "");

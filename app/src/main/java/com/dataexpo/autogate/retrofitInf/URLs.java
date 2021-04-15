@@ -22,4 +22,7 @@ public class URLs {
 
     //获取卡号的权限
     public static final String checkCardUrl = "api/data/findIC" + postfix;
+
+    // 获取当前设备配置
+    public static final String queryRegistInfoUrl = "pda/device/info" + postfix;
 }

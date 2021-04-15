@@ -448,6 +448,12 @@ public class UserService {
         return DBUtils.getInstance().update(DBUtils.TABLE_USER, contentValues, "pid = ?", new String[]{startEuId+ ""});
     }
 
+    public int updateAllImgNoSync() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("image_sync", 0);
+        return DBUtils.getInstance().update(DBUtils.TABLE_USER, contentValues, null, null);
+    }
+
     /**
      * 把服务器数据转化为本地数据
      * @param ue

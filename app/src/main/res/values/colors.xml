@@ -23,7 +23,7 @@
     <color name="font_gray">#a6a6a6</color>
     <color name="line_gray">#f5f5f5</color>
 
-    <color name="presentationbg">#80808080</color>
+    <color name="presentationbg">#80000000</color>
 
     <color name="transbg">#00808080</color>
 </resources>

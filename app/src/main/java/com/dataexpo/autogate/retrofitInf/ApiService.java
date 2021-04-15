@@ -1,6 +1,7 @@
 package com.dataexpo.autogate.retrofitInf;
 
 import com.dataexpo.autogate.model.service.Device;
+import com.dataexpo.autogate.model.service.DeviceQueryResult;
 import com.dataexpo.autogate.model.service.MsgBean;
 import com.dataexpo.autogate.model.service.PageResult;
 import com.dataexpo.autogate.model.service.PermissionBean;
@@ -38,4 +39,7 @@ public interface ApiService {
     //获取卡号在服务器的信息
     @GET(checkCardUrl)
     Call<MsgBean> checkCard(@Query("ICD") String icd);
+
+    @GET(queryRegistInfoUrl)
+    Call<DeviceQueryResult> queryRegistInfo(@Query("serialNumber") String serialNumber);
 }

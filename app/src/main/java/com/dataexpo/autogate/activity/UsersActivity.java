@@ -125,6 +125,7 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
 ////        btn_delete.setOnClickListener(this);
 //        btn_cancel.setOnClickListener(this);
         findViewById(R.id.btn_user_manager_filter).setOnClickListener(this);
+        findViewById(R.id.ib_back).setOnClickListener(this);
     }
 
     @Override
@@ -150,6 +151,7 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
                 break;
 
             case R.id.btn_user_manager_back:
+            case R.id.ib_back:
                 finish();
                 break;
 

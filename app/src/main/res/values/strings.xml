@@ -85,8 +85,8 @@
     <string name="company">公司</string>
     <string name="deputation">团组</string>
     <string name="faceregistr">人脸是否已注册</string>
-    <string name="local_total">本地数据总数</string>
-    <string name="server_total">服务器数据总数</string>
+    <string name="local_total">本地数据总数：</string>
+    <string name="server_total">服务器数据总数：</string>
     <string name="backStr"><![CDATA[<]]></string>
     <string name="dataclear">数据清理</string>
     <string name="clear_face_data">清空人像数据</string>

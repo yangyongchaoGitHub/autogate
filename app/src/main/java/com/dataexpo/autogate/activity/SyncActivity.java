@@ -48,12 +48,20 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
     private ConstraintLayout cl_record;
 
     private CircularProgressView progress_view;
+    private CircularProgressView progress_view_mini; //同步基础数据内部的进度
+    private CircularProgressView progress_view_img; //同步人像进度
 
     private TextView tv_server_count_value;
     private TextView tv_local_count_value;
     private TextView tv_curr_count;
+    private TextView tv_img_local_count_value;
+
+    private TextView tv_img_total_value;
 
     private ImageView iv_sync_curr;
+
+    private ImageView iv_success_base;
+    private ImageView iv_success_img;
 
     private Retrofit mRetrofit;
 
@@ -61,6 +69,10 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
     private int totalServiceSize = 0;
     private int totalLocalSize = 0;
     private int currChange = 0;
+
+    //同步图像数据
+    private int totalImgSize = 0;
+    private int currImgChange = 0;
 
     private int requestNo = 0;
 
@@ -96,6 +108,12 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
         btn_check.setOnClickListener(this);
 
         progress_view = findViewById(R.id.progress_view);
+        progress_view_mini = findViewById(R.id.progress_view_mini);
+        iv_success_base = findViewById(R.id.iv_success_base);
+        iv_success_img = findViewById(R.id.iv_success_img);
+        progress_view_img = findViewById(R.id.progress_view_img);
+        tv_img_total_value = findViewById(R.id.tv_img_total_value);
+        tv_img_local_count_value = findViewById(R.id.tv_img_local_count_value);
         //progress_view.setProgress(50);
 
         tv_server_count_value = findViewById(R.id.tv_server_count_value);
@@ -103,11 +121,19 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
         tv_curr_count = findViewById(R.id.tv_curr_count);
 
         iv_sync_curr = findViewById(R.id.iv_sync_curr);
+
+        findViewById(R.id.ib_back).setOnClickListener(this);
+        findViewById(R.id.tv_back).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.tv_back:
+            case R.id.ib_back:
+                this.finish();
+                break;
+
             case R.id.btn_check:
                 if (btn_check.getText().toString().equals("取消")) {
                     btn_check.setText("检查数据完整性");
@@ -124,10 +150,16 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                     return;
                 }
 
-
                 if (ust != null && ust.running) {
                     Toast.makeText(mContext, "正在同步", Toast.LENGTH_SHORT).show();
                 } else {
+
+                    iv_success_base.setVisibility(View.INVISIBLE);
+                    progress_view_mini.setVisibility(View.VISIBLE);
+                    iv_success_img.setVisibility(View.INVISIBLE);
+                    tv_img_total_value.setText("");
+                    tv_img_local_count_value.setText("");
+                    tv_curr_count.setText("");
                     ust = new UserSyncThread();
                     ust.start();
                     btn_check.setText("取消");
@@ -295,6 +327,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
             UserService.getInstance().updateToSyncOk(queryConditionVo.getStartEuId(), queryConditionVo.getEucode());
             queryConditionVo.setRequestStatus(UserQueryConditionVo.STATUS_RESPONSE);
         }
+        fixProgressImgShow();
     }
 
     //将请求到的数据和本地的数据进行比较
@@ -395,8 +428,21 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                progress_view_mini.setVisibility(View.INVISIBLE);
                 tv_curr_count.setText("已同步: " + currChange + "");
                 progress_view.setProgress((float) ((double) currChange / (double) totalServiceSize) * 100);
+            }
+        });
+    }
+
+    private void fixProgressImgShow() {
+        currImgChange++;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tv_img_local_count_value.setText(currImgChange + "");
+                progress_view_img.setProgress((float) ((double) currImgChange / (double) totalImgSize) * 100);
             }
         });
     }
@@ -444,6 +490,9 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                                 totalLocalSize = UserService.getInstance().countLocal();
                                 tv_local_count_value.setText(totalLocalSize + "");
 
+                                progress_view.setProgress(0);
+                                iv_success_base.setVisibility(View.VISIBLE);
+
                                 int syncCount = UserService.getInstance().countImageLocalNoSync();
                                 if (syncCount > 0) {
                                     Log.i(TAG, "syncCount > 0   goto sync img ");
@@ -452,6 +501,8 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                                         uist.start();
                                     }
                                 } else {
+                                    tv_img_total_value.setText("0");
+                                    tv_curr_count.setText("");
                                     Log.i(TAG, "syncCount !> 0   sync end ");
                                     btn_check.setText("检查数据完整性");
                                     Toast.makeText(mContext, "同步结束", Toast.LENGTH_SHORT).show();
@@ -497,15 +548,15 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
 
         @Override
         public void run() {
-            totalServiceSize = 0;
-            currChange = 0;
-            totalLocalSize = UserService.getInstance().countImageLocalNoSync();
+            currImgChange = 0;
+            totalImgSize = UserService.getInstance().countImageLocalNoSync();
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    progress_view.setProgress(0);
-                    tv_local_count_value.setText(totalLocalSize + "");
+                    //progress_view.setProgress(0);
+                    progress_view_img.setProgress(0);
+                    tv_img_total_value.setText(totalImgSize + "");
                 }
             });
 
@@ -535,6 +586,10 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                progress_view_img.setProgress(0);
+                                iv_success_img.setVisibility(View.VISIBLE);
+                                iv_sync_curr.setImageDrawable(null);
+                                iv_sync_curr.setVisibility(View.INVISIBLE);
                                 btn_check.setText("检查数据完整性");
                                 Toast.makeText(mContext, "同步结束", Toast.LENGTH_SHORT).show();
                                 setRunningStop();

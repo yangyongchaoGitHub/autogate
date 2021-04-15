@@ -1,5 +1,7 @@
 package com.dataexpo.autogate.activity;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -42,6 +44,7 @@ public class UserDetails extends BascActivity implements View.OnClickListener {
         faceregistr = findViewById(R.id.tv_user_info_register_value);
         faceregistr.setOnClickListener(this);
         initInfo(user);
+        findViewById(R.id.ib_back).setOnClickListener(this);
     }
 
     private void initInfo(User user) {
@@ -49,12 +52,15 @@ public class UserDetails extends BascActivity implements View.OnClickListener {
         tv_company.setText(user.company);
         tv_deputation.setText(user.position);
         faceregistr.setText(user.bregist_face == IMPORT_SUCCESS  ? "已注册" : "未注册");
+        Bitmap bitmap = BitmapFactory.decodeFile(FileUtils.getUserPic(user.image_name));
+        iv_image.setImageBitmap(bitmap);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_user_details_back:
+            case R.id.ib_back:
                 finish();
                 break;
 
