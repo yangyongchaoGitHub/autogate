@@ -96,6 +96,10 @@ public class ModelSelectActivity extends BascActivity implements OnItemClickList
                     recyclerView.setVisibility(View.INVISIBLE);
                 } else if (position == 1) {
                     recyclerView.setVisibility(View.VISIBLE);
+
+                    if (permissions == null) {
+                        goQuery();
+                    }
                 }
             }
 
@@ -110,6 +114,7 @@ public class ModelSelectActivity extends BascActivity implements OnItemClickList
 
         btn_back.setOnClickListener(this);
         btn_save.setOnClickListener(this);
+        findViewById(R.id.ib_back).setOnClickListener(this);
     }
 
     private void goQuery() {
@@ -130,6 +135,17 @@ public class ModelSelectActivity extends BascActivity implements OnItemClickList
                     public void run() {
                         if (result.data != null && result.data.size() > 0) {
                             permissions = result.data;
+                            if (MainApplication.getInstance().getpModel() == 1) {
+                                Permissions p = MainApplication.getInstance().getPermissions();
+                                if (p != null) {
+                                    for (Permissions pi: permissions) {
+                                        if (pi.getId() == p.getId()) {
+                                            pi.setbShow(true);
+                                        }
+                                    }
+                                }
+                            }
+
                             mAdapter.setData(permissions);
                             mAdapter.notifyDataSetChanged();
                         } else {
@@ -169,6 +185,7 @@ public class ModelSelectActivity extends BascActivity implements OnItemClickList
     public void onClick(View v) {
        switch (v.getId()) {
            case R.id.btn_back:
+           case R.id.ib_back:
                this.finish();
                break;
 

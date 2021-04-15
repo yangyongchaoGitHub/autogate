@@ -58,10 +58,10 @@ public class ClearDataActivity extends BascActivity implements View.OnClickListe
         //获取人像数据的总数
         int imgCount = UserService.getInstance().countOfImg();
 
-        tv_face_value.setText(imgCount + "");
+        tv_face_value.setText("人像个数： " + imgCount);
 
         int recordCount = CardService.getInstance().countOfTotalGate();
-        tv_record_value.setText(recordCount + "");
+        tv_record_value.setText("记录数： " + recordCount);
     }
 
     private void initView() {
@@ -82,6 +82,7 @@ public class ClearDataActivity extends BascActivity implements View.OnClickListe
         btn_login = findViewById(R.id.btn_login);
 
         btn_login.setOnClickListener(this);
+        findViewById(R.id.ib_back).setOnClickListener(this);
     }
 
     @Override
@@ -97,6 +98,7 @@ public class ClearDataActivity extends BascActivity implements View.OnClickListe
                 break;
 
             case R.id.btn_back:
+            case R.id.ib_back:
                 this.finish();
                 break;
 
@@ -104,13 +106,13 @@ public class ClearDataActivity extends BascActivity implements View.OnClickListe
                 UserService.getInstance().updateAllImgNoSync();
                 UserService.getInstance().clearAllImg();
                 int imgCount = UserService.getInstance().countOfImg();
-                tv_face_value.setText(imgCount + "");
+                tv_face_value.setText("人像个数： " + imgCount);
                 break;
 
             case R.id.btn_clear_gate_record:
                 CardService.getInstance().clearAllData();
                 int recordCount = CardService.getInstance().countOfTotalGate();
-                tv_record_value.setText(recordCount + "");
+                tv_record_value.setText("记录个数： " + recordCount);
                 break;
             default:
         }

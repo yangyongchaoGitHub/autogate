@@ -122,6 +122,7 @@ public class RfidActivity extends BascActivity implements OnItemClickListener, O
 
         findViewById(R.id.btn_add).setOnClickListener(this);
         findViewById(R.id.btn_back).setOnClickListener(this);
+        findViewById(R.id.ib_back).setOnClickListener(this);
     }
 
     @Override
@@ -146,6 +147,7 @@ public class RfidActivity extends BascActivity implements OnItemClickListener, O
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_back:
+            case R.id.ib_back:
                 this.finish();
                 break;
 
