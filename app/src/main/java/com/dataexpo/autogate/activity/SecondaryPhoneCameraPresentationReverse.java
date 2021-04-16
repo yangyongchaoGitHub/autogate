@@ -193,7 +193,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                     //没有向服务器查询，则表示不符合
                     if (MainApplication.getInstance().getpModel() == 1 &&
                             MainApplication.getInstance().getPermissions() != null && !bQuery) {
-                        mReports.setLtime(Utils.timeNowLong());
+                        mReports.setTime(Utils.timeNowLong());
                         mReports.setModel(1);
                         mReports.setAddress(MainApplication.getInstance().getPermissions().getNames());
                         mReports.setStatus(1);
@@ -275,7 +275,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                             iv_pass_status.setVisibility(View.VISIBLE);
 
                             //保存日志
-                            mReports.setLtime(Utils.timeNowLong());
+                            mReports.setTime(Utils.timeNowLong());
                             mReports.setModel(1);
                             mReports.setPid(userAndPermission.getEuId());
                             mReports.setAddress(MainApplication.getInstance().getPermissions().getNames());
@@ -284,7 +284,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                             CardService.getInstance().insert(mReports);
 
                         } else {
-                            mReports.setLtime(Utils.timeNowLong());
+                            mReports.setTime(Utils.timeNowLong());
                             mReports.setModel(1);
                             mReports.setAddress(MainApplication.getInstance().getPermissions().getNames());
                             mReports.setStatus(1);
@@ -307,7 +307,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                         ReportData reportData = requestMap.get(call.hashCode());
 
                         if (reportData != null) {
-                            mReports.setLtime(Utils.timeNowLong());
+                            mReports.setTime(Utils.timeNowLong());
                             mReports.setModel(1);
                             mReports.setAddress(MainApplication.getInstance().getPermissions().getNames());
                             mReports.setStatus(1);

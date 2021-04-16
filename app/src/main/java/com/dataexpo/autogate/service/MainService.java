@@ -6,6 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.listener.GateObserver;
 import com.dataexpo.autogate.listener.MQTTObserver;
 import com.dataexpo.autogate.listener.OnFrameCallback;
@@ -66,25 +67,29 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
 
     @Override
     public void responseData(ReportData mReports) {
-        if (mReports != null) {
+        //检查权限：
+        if (mReports != null && MainApplication.getInstance().getpModel() == 0) {
             Log.i(TAG, "responseData card: " + mReports.getNumber() + " time " + mReports.getTime() + " " +
                     MainApplication.getInstance().getpModel() + " " + MainApplication.getInstance().getPermissions());
             User user = new User();
+
             user.cardCode = mReports.getNumber();
+            mReports.setModel(0);
+            mReports.setTime(Utils.timeNowLong());
 
             User res = UserService.getInstance().findUserByCardCode(user);
 
             if (res != null) {
                 //有此用户
-                //检查权限：
-                if (MainApplication.getInstance().getpModel() == 0) {
-                    //验证模式要进行权限验证, 普通模式直接存数据
-                    ledCtrl(LED_GREEN, mReports.getRfid());
-                }
+                mReports.setPid(res.pid);
+                mReports.setStatus(2);
+                ledCtrl(LED_GREEN, mReports.getRfid());
 
             } else {
+                mReports.setStatus(1);
                 ledCtrl(LED_RED, mReports.getRfid());
             }
+            CardService.getInstance().insert(mReports);
         }
     }
 
@@ -140,7 +145,7 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
         GateService.getInstance().start();
 
 
-        addGateObserver(CardService.getInstance());
+        //addGateObserver(CardService.getInstance());
         addGateObserver(this);
 
 //        MQTTHiveMQService.getInstance().init(this);

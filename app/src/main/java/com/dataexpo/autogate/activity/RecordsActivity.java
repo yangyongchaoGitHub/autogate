@@ -20,16 +20,24 @@ public class RecordsActivity extends BascActivity implements View.OnClickListene
         findViewById(R.id.btn_record_2).setOnClickListener(this);
         findViewById(R.id.ib_back).setOnClickListener(this);
         findViewById(R.id.tv_back).setOnClickListener(this);
+        findViewById(R.id.iv_record_1).setOnClickListener(this);
+        findViewById(R.id.iv_record_1).setOnClickListener(this);
+        findViewById(R.id.iv_record_2).setOnClickListener(this);
+        findViewById(R.id.tv_record_2).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_record_1:
+            case R.id.iv_record_1:
+            case R.id.tv_record_1:
                 startActivity(new Intent(mContext, FaceRecordActivity.class));
                 break;
 
             case R.id.btn_record_2:
+            case R.id.iv_record_2:
+            case R.id.tv_record_2:
                 startActivity(new Intent(mContext, GateRecordActivity.class));
                 break;
 

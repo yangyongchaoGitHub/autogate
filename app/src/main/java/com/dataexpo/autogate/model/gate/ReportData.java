@@ -1,14 +1,16 @@
 package com.dataexpo.autogate.model.gate;
 
 import com.dataexpo.autogate.model.Rfid;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ReportData {
     private int id;
+    @JsonIgnore
     private Rfid rfid;
     private String number = "";
     private int direction = 0;
     private String time = "";
-    private String ltime = "";
+    @JsonIgnore
     public boolean check;
 
     //新加的验证模式的属性
@@ -17,6 +19,9 @@ public class ReportData {
     private String address;
     private int status;
     private int permissionid;
+    private String serialNum;
+
+    public ReportData(){}
 
     public ReportData(int id, String number, int direction, String time, int model, int pid, String address, int status, int permissionid) {
         this.id = id;
@@ -43,14 +48,6 @@ public class ReportData {
         this.setNumber(sData);
         this.setDirection(sDir);
         this.setTime(sTime);
-    }
-
-    public String getLtime() {
-        return ltime;
-    }
-
-    public void setLtime(String ltime) {
-        this.ltime = ltime;
     }
 
     public boolean isCheck() {
@@ -139,5 +136,13 @@ public class ReportData {
 
     public void setPermissionid(int permissionid) {
         this.permissionid = permissionid;
+    }
+
+    public String getSerialNum() {
+        return serialNum;
+    }
+
+    public void setSerialNum(String serialNum) {
+        this.serialNum = serialNum;
     }
 }

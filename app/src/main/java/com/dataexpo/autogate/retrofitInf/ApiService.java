@@ -1,5 +1,6 @@
 package com.dataexpo.autogate.retrofitInf;
 
+import com.dataexpo.autogate.model.gate.ReportData;
 import com.dataexpo.autogate.model.service.Device;
 import com.dataexpo.autogate.model.service.DeviceQueryResult;
 import com.dataexpo.autogate.model.service.MsgBean;
@@ -42,4 +43,7 @@ public interface ApiService {
 
     @GET(queryRegistInfoUrl)
     Call<DeviceQueryResult> queryRegistInfo(@Query("serialNumber") String serialNumber);
+
+    @POST(uploadRecordUrl)
+    Call<NetResult<String>> uploadRecord(@Body ReportData data);
 }

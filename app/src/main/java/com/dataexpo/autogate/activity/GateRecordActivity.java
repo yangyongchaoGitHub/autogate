@@ -1,5 +1,6 @@
 package com.dataexpo.autogate.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ public class GateRecordActivity extends BascActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record_gate);
+        mContext = this;
         initView();
     }
 
@@ -70,7 +72,7 @@ public class GateRecordActivity extends BascActivity implements View.OnClickList
         btn_delete = findViewById(R.id.btn_gate_record_delete);
         btn_delete.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
-        findViewById(R.id.btn_gate_record_filter).setOnClickListener(this);
+        findViewById(R.id.btn_gate_record_upload).setOnClickListener(this);
         findViewById(R.id.btn_gate_record_back).setOnClickListener(this);
         findViewById(R.id.ib_back).setOnClickListener(this);
     }
@@ -78,6 +80,11 @@ public class GateRecordActivity extends BascActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.btn_gate_record_upload:
+                //到日志上传界面
+                startActivity(new Intent(mContext, RecordUploadActivity.class));
+                break;
+
             case R.id.btn_user_manager_back:
                 this.finish();
                 break;
@@ -177,8 +184,12 @@ public class GateRecordActivity extends BascActivity implements View.OnClickList
             ReportData data = mList.get(position);
             holder.text_direction.setText(1 == data.getDirection() ? "进" : "出");
             holder.text_number.setText(data.getNumber());
-            holder.text_time.setText(Utils.formatTime(Long.parseLong(data.getTime()),
-                    "yyyy年MM月dd日HH时mm分ss秒"));
+            try {
+                holder.text_time.setText(Utils.formatTime(Long.parseLong(data.getTime()),
+                        "yyyy年MM月dd日HH时mm分ss秒"));
+            } catch (Exception e) {
+
+            }
 
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override

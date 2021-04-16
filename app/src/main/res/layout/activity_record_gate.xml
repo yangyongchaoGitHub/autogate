@@ -93,10 +93,10 @@
         />
 
     <TextView
-        android:id="@+id/btn_gate_record_filter"
+        android:id="@+id/btn_gate_record_upload"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:text="@string/filter"
+        android:text="@string/upload"
         android:textSize="@dimen/x40"
         android:textColor="@color/white"
         android:gravity="center"

@@ -116,9 +116,16 @@ public class Utils {
      * @return
      */
     public static String formatTime(long timeStamp, String pattern) {
-        Date date = new Date(timeStamp);
-        DateFormat dateFormat = new SimpleDateFormat(pattern);
-        return dateFormat.format(date);
+        String result = "";
+        try {
+            Date date = new Date(timeStamp);
+            DateFormat dateFormat = new SimpleDateFormat(pattern);
+            result = dateFormat.format(date);
+        } catch (Exception e) {
+
+        }
+
+        return result;
     }
 
     public static String getVersionName(Context context) {

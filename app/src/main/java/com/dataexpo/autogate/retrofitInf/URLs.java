@@ -25,4 +25,7 @@ public class URLs {
 
     // 获取当前设备配置
     public static final String queryRegistInfoUrl = "pda/device/info" + postfix;
+
+    // 上传通道门记录
+    public static final String uploadRecordUrl = "pda/record/upload" + postfix;
 }

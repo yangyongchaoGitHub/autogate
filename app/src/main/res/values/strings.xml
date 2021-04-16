@@ -93,4 +93,6 @@
     <string name="clear_gate_record">清空识别记录</string>
     <string name="model_select">模式选择</string>
 
+    <string name="upload">上传记录</string>
+
 </resources>

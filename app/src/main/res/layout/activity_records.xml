@@ -63,6 +63,7 @@
         app:layout_constraintHorizontal_bias="0.2626666">
 
         <ImageButton
+            android:id="@+id/iv_record_1"
             android:layout_width="@dimen/x100"
             android:layout_height="@dimen/x100"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -73,6 +74,7 @@
             android:background="@drawable/face_record" />
 
         <TextView
+            android:id="@+id/tv_record_1"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:text="人脸识别记录"
@@ -103,6 +105,7 @@
         app:layout_constraintHorizontal_bias="0.73733333">
 
         <ImageButton
+            android:id="@+id/iv_record_2"
             android:layout_width="@dimen/x100"
             android:layout_height="@dimen/x100"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -113,6 +116,7 @@
             android:background="@drawable/gate_record" />
 
         <TextView
+            android:id="@+id/tv_record_2"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:text="智能闸通过记录"
