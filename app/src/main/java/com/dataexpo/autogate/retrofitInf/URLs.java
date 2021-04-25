@@ -1,7 +1,8 @@
 package com.dataexpo.autogate.retrofitInf;
 
 public class URLs {
-    public static final String baseUrl = "http://192.168.1.12:8080/Doors/";
+    //public static final String baseUrl = "http://192.168.1.12:8080/Doors/";
+    public static final String baseUrl = "http://saas.dataexpo.com.cn/Doors/";
 
     private static final String postfix = ".do";
 
@@ -28,4 +29,7 @@ public class URLs {
 
     // 上传通道门记录
     public static final String uploadRecordUrl = "pda/record/upload" + postfix;
+
+    //查询背景图
+    public static final String queryBackgroundUrl = "upload/bg/bg.jpg";
 }

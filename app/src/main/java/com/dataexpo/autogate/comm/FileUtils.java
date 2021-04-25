@@ -205,6 +205,21 @@ public class FileUtils {
     }
 
     /**
+     * 获取背景图
+     */
+    public static File getBgDirectory() {
+        File sdRootFile = getSDRootFile();
+        File file = null;
+        if (sdRootFile != null && sdRootFile.exists()) {
+            file = new File(sdRootFile, "autogate-bg");
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+        }
+        return file;
+    }
+
+    /**
      * 获取批量导入压缩图片文件的目录信息
      */
     public static File getBatchImportDirectory() {

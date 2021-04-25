@@ -28,6 +28,9 @@ public class MainApplication extends Application {
     private volatile int MQTTStatus = -1;
     private int faceSDKStatus;
     private int importStatus = IMPORT_MQTT;
+
+    //背景图片是否有变化
+    private boolean bChange = false;
     //通道权限
     private Permissions permissions;
     //当前运行模式  0为普通模式，1为验证识别模式(按不同权限区别可进入区域) 默认是普通模式
@@ -147,5 +150,13 @@ public class MainApplication extends Application {
 
     public void setPermissions(Permissions permissions) {
         this.permissions = permissions;
+    }
+
+    public boolean isbChange() {
+        return bChange;
+    }
+
+    public void setbChange(boolean bChange) {
+        this.bChange = bChange;
     }
 }

@@ -46,4 +46,7 @@ public interface ApiService {
 
     @POST(uploadRecordUrl)
     Call<NetResult<String>> uploadRecord(@Body ReportData data);
+
+    @GET(queryBackgroundUrl)
+    Call<ResponseBody> queryBackground();
 }

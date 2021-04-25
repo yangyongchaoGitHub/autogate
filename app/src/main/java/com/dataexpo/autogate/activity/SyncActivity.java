@@ -1,5 +1,6 @@
 package com.dataexpo.autogate.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -69,6 +70,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
     private int totalServiceSize = 0;
     private int totalLocalSize = 0;
     private int currChange = 0;
+    private int minPid = 0;
 
     //同步图像数据
     private int totalImgSize = 0;
@@ -124,11 +126,16 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
 
         findViewById(R.id.ib_back).setOnClickListener(this);
         findViewById(R.id.tv_back).setOnClickListener(this);
+        findViewById(R.id.tv_background).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.tv_background:
+                startActivity(new Intent(mContext, BackgroundActivity.class));
+                break;
+
             case R.id.tv_back:
             case R.id.ib_back:
                 this.finish();
@@ -161,6 +168,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                     tv_img_local_count_value.setText("");
                     tv_curr_count.setText("");
                     ust = new UserSyncThread();
+                    minPid = 0;
                     ust.start();
                     btn_check.setText("取消");
                 }
@@ -343,9 +351,22 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
         });
 
         String minId = "", maxId = "";
-        if (userEntityVos.size() > 1) {
-            minId = userEntityVos.get(0).getEuId() + "";
+        if (userEntityVos.size() >= 1) {
+            if (minPid < userEntityVos.get(0).getEuId()) {
+                Log.i(TAG, " minPid 1 " + minPid);
+                minId = minPid + "";
+            } else {
+                Log.i(TAG, " minPid 2 " + userEntityVos.get(0).getEuId());
+                minId = userEntityVos.get(0).getEuId() + "";
+            }
+            Log.i(TAG, " maxId 1 " + userEntityVos.get(userEntityVos.size() - 1).getEuId());
             maxId = userEntityVos.get(userEntityVos.size() - 1).getEuId() + "";
+            if (userEntityVos.size() < 100) {
+                //这时应该直接取后面的全部
+                maxId = (userEntityVos.get(userEntityVos.size() - 1).getEuId() + 10000000) + "";
+            } else {
+                minPid = userEntityVos.get(userEntityVos.size() - 1).getEuId() + 1;
+            }
         }
 
         // 根据最上，最下两个euid进行数据库查询，
@@ -361,7 +382,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
         Iterator<UserEntityVo> iue = userEntityVos.iterator();
         Iterator<User> iu;
 
-        //Log.i(TAG, "userEntityVos size " + userEntityVos.size() + " users size : " + users.size());
+        Log.i(TAG, "userEntityVos size " + userEntityVos.size() + " users size : " + users.size());
 
         while (iue.hasNext()) {
             UserEntityVo ue = iue.next();

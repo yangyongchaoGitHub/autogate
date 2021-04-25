@@ -333,7 +333,7 @@ public class UserService {
     public List<User> findUserByEuId(String minId, String maxId) {
         Log.i(TAG, "min: " + minId + " " + maxId);
         Cursor cursor = DBUtils.getInstance().listAll(DBUtils.TABLE_USER, null,
-                "pid>=? and pid<=?", new String[]{minId, maxId}, null, null, null);
+                "pid >= ? and pid <= ?", new String[]{minId, maxId}, null, null, null);
 //        Cursor cursor = DBUtils.getInstance().rowSelect("select * from gate_user where pid>=? and pid<=?",
 //                new String[]{minId, maxId});
 

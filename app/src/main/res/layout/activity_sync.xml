@@ -48,6 +48,21 @@
         style="@style/nullbg"
         android:src="@drawable/back"/>
 
+    <TextView
+        android:id="@+id/tv_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="背景图"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="@dimen/x48"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintWidth_percent="0.1"
+        app:layout_constraintHeight_percent="0.138888888"
+        style="@style/nullbg"
+        android:src="@drawable/back"/>
+
     <!-- 选择同步数据还是同步记录 -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:visibility="gone"

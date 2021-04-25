@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -57,6 +58,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
     private ImageView iv_face;
     private TextView tv_name;
     private TextView tv_direction;
+    private ImageView tv_bg;
     private User faceCurrUser = null;
     private User GateCurrUser = null;
 
@@ -72,6 +74,8 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
     private Retrofit mRetrofit;
     private Integer requestNum = 0;
     private Map<Integer, ReportData> requestMap = new HashMap<>();
+
+    private BgThread bgThread = null;
 
     public SecondaryPhoneCameraPresentationReverse(Context outerContext, Display display) {
         super(outerContext, display);
@@ -90,6 +94,10 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
         //注册消费者
         MainApplication.getInstance().getService().removeGateObserver(SecondaryPhoneCameraPresentationReverse.this);
         MainApplication.getInstance().getService().addGateObserver(SecondaryPhoneCameraPresentationReverse.this);
+        if (bgThread == null) {
+            bgThread = new BgThread();
+            bgThread.start();
+        }
     }
 
     private void initView() {
@@ -97,6 +105,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
         iv_face = findViewById(R.id.iv_face);
         tv_name = findViewById(R.id.tv_gage_name);
         tv_direction = findViewById(R.id.tv_direction);
+        tv_bg = findViewById(R.id.tv_bg);
 
         findViewById(R.id.btn_gosetting).setOnClickListener(this);
         findViewById(R.id.btn_exit).setOnClickListener(this);
@@ -106,6 +115,12 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
 
         iv_pass_status = findViewById(R.id.iv_pass_status);
         progress_view = findViewById(R.id.progress_view);
+
+        String path = FileUtils.getBgDirectory().getPath() + "/bg.jpg";
+        //final Bitmap bitmap = BitmapFactory.decodeFile(path);
+        Log.i(TAG, " responseData image path: " + path);
+
+        tv_bg.setBackground(Drawable.createFromPath(path));
     }
 
     @Override
@@ -323,5 +338,42 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                 Log.i(TAG, "onFailure" + t.toString());
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        bgThread.exist();
+        bgThread = null;
+    }
+
+    class BgThread extends Thread {
+        private boolean running = true;
+        @Override
+        public void run() {
+            while (running) {
+                try {
+                    sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (MainApplication.getInstance().isbChange()) {
+                    iv_head.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            String path = FileUtils.getBgDirectory().getPath() + "/bg.jpg";
+                            //final Bitmap bitmap = BitmapFactory.decodeFile(path);
+                            Log.i(TAG, " responseData image path: " + path);
+
+                            tv_bg.setBackground(Drawable.createFromPath(path));
+                        }
+                    });
+                }
+            }
+        }
+
+        public void exist() {
+            running = false;
+        }
     }
 }

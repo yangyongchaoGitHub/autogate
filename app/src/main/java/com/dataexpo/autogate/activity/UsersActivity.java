@@ -223,6 +223,8 @@ public class UsersActivity extends BascActivity implements OnItemClickListener, 
                     view.setLayoutParams(new ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT));
+                    footVh.pb.setVisibility(View.INVISIBLE);
+                    footVh.tv.setVisibility(View.INVISIBLE);
                     break;
             }
             return vh;
