@@ -26,6 +26,7 @@ public class User extends BaseModel {
     public static final int IMG_SYNC_END = 2;
 
     public int id;
+    public int expoId;
     public int pid; //数据库id
     public String name = "";
     public String company = "";

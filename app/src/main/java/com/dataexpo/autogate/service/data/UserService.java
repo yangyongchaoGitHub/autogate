@@ -16,6 +16,7 @@ import com.dataexpo.autogate.model.service.UserEntityVo;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.dataexpo.autogate.comm.Utils.EXPO_ID;
 import static com.dataexpo.autogate.face.manager.ImportFileManager.IMPORT_SUCCESS;
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_JPG;
 import static com.dataexpo.autogate.model.User.IMAGE_TYPE_PNG;
@@ -81,7 +82,7 @@ public class UserService {
             }
         }
         //存入数据库
-        return insertDB(user);
+        return insertDB(user, null);
     }
 
     //注册用户的同时保存用户的照片到指定的目录 用户实体没有图片数据  图片此时存在于其他目录
@@ -124,7 +125,7 @@ public class UserService {
             }
         }
         //存入数据库
-        if (insertDB(user) <= 0) {
+        if (insertDB(user, null) <= 0) {
             res = 2;
         }
         return res;
@@ -190,9 +191,10 @@ public class UserService {
     /**
      * 添加数据
      */
-    public synchronized long insertDB(User user) {
+    public synchronized long insertDB(User user, Integer expoId) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("pid", user.pid);
+        contentValues.put("expoId", expoId);
         contentValues.put("name", user.name);
         contentValues.put("company", user.company);
         contentValues.put("position", user.position);
@@ -310,6 +312,7 @@ public class UserService {
         User user_response = new User();
         user_response.id = cursor.getInt(cursor.getColumnIndex("id"));
         user_response.pid = cursor.getInt(cursor.getColumnIndex("pid"));
+        user_response.expoId = cursor.getInt(cursor.getColumnIndex("expoId"));
         user_response.name = cursor.getString(cursor.getColumnIndex("name"));
         user_response.company = cursor.getString(cursor.getColumnIndex("company"));
         user_response.position = cursor.getString(cursor.getColumnIndex("position"));
@@ -352,17 +355,25 @@ public class UserService {
      * 添加来自服务器的数据
      * @param sUpdateList
      */
-    public void addDataFromService(List<UserEntityVo> sUpdateList) {
-        User user;
-        for (UserEntityVo ue: sUpdateList) {
-            user = new User();
+    public void addDataFromService(List<UserEntityVo> sUpdateList, Integer expoId) {
+        DBUtils.getInstance().beginTransaction();
+        try {
+            User user;
+            for (UserEntityVo ue: sUpdateList) {
+                user = new User();
 
-            if (ue.getImageBase64() != null && !"".equals(ue.getImageBase64())) {
-                user.image_sync = IMG_SYNC_CHANGE;
+                if (ue.getImageBase64() != null && !"".equals(ue.getImageBase64())) {
+                    user.image_sync = IMG_SYNC_CHANGE;
+                }
+
+                ServerUserToLocal(ue, user);
+                insertDB(user, expoId);
             }
-
-            ServerUserToLocal(ue, user);
-            insertDB(user);
+            DBUtils.getInstance().setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtils.getInstance().endTransaction();
         }
     }
 
@@ -384,6 +395,21 @@ public class UserService {
         for (User u: users) {
             DBUtils.getInstance().delData(DBUtils.TABLE_USER, u.id);
         }
+    }
+
+    /**
+     * 删除全部
+     */
+    public int removeAll() {
+        return DBUtils.getInstance().delDataAll(DBUtils.TABLE_USER);
+    }
+
+    /**
+     * 删除所有不在这个项目的数据
+     * @param parseInt
+     */
+    public void removeAllByExpoId(int parseInt) {
+        DBUtils.getInstance().delDataBy(DBUtils.TABLE_USER, "expoId != ?", new String[]{parseInt + ""});
     }
 
     /**
@@ -501,6 +527,8 @@ public class UserService {
             result = false;
         }
 
+        Log.i(TAG, " " + ue.getImageBase64());
+
         //服务器端存在图片
         if (ue.getImageBase64() != null && !"".equals(ue.getImageBase64())) {
             Log.i(TAG, "compareUser" + ue.getImageBase64());
@@ -513,9 +541,9 @@ public class UserService {
             }
         }
 
+        //如果本地有，服务器没有，那也要删除
         if (ue.getImageBase64() != null && "".equals(ue.getImageBase64())) {
             if (u.image_sync == IMG_SYNC_END) {
-                //如果本地有，服务器没有，那也要删除
                 if (FileUtils.isFileExist(FileUtils.getUserPic(ue.getEucode())) != null) {
                     FileUtils.deleteFile(FileUtils.getUserPic(ue.getEucode()));
                 }

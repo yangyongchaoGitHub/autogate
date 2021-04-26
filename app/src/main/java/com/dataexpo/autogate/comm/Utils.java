@@ -46,8 +46,10 @@ public class Utils {
     public static String GATE_IP = "gate_ip";
     public static String GATE_DIRECTION_SET = "direction_set";
 
+    public static String EXPO_ID = "expo_id";
     public static String EXPO_NAME = "expo_name";
     public static String EXPO_ADDRESS = "expo_address";
+    public static String EXPO_DEVICE_NAME = "expo_device_name";
 
     public static String MODEL_NAME = "model_name";
     public static String PERMISSION_ID = "permission_id";

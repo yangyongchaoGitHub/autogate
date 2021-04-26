@@ -21,9 +21,12 @@ public class ReportData {
     private int permissionid;
     private String serialNum;
 
+    //新增eucode
+    private String eucode;
+
     public ReportData(){}
 
-    public ReportData(int id, String number, int direction, String time, int model, int pid, String address, int status, int permissionid) {
+    public ReportData(int id, String number, int direction, String time, int model, int pid, String address, int status, int permissionid, String eucode) {
         this.id = id;
         this.number = number;
         this.direction = direction;
@@ -33,6 +36,7 @@ public class ReportData {
         this.address = address;
         this.status = status;
         this.permissionid = permissionid;
+        this.eucode = eucode;
     }
 
     public ReportData(Rfid rfid, String number, int direction, String time) {
@@ -144,5 +148,13 @@ public class ReportData {
 
     public void setSerialNum(String serialNum) {
         this.serialNum = serialNum;
+    }
+
+    public String getEucode() {
+        return eucode;
+    }
+
+    public void setEucode(String eucode) {
+        this.eucode = eucode;
     }
 }

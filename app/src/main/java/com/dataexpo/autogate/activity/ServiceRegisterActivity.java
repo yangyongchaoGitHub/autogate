@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.dataexpo.autogate.R;
 import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.model.service.Device;
+import com.dataexpo.autogate.model.service.mp.MsgBean;
 import com.dataexpo.autogate.retrofitInf.ApiService;
 import com.dataexpo.autogate.retrofitInf.rentity.NetResult;
 import com.dataexpo.autogate.service.MainApplication;
@@ -26,6 +27,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 import static com.dataexpo.autogate.comm.Utils.EXPO_ADDRESS;
+import static com.dataexpo.autogate.comm.Utils.EXPO_DEVICE_NAME;
+import static com.dataexpo.autogate.comm.Utils.EXPO_ID;
 import static com.dataexpo.autogate.comm.Utils.EXPO_NAME;
 import static com.dataexpo.autogate.comm.Utils.GATE_IP;
 import static com.dataexpo.autogate.comm.Utils.GATE_PORT;
@@ -33,14 +36,17 @@ import static com.dataexpo.autogate.comm.Utils.GATE_PORT;
 public class ServiceRegisterActivity extends BascActivity implements View.OnClickListener {
     private static final String TAG = ServiceRegisterActivity.class.getSimpleName();
     private EditText tv_expo_name;
+    private EditText tv_expo_id;
     private EditText tv_device_name;
     private EditText tv_address;
     private TextView tv_back;
     private ImageView ib_back;
     private TextView tv_confirm;
 
+    private String expoId;
     private String expoName;
     private String address;
+    private String deviceName;
 
     private Retrofit mRetrofit;
 
@@ -55,10 +61,13 @@ public class ServiceRegisterActivity extends BascActivity implements View.OnClic
     }
 
     private void initView() {
+        expoId = Utils.getEXPOConfig(mContext, EXPO_ID);
         expoName = Utils.getEXPOConfig(mContext, EXPO_NAME);
         address = Utils.getEXPOConfig(mContext, EXPO_ADDRESS);
+        deviceName = Utils.getEXPOConfig(mContext, EXPO_DEVICE_NAME);
 
         tv_expo_name = findViewById(R.id.tv_expo_name);
+        tv_expo_id = findViewById(R.id.tv_expo_id);
         tv_address = findViewById(R.id.tv_expo_add);
         tv_back = findViewById(R.id.tv_back);
         tv_confirm = findViewById(R.id.tv_confirm);
@@ -67,8 +76,10 @@ public class ServiceRegisterActivity extends BascActivity implements View.OnClic
         tv_back.setOnClickListener(this);
         tv_confirm.setOnClickListener(this);
 
+        tv_expo_id.setText(expoId);
         tv_expo_name.setText(expoName);
         tv_address.setText(address);
+        tv_device_name.setText(deviceName);
 
         findViewById(R.id.btn_go_rfid).setOnClickListener(this);
         findViewById(R.id.ib_back).setOnClickListener(this);
@@ -89,16 +100,58 @@ public class ServiceRegisterActivity extends BascActivity implements View.OnClic
 
             case R.id.tv_confirm:
                 //保存配置
-                expoName = tv_expo_name.getText().toString().trim();
+                expoId = tv_expo_id.getText().toString().trim();
                 address = tv_address.getText().toString().trim();
+                deviceName = tv_device_name.getText().toString().trim();
 
-                saveToService();
+                //saveToService();
+                verifyExpo();
 
-                Utils.saveEXPOConfig(mContext, EXPO_NAME, expoName);
-                Utils.saveEXPOConfig(mContext, EXPO_ADDRESS, address);
                 break;
             default:
         }
+    }
+
+    private void verifyExpo() {
+        ApiService apiService = mRetrofit.create(ApiService.class);
+
+        Call<MsgBean<String>> call = apiService.verifyExpo(expoId, address);
+
+        call.enqueue(new Callback<MsgBean<String>>() {
+            @Override
+            public void onResponse(Call<MsgBean<String>> call, Response<MsgBean<String>> response) {
+                MsgBean<String> result = response.body();
+                if (result == null) {
+                    return;
+                }
+                Log.i(TAG, "onResponse" + result.msg);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Utils.saveEXPOConfig(mContext, EXPO_ID, expoId);
+                        Utils.saveEXPOConfig(mContext, EXPO_NAME, result.msg);
+                        Utils.saveEXPOConfig(mContext, EXPO_ADDRESS, address);
+                        Utils.saveEXPOConfig(mContext, EXPO_DEVICE_NAME, deviceName);
+                        tv_expo_id.setText(expoId);
+                        tv_expo_name.setText(result.msg);
+                        tv_address.setText(address);
+                        tv_device_name.setText(deviceName);
+                        Toast.makeText(mContext, "项目名称是：" + result.msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Call<MsgBean<String>> call, Throwable t) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mContext, "接口访问失败，请检查网络或联系服务器管理员", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                Log.i(TAG, "onFailure" + t.toString());
+            }
+        });
     }
 
     private void saveToService() {

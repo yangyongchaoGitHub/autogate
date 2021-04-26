@@ -128,6 +128,7 @@ public class MainApplication extends Application {
     public static Retrofit getmRetrofit() {
         return mRetrofit;
     }
+
     public static void createRetrofit() {
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(URLs.baseUrl)

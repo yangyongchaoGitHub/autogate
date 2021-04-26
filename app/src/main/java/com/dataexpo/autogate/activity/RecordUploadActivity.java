@@ -182,7 +182,7 @@ public class RecordUploadActivity extends BascActivity implements View.OnClickLi
         });
     }
 
-    //用户数据同步线程
+    //上传数据线程
     class UploadThread extends Thread {
         private boolean running = true;
 

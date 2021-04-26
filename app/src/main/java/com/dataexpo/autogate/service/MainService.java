@@ -82,6 +82,7 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
             if (res != null) {
                 //有此用户
                 mReports.setPid(res.pid);
+                mReports.setEucode(res.code);
                 mReports.setStatus(2);
                 ledCtrl(LED_GREEN, mReports.getRfid());
 

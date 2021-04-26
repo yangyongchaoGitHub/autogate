@@ -118,7 +118,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
 
         String path = FileUtils.getBgDirectory().getPath() + "/bg.jpg";
         //final Bitmap bitmap = BitmapFactory.decodeFile(path);
-        Log.i(TAG, " responseData image path: " + path);
+        //Log.i(TAG, " responseData image path: " + path);
 
         tv_bg.setBackground(Drawable.createFromPath(path));
     }
@@ -203,7 +203,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                         iv_head.setVisibility(View.INVISIBLE);
                         tv_name.setText("未注册！");
                     }
-                    tv_direction.setText("In".equals(mReports.getDirection()) ? "进" : "出");
+                    //tv_direction.setText("In".equals(mReports.getDirection()) ? "进" : "出");
 
                     //没有向服务器查询，则表示不符合
                     if (MainApplication.getInstance().getpModel() == 1 &&
@@ -213,6 +213,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                         mReports.setAddress(MainApplication.getInstance().getPermissions().getNames());
                         mReports.setStatus(1);
                         mReports.setPermissionid(MainApplication.getInstance().getPermissions().getId());
+
                         CardService.getInstance().insert(mReports);
                     }
                 }
@@ -225,6 +226,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
 
     }
 
+    //当校验模式时，需要查询权限
     private void queryPermission(ReportData mReports) {
         iv_head.post(new Runnable() {
             @Override
@@ -363,7 +365,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                         public void run() {
                             String path = FileUtils.getBgDirectory().getPath() + "/bg.jpg";
                             //final Bitmap bitmap = BitmapFactory.decodeFile(path);
-                            Log.i(TAG, " responseData image path: " + path);
+                            //Log.i(TAG, " responseData image path: " + path);
 
                             tv_bg.setBackground(Drawable.createFromPath(path));
                         }

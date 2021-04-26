@@ -14,6 +14,8 @@ public class UserQueryConditionVo implements Serializable {
 
 	//查询起始euid
 	private Integer startEuId;
+
+	private Integer expoId;
 	
 	private String name;
 	
@@ -158,5 +160,13 @@ public class UserQueryConditionVo implements Serializable {
 
 	public void setThreadName(String threadName) {
 		this.threadName = threadName;
+	}
+
+	public Integer getExpoId() {
+		return expoId;
+	}
+
+	public void setExpoId(Integer expoId) {
+		this.expoId = expoId;
 	}
 }

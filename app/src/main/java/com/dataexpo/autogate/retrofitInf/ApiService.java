@@ -22,15 +22,14 @@ import static com.dataexpo.autogate.retrofitInf.URLs.*;
 
 public interface ApiService {
 
-    @GET(tiktakUrl) //网络请求路径
-    Call<NetResult<String>> tiktak();
-
+    @Deprecated
     @POST(saveDeviceUrl)
     Call<NetResult<String>> saveDeviceConfig(@Body Device device);
 
     @POST(queryUserUrl)
     Call<NetResult<PageResult<UserEntityVo>>> querySyncUser(@Body UserQueryConditionVo vo);
 
+    @Deprecated
     @GET(queryUserImageUrl)
     Call<ResponseBody> querySyncUserImage(@Path("eucode") String eucode);
 
@@ -41,6 +40,7 @@ public interface ApiService {
     @GET(checkCardUrl)
     Call<MsgBean> checkCard(@Query("ICD") String icd);
 
+    @Deprecated
     @GET(queryRegistInfoUrl)
     Call<DeviceQueryResult> queryRegistInfo(@Query("serialNumber") String serialNumber);
 
@@ -49,4 +49,11 @@ public interface ApiService {
 
     @GET(queryBackgroundUrl)
     Call<ResponseBody> queryBackground();
+
+    // 对接到mp后台
+    @GET(verifyExpoUrl)
+    Call<com.dataexpo.autogate.model.service.mp.MsgBean<String>> verifyExpo(@Query("expoId") String expoId, @Query("address") String address);
+
+    @POST(mpQueryUserUrl)
+    Call<com.dataexpo.autogate.model.service.mp.MsgBean<PageResult<UserEntityVo>>> mpQuerySyncUser(@Body UserQueryConditionVo vo);
 }

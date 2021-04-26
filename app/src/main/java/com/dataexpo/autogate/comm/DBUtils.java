@@ -25,6 +25,18 @@ public class DBUtils {
     private String selectionArgs[] = new String[1];
     private String where1 = " = ?";
 
+    public void beginTransaction() {
+        db.beginTransaction();
+    }
+
+    public void endTransaction() {
+        db.endTransaction();
+    }
+
+    public void setTransactionSuccessful() {
+        db.setTransactionSuccessful();
+    }
+
     private static class HolderClass {
         private static final DBUtils instance = new DBUtils();
     }
@@ -49,6 +61,7 @@ public class DBUtils {
         String sql_user = "create table if not exists " + TABLE_USER +
                 "(id integer primary key autoincrement," +
                 "pid int, " +
+                "expoId int, " +
                 "name nchar(64), " +
                 "company nchar(64), " +
                 "position nchar(32), " +
@@ -70,6 +83,7 @@ public class DBUtils {
         String sql_card_record = "create table if not exists " + TABLE_CARD_RECORD +
                 "(id integer primary key autoincrement," + // id
                 "number char(32), " +                      // 卡号
+                "eucode char(32), " +                      // eucode
                 "direction int, " +                        // 进出方向
                 "model int, " +                            // 通道模式 0:普通模式; 1验证模式
                 "time char(32), " +                        // 记录的日期
@@ -147,9 +161,13 @@ public class DBUtils {
      *
      */
     public int delDataAll(String table) {
-        int inde = db.delete(table,null,null);
         //Log.e("--Main--", "删除了==============" + inde);
-        return inde;
+        return db.delete(table,null,null);
+    }
+
+    public int delDataBy(String table, String whereClause, String[] whereArgs) {
+        //Log.e("--Main--", "删除了==============" + inde);
+        return db.delete(table, whereClause, whereArgs);
     }
 
     /**

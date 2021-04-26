@@ -40,7 +40,7 @@ public class CardService implements GateObserver {
 
         //当模式是普通模式时保存记录，如果是校验模式则由界面统一控制门控制和记录保存
         if (MainApplication.getInstance().getpModel() == 0) {
-            insert(mReports.getNumber(), mReports.getDirection(), Utils.timeNowLong());
+            insert(mReports.getNumber(), mReports.getDirection(), Utils.timeNowLong(), mReports.getEucode());
         }
     }
 
@@ -52,10 +52,11 @@ public class CardService implements GateObserver {
     /**
      * 添加数据
      */
-    public long insert(String number, int direction, String time) {
+    public long insert(String number, int direction, String time, String eucode) {
         Log.i(TAG, "insert 1  " + number);
         ContentValues contentValues = new ContentValues();
         contentValues.put("number", number);
+        contentValues.put("eucode", eucode);
         contentValues.put("direction", direction);
         contentValues.put("time", time);
         contentValues.put("model", 0);
@@ -69,6 +70,7 @@ public class CardService implements GateObserver {
         Log.i(TAG, "insert 2  " + reportData.getNumber());
         ContentValues contentValues = new ContentValues();
         contentValues.put("number", reportData.getNumber());
+        contentValues.put("eucode", reportData.getEucode());
         contentValues.put("direction", reportData.getDirection());
         contentValues.put("time", reportData.getTime());
         contentValues.put("model", reportData.getModel());
@@ -126,6 +128,7 @@ public class CardService implements GateObserver {
         while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex("id"));
             String number = cursor.getString(cursor.getColumnIndex("number"));
+            String eucode = cursor.getString(cursor.getColumnIndex("eucode"));
             int direction = cursor.getInt(cursor.getColumnIndex("direction"));
             String time = cursor.getString(cursor.getColumnIndex("time"));
             int model = cursor.getInt(cursor.getColumnIndex("model"));
@@ -133,7 +136,7 @@ public class CardService implements GateObserver {
             String address = cursor.getString(cursor.getColumnIndex("address"));
             int status = cursor.getInt(cursor.getColumnIndex("status"));
             int permissionid = cursor.getInt(cursor.getColumnIndex("permissionid"));
-            list.add(new ReportData(id, number, direction, time, model, pid, address, status, permissionid));
+            list.add(new ReportData(id, number, direction, time, model, pid, address, status, permissionid, eucode));
         }
 
         cursor.close();
@@ -151,6 +154,7 @@ public class CardService implements GateObserver {
         while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex("id"));
             String n = cursor.getString(cursor.getColumnIndex("number"));
+            String eucode = cursor.getString(cursor.getColumnIndex("number"));
             int direction = cursor.getInt(cursor.getColumnIndex("direction"));
             String time = cursor.getString(cursor.getColumnIndex("time"));
             int model = cursor.getInt(cursor.getColumnIndex("model"));
@@ -158,7 +162,7 @@ public class CardService implements GateObserver {
             String address = cursor.getString(cursor.getColumnIndex("address"));
             int status = cursor.getInt(cursor.getColumnIndex("status"));
             int permissionid = cursor.getInt(cursor.getColumnIndex("permissionid"));
-            list.add(new ReportData(id, number, direction, time, model, pid, address, status, permissionid));
+            list.add(new ReportData(id, number, direction, time, model, pid, address, status, permissionid, eucode));
         }
 
         cursor.close();
