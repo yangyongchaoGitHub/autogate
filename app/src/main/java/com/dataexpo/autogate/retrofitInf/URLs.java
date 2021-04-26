@@ -11,6 +11,7 @@ public class URLs {
     @Deprecated
     public static final String saveDeviceUrl = "pda/device/save" + postfix;
 
+    @Deprecated
     //查询同步用户数据
     public static final String queryUserUrl = "pda/user/queryByCondition" + postfix;
 
@@ -28,6 +29,7 @@ public class URLs {
     @Deprecated
     public static final String queryRegistInfoUrl = "pda/device/info" + postfix;
 
+    @Deprecated
     // 上传通道门记录
     public static final String uploadRecordUrl = "pda/record/upload" + postfix;
 
@@ -42,5 +44,11 @@ public class URLs {
 
     //查询同步用户数据
     public static final String mpQueryUserUrl = "gate/queryByCondition";
+
+    // 上传通道门记录
+    public static final String mpuploadRecordUrl = "gate/uploadOneRecord";
+
+    // 获取背景图
+    public static final String mpQueryBackgroundUrl = "gate/getBgPath";
 
 }

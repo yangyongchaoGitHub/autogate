@@ -180,13 +180,18 @@ public class FileUtils {
      * @return 返回用户图片的uri
      */
     public static String getUserPic(String code) {
-        String res = "";
-        if (code.endsWith(".jpg")) {
-            res = getRegistedDirectory() + "/" + code;
-        } else {
-            res = getRegistedDirectory() + "/" + code + ".jpg";
+        try {
+            String res = "";
+            if (code.endsWith(".jpg")) {
+                res = getRegistedDirectory() + "/" + code;
+            } else {
+                res = getRegistedDirectory() + "/" + code + ".jpg";
+            }
+            return res;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return res;
     }
 
     /**

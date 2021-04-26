@@ -13,8 +13,10 @@ import com.dataexpo.autogate.R;
 import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.model.gate.ReportData;
 import com.dataexpo.autogate.model.service.PageResult;
+import com.dataexpo.autogate.model.service.RecordVo;
 import com.dataexpo.autogate.model.service.UserEntityVo;
 import com.dataexpo.autogate.model.service.UserQueryConditionVo;
+import com.dataexpo.autogate.model.service.mp.MsgBean;
 import com.dataexpo.autogate.retrofitInf.ApiService;
 import com.dataexpo.autogate.retrofitInf.rentity.NetResult;
 import com.dataexpo.autogate.service.MainApplication;
@@ -22,6 +24,7 @@ import com.dataexpo.autogate.service.data.CardService;
 import com.dataexpo.autogate.service.data.UserService;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +32,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+
+import static com.dataexpo.autogate.comm.Utils.EXPO_ADDRESS;
+import static com.dataexpo.autogate.comm.Utils.EXPO_ID;
 
 public class RecordUploadActivity extends BascActivity implements View.OnClickListener {
     private static final String TAG = RecordUploadActivity.class.getSimpleName();
@@ -119,7 +125,67 @@ public class RecordUploadActivity extends BascActivity implements View.OnClickLi
         }
     }
 
-    //获取用户数据
+    //上传数据
+    private int mpUpload(UploadRequest uploadRequest) {
+        ApiService apiService = mRetrofit.create(ApiService.class);
+        uploadRequest.reportData.setSerialNum(serialNum);
+
+        ReportData reportData = uploadRequest.reportData;
+        RecordVo recordVo = new RecordVo(reportData.getEucode(),
+                new Date(Long.parseLong(reportData.getTime())), serialNum,
+                Integer.parseInt(Utils.getEXPOConfig(mContext, EXPO_ID)),
+                Utils.getEXPOConfig(mContext, EXPO_ADDRESS), reportData.getNumber(),
+                reportData.getPid() + "");
+
+        Call<MsgBean<String>> call = apiService.mpUploadRecord(recordVo);
+
+        call.enqueue(new Callback<MsgBean<String>>() {
+            @Override
+            public void onResponse(Call<MsgBean<String>> call, Response<MsgBean<String>> response) {
+                Log.i(TAG, "onResponse" + response);
+
+                MsgBean<String> result = response.body();
+                UploadRequest request = requestMap.get(call.hashCode());
+
+                if (result != null && result.code != null && result.code.equals(200)) {
+                    currChange++;
+                    fixProgressShow();
+
+                    if (request != null) {
+                        CardService.getInstance().removeById(request.reportData.getId());
+                        request.requestStatus = UploadRequest.STATUS_RESPONSE;
+                    }
+
+                } else {
+                    if (request != null) {
+                        request.requestStatus = UploadRequest.STATUS_FAIL;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MsgBean<String>> call, Throwable t) {
+                UploadRequest request = requestMap.get(call.hashCode());
+                if (request != null) {
+                    request.requestStatus = UploadRequest.STATUS_FAIL;
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mContext, "接口访问失败，请检查网络或联系服务器管理员", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                Log.i(TAG, "onFailure" + t.toString());
+            }
+        });
+        uploadRequest.hscode = call.hashCode();
+        uploadRequest.requestStatus = UploadRequest.STATUS_REQUESTING;
+        requestMap.put(call.hashCode(), uploadRequest);
+        return call.hashCode();
+    }
+
+    //上传数据
     private int upload(UploadRequest uploadRequest) {
         ApiService apiService = mRetrofit.create(ApiService.class);
         uploadRequest.reportData.setSerialNum(serialNum);
@@ -218,7 +284,7 @@ public class RecordUploadActivity extends BascActivity implements View.OnClickLi
                     if (uploadRequest.reportData != null) {
                         requestMap.remove(uploadRequest.hscode);
 
-                        int hscode = upload(uploadRequest);
+                        int hscode = mpUpload(uploadRequest);
 
                         requestMap.put(hscode, uploadRequest);
                     } else {
@@ -236,7 +302,7 @@ public class RecordUploadActivity extends BascActivity implements View.OnClickLi
                     }
 
                 } else if (uploadRequest.requestStatus == UploadRequest.STATUS_FAIL) {
-                    upload(uploadRequest);
+                    mpUpload(uploadRequest);
                 }
             }
         }

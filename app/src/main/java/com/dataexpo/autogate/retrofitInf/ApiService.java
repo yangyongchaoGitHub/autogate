@@ -6,6 +6,7 @@ import com.dataexpo.autogate.model.service.DeviceQueryResult;
 import com.dataexpo.autogate.model.service.MsgBean;
 import com.dataexpo.autogate.model.service.PageResult;
 import com.dataexpo.autogate.model.service.PermissionBean;
+import com.dataexpo.autogate.model.service.RecordVo;
 import com.dataexpo.autogate.model.service.UserEntityVo;
 import com.dataexpo.autogate.model.service.UserQueryConditionVo;
 import com.dataexpo.autogate.retrofitInf.rentity.NetResult;
@@ -26,6 +27,7 @@ public interface ApiService {
     @POST(saveDeviceUrl)
     Call<NetResult<String>> saveDeviceConfig(@Body Device device);
 
+    @Deprecated
     @POST(queryUserUrl)
     Call<NetResult<PageResult<UserEntityVo>>> querySyncUser(@Body UserQueryConditionVo vo);
 
@@ -44,11 +46,12 @@ public interface ApiService {
     @GET(queryRegistInfoUrl)
     Call<DeviceQueryResult> queryRegistInfo(@Query("serialNumber") String serialNumber);
 
+    @Deprecated
     @POST(uploadRecordUrl)
     Call<NetResult<String>> uploadRecord(@Body ReportData data);
 
-    @GET(queryBackgroundUrl)
-    Call<ResponseBody> queryBackground();
+    @GET(mpQueryBackgroundUrl)
+    Call<com.dataexpo.autogate.model.service.mp.MsgBean<String>> queryBackground(@Query("expoId") Integer expoId);
 
     // 对接到mp后台
     @GET(verifyExpoUrl)
@@ -56,4 +59,8 @@ public interface ApiService {
 
     @POST(mpQueryUserUrl)
     Call<com.dataexpo.autogate.model.service.mp.MsgBean<PageResult<UserEntityVo>>> mpQuerySyncUser(@Body UserQueryConditionVo vo);
+
+    @POST(mpuploadRecordUrl)
+    Call<com.dataexpo.autogate.model.service.mp.MsgBean<String>> mpUploadRecord(@Body RecordVo vo);
+
 }

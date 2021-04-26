@@ -176,6 +176,7 @@ public class CardService implements GateObserver {
         ReportData reportData = new ReportData();
         reportData.setId(cursor.getInt(cursor.getColumnIndex("id")));
         reportData.setNumber(cursor.getString(cursor.getColumnIndex("number")));
+        reportData.setEucode(cursor.getString(cursor.getColumnIndex("eucode")));
         reportData.setDirection(cursor.getInt(cursor.getColumnIndex("direction")));
         reportData.setModel(cursor.getInt(cursor.getColumnIndex("model")));
         reportData.setTime(cursor.getString(cursor.getColumnIndex("time")));
