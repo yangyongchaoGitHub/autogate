@@ -527,11 +527,11 @@ public class UserService {
             result = false;
         }
 
-        Log.i(TAG, " " + ue.getImageBase64());
+        //Log.i(TAG, " " + ue.getImageBase64());
 
         //服务器端存在图片
         if (ue.getImageBase64() != null && !"".equals(ue.getImageBase64())) {
-            Log.i(TAG, "compareUser" + ue.getImageBase64());
+            //Log.i(TAG, "compareUser" + ue.getImageBase64());
             //本地无图片 或者本地图片和服务器图片base64不一致
             if (u.image_sync == IMG_SYNC_NONE || !ue.getImageBase64().equals(u.image_base64)) {
                 u.image_base64 = ue.getImageBase64();

@@ -218,7 +218,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
 
     //获取用户数据
     private UserQueryConditionVo queryUser(UserQueryConditionVo vo) {
-        Log.i(TAG, "queryUser " + vo.getPageNo());
+        Log.i(TAG, "queryUser " + vo.getPageNo() + " pagenum: " + vo.getPageNo() + " size:" + vo.getPageSize());
         ApiService apiService = mRetrofit.create(ApiService.class);
 
         vo.setRequestStatus(UserQueryConditionVo.STATUS_REQUESTING);
@@ -583,7 +583,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
             currChange = 0;
             totalLocalSize = UserService.getInstance().countLocal();
 
-            int pageNo = 0;
+            int pageNo = 1;
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -601,7 +601,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                 //按批次进行服务器用户数据进行同步
                 if (conditionVo == null) {
                     conditionVo = new UserQueryConditionVo();
-                    conditionVo.setPageNo(1);
+                    conditionVo.setPageNo(pageNo);
                     conditionVo.setPageSize(seed);
                     conditionVo.setRequestId(++requestNo);
                     conditionVo.setThreadName(this.getName());

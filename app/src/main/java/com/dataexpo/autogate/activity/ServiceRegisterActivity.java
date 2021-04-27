@@ -128,15 +128,19 @@ public class ServiceRegisterActivity extends BascActivity implements View.OnClic
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Utils.saveEXPOConfig(mContext, EXPO_ID, expoId);
-                        Utils.saveEXPOConfig(mContext, EXPO_NAME, result.msg);
-                        Utils.saveEXPOConfig(mContext, EXPO_ADDRESS, address);
-                        Utils.saveEXPOConfig(mContext, EXPO_DEVICE_NAME, deviceName);
-                        tv_expo_id.setText(expoId);
-                        tv_expo_name.setText(result.msg);
-                        tv_address.setText(address);
-                        tv_device_name.setText(deviceName);
-                        Toast.makeText(mContext, "项目名称是：" + result.msg, Toast.LENGTH_SHORT).show();
+                        if (result.code != null && result.code.equals(200)) {
+                            Utils.saveEXPOConfig(mContext, EXPO_ID, expoId);
+                            Utils.saveEXPOConfig(mContext, EXPO_NAME, result.msg);
+                            Utils.saveEXPOConfig(mContext, EXPO_ADDRESS, address);
+                            Utils.saveEXPOConfig(mContext, EXPO_DEVICE_NAME, deviceName);
+                            tv_expo_id.setText(expoId);
+                            tv_expo_name.setText(result.msg);
+                            tv_address.setText(address);
+                            tv_device_name.setText(deviceName);
+                            Toast.makeText(mContext, "项目名称是：" + result.msg, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(mContext, "项目不存在！！ ", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }
