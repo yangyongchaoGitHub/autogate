@@ -15,10 +15,22 @@ import com.dataexpo.autogate.listener.OnServeiceCallback;
 import com.dataexpo.autogate.model.Rfid;
 import com.dataexpo.autogate.model.User;
 import com.dataexpo.autogate.model.gate.ReportData;
+import com.dataexpo.autogate.model.service.RecordVo;
+import com.dataexpo.autogate.model.service.mp.MsgBean;
 import com.dataexpo.autogate.netty.UDPClient;
+import com.dataexpo.autogate.retrofitInf.ApiService;
 import com.dataexpo.autogate.service.data.CardService;
 import com.dataexpo.autogate.service.data.UserService;
 
+import java.util.Date;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+
+import static com.dataexpo.autogate.comm.Utils.EXPO_ADDRESS;
+import static com.dataexpo.autogate.comm.Utils.EXPO_ID;
 import static com.dataexpo.autogate.service.GateService.LED_GREEN;
 import static com.dataexpo.autogate.service.GateService.LED_RED;
 import static com.dataexpo.autogate.service.MQTTService.MQTT_CONNECT_SUCCESS;
@@ -28,6 +40,10 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
     private OnServeiceCallback callback;
     private MsgBinder mb = null;
     UDPClient client = null;
+
+    private Retrofit mRetrofit;
+
+    String serialNum = Utils.getSerialNumber();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -90,7 +106,12 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
                 mReports.setStatus(1);
                 ledCtrl(LED_RED, mReports.getRfid());
             }
-            CardService.getInstance().insert(mReports);
+            if (MainApplication.getInstance().getRecordModel() == 1) {
+                //在线模式，直接上传数据到服务器
+                mpUpload(mReports);
+            } else {
+                CardService.getInstance().insert(mReports);
+            }
         }
     }
 
@@ -154,10 +175,46 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
 //        MQTTService.getInstance().init(this);
 //        MQTTService.getInstance().add(this);
         client= new UDPClient();
+
+        mRetrofit = MainApplication.getmRetrofit();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    //上传数据
+    private void mpUpload(ReportData mReports) {
+        ApiService apiService = mRetrofit.create(ApiService.class);
+
+        RecordVo recordVo = new RecordVo(mReports.getEucode(),
+                new Date(Long.parseLong(mReports.getTime())), serialNum,
+                Integer.parseInt(Utils.getEXPOConfig(MainApplication.getInstance(), EXPO_ID)),
+                Utils.getEXPOConfig(MainApplication.getInstance(), EXPO_ADDRESS), mReports.getNumber(),
+                mReports.getPid() + "");
+
+        Call<MsgBean<String>> call = apiService.mpUploadRecord(recordVo);
+
+        call.enqueue(new Callback<MsgBean<String>>() {
+            @Override
+            public void onResponse(Call<MsgBean<String>> call, Response<MsgBean<String>> response) {
+                Log.i(TAG, "onResponse" + response);
+
+                MsgBean<String> result = response.body();
+
+                if (result == null || result.code == null || !result.code.equals(200)) {
+                    CardService.getInstance().insert(mReports);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MsgBean<String>> call, Throwable t) {
+                Log.i(TAG, "onFailure" + t.toString());
+                CardService.getInstance().insert(mReports);
+            }
+        });
+
+        call.hashCode();
     }
 }

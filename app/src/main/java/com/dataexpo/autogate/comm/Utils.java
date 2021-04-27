@@ -34,6 +34,7 @@ public class Utils {
     public static String GATE_XML = "gate";
     public static String EXPO_XML = "expo";
     public static String MODEL_XML = "model";
+    public static String LOCAL_XML = "local";
 
     public static String MQTT_HOST = "host";
     public static String MQTT_PORT = "port";
@@ -54,6 +55,22 @@ public class Utils {
     public static String MODEL_NAME = "model_name";
     public static String PERMISSION_ID = "permission_id";
     public static String PERMISSION_NAME = "permission_name";
+
+    public static String LOCAL_RECORD_MODEL = "local_record_model";
+
+    public synchronized static String getLocal(Context context, String key) {
+        SharedPreferences preferences = context.getSharedPreferences(LOCAL_XML,
+                Context.MODE_PRIVATE);
+        return preferences.getString(key, "");
+    }
+
+    public synchronized static void saveLocal(Context context, String key, String val) {
+        SharedPreferences preferences = context.getSharedPreferences(LOCAL_XML,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(key, val);
+        editor.commit();
+    }
 
     public synchronized static String getModel(Context context, String key) {
         SharedPreferences preferences = context.getSharedPreferences(MODEL_XML,

@@ -33,6 +33,7 @@ public class URLs {
     // 上传通道门记录
     public static final String uploadRecordUrl = "pda/record/upload" + postfix;
 
+    @Deprecated
     //查询背景图
     public static final String queryBackgroundUrl = "upload/bg/bg.jpg";
 

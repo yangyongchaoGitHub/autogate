@@ -94,5 +94,6 @@
     <string name="model_select">模式选择</string>
 
     <string name="upload">上传记录</string>
+    <string name="record_model">模式选择</string>
 
 </resources>

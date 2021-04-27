@@ -43,6 +43,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.RecordModelActivity"/>
         <activity android:name=".activity.BackgroundActivity"/>
         <activity android:name=".activity.RecordUploadActivity"/>
         <activity android:name=".activity.ModelSelectActivity"/>

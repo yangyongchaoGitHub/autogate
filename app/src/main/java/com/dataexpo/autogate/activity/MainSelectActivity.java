@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.dataexpo.autogate.R;
 import com.dataexpo.autogate.comm.DBUtils;
@@ -182,7 +183,8 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
 
             case R.id.bl_3:
                 //模式选择
-                startActivity(new Intent(mContext, ModelSelectActivity.class));
+                Toast.makeText(mContext, "当前设备仅支持普通模式 ", Toast.LENGTH_SHORT).show();
+                //startActivity(new Intent(mContext, ModelSelectActivity.class));
                 break;
 
             case R.id.bl_4:

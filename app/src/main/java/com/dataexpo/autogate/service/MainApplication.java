@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import static com.dataexpo.autogate.comm.Utils.LOCAL_RECORD_MODEL;
 import static com.dataexpo.autogate.comm.Utils.MODEL_NAME;
 import static com.dataexpo.autogate.comm.Utils.PERMISSION_ID;
 import static com.dataexpo.autogate.comm.Utils.PERMISSION_NAME;
@@ -35,6 +36,9 @@ public class MainApplication extends Application {
     private Permissions permissions;
     //当前运行模式  0为普通模式，1为验证识别模式(按不同权限区别可进入区域) 默认是普通模式
     private int pModel = 0;
+
+    //记录存储模式  0是离线模式   1是在线模式
+    private int recordModel = 0;
 
     //网络框架
     private static Retrofit mRetrofit;
@@ -69,6 +73,11 @@ public class MainApplication extends Application {
             } catch (Exception e) {
                 permissions = null;
             }
+        }
+
+        String recordStr = Utils.getLocal(this, LOCAL_RECORD_MODEL);
+        if (!"".equals(recordStr)) {
+            recordModel = Integer.parseInt(recordStr);
         }
 
         Log.i(TAG, "onCreate " + model + " " + permissions);
@@ -159,5 +168,13 @@ public class MainApplication extends Application {
 
     public void setbChange(boolean bChange) {
         this.bChange = bChange;
+    }
+
+    public int getRecordModel() {
+        return recordModel;
+    }
+
+    public void setRecordModel(int recordModel) {
+        this.recordModel = recordModel;
     }
 }

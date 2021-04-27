@@ -30,6 +30,7 @@ public class CardService implements GateObserver {
     }
 
     //现在不启用这个
+    @Deprecated
     @Override
     public void responseData(ReportData mReports) {
         //Log.i(TAG, "responseData");
