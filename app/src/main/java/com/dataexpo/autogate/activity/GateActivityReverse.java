@@ -289,7 +289,8 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
 
                 if (res != null) {
                     //有此用户
-                    String path = FileUtils.getUserPic(res.image_name);
+                    //String path = FileUtils.getUserPic(res.image_name);
+                    String path = FileUtils.getUserPic(res.code);
                     final Bitmap bitmap = BitmapFactory.decodeFile(path);
                     Log.i(TAG, " responseData image path: " + path);
                     iv_success_curr.setImageBitmap(bitmap);
@@ -308,7 +309,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
 
                     for (int i = 0; i < len; i++) {
                         if (users[i] != null) {
-                            ivs[i].setImageBitmap(BitmapFactory.decodeFile(FileUtils.getUserPic(users[i].image_name)));
+                            ivs[i].setImageBitmap(BitmapFactory.decodeFile(FileUtils.getUserPic(users[i].code)));
                             tvs[i].setText(users[i].name);
                         }
                     }

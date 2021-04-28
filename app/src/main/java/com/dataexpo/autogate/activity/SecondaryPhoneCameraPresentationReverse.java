@@ -183,7 +183,8 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
 
                     if (res != null) {
                         //有此用户
-                        String path = FileUtils.getUserPic(res.image_name);
+                        //String path = FileUtils.getUserPic(res.image_name);
+                        String path = FileUtils.getUserPic(res.code);
                         final Bitmap bitmap = BitmapFactory.decodeFile(path);
                         Log.i(TAG, " responseData image path: " + path);
 

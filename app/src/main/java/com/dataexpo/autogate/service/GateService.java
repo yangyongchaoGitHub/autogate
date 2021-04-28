@@ -360,12 +360,11 @@ public class GateService extends GateSubject {
                                 }
                             } else {
                                 r.status = GATE_STATUS_READ_ERROR;
-                                Log.i(TAG, "？？？？？？？？？？？？？？ ");
+                                Log.i(TAG, "读取的数据出错 将重新连接读取？？？？？？？？？？？？？？ ");
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-
                     }
                 }
             }

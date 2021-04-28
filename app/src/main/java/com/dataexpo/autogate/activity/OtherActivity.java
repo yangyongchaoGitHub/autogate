@@ -18,6 +18,7 @@ import com.dataexpo.autogate.model.Rfid;
 import com.dataexpo.autogate.model.gate.ReportData;
 import com.dataexpo.autogate.model.service.Device;
 import com.dataexpo.autogate.model.service.DeviceQueryResult;
+import com.dataexpo.autogate.model.service.mp.MsgBean;
 import com.dataexpo.autogate.retrofitInf.ApiService;
 import com.dataexpo.autogate.retrofitInf.rentity.NetResult;
 import com.dataexpo.autogate.service.MainApplication;
@@ -29,6 +30,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import static com.dataexpo.autogate.comm.Utils.EXPO_ADDRESS;
+import static com.dataexpo.autogate.comm.Utils.EXPO_DEVICE_NAME;
+import static com.dataexpo.autogate.comm.Utils.EXPO_ID;
+import static com.dataexpo.autogate.comm.Utils.EXPO_NAME;
 import static com.dataexpo.autogate.service.GateService.*;
 import static com.dataexpo.autogate.service.MQTTService.*;
 
@@ -84,6 +89,53 @@ public class OtherActivity extends BascActivity implements View.OnClickListener 
 
         tv_ip = findViewById(R.id.tv_ip);
         tv_connect_service = findViewById(R.id.tv_connect_service);
+    }
+
+    private void verifyExpo() {
+        ApiService apiService = mRetrofit.create(ApiService.class);
+
+        Call<MsgBean<String>> call = apiService.verifyExpo(Utils.getEXPOConfig(mContext, EXPO_ID), "");
+
+        call.enqueue(new Callback<MsgBean<String>>() {
+            @Override
+            public void onResponse(Call<MsgBean<String>> call, Response<MsgBean<String>> response) {
+                MsgBean<String> result = response.body();
+                if (result == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tv_connect_service.setText("设备未注册1！！");
+                            Toast.makeText(mContext, "设备未注册1！！ ", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    return;
+                }
+                Log.i(TAG, "onResponse" + result.msg);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (result.code != null && result.code.equals(200)) {
+                            tv_connect_service.setText("连接成功: " + result.msg);
+                        } else {
+                            tv_connect_service.setText("设备未注册1！！");
+                            Toast.makeText(mContext, "设备未注册！！ ", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Call<MsgBean<String>> call, Throwable t) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tv_connect_service.setText("连接服务器失败");
+                        Toast.makeText(mContext, "接口访问失败，请检查网络或联系服务器管理员", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                Log.i(TAG, "onFailure" + t.toString());
+            }
+        });
     }
 
     private void queryService() {
@@ -194,7 +246,8 @@ public class OtherActivity extends BascActivity implements View.OnClickListener 
         switch (v.getId()) {
             case R.id.btn_connect_service:
                 //连接服务器获取数据，借此测试连接状态
-                queryService();
+                //queryService();
+                verifyExpo();
                 break;
 
             case R.id.ib_back:

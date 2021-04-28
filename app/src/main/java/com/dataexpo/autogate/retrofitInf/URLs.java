@@ -1,9 +1,9 @@
 package com.dataexpo.autogate.retrofitInf;
 
 public class URLs {
-    public static final String baseUrl = "http://192.168.1.12:8090/";
+    //public static final String baseUrl = "http://192.168.1.12:8090/";
     //public static final String baseUrl = "http://saas.dataexpo.com.cn/Doors/";
-    //public static final String baseUrl = "https://auth.dataexpo.com.cn/";
+    public static final String baseUrl = "https://auth.dataexpo.com.cn/";
 
     private static final String postfix = ".do";
 

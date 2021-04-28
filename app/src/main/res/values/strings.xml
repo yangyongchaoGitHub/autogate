@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AutoGate</string>
+    <string name="app_name">通道门监控</string>
     <string name="back">返回</string>
     <string name="IP">IP:</string>
     <string name="port">端口:</string>
