@@ -277,7 +277,6 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
     }
 
     private void downloadImage(UserQueryConditionVo vo) {
-        Log.i(TAG, "img url: ");
         if (vo.getImageBase64() == null || vo.getImageBase64().equals("") || !vo.getImageBase64().startsWith("http")) {
             vo.setRequestStatus(UserQueryConditionVo.STATUS_RESPONSE);
             UserService.getInstance().updateToNoSyncImg(vo.getStartEuId());

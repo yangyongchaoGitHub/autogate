@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -117,6 +118,8 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
     private int hId = -1; //登录返回的id
     private int playingHandle = -1; //是否播放成功
 
+    private QueryImgThread queryImgThread = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,7 +135,6 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         if (app != null && app.getService() != null) {
             app.getService().setFrameCallback(this);
         }
-
 
         //TODO: 大华摄像头
 //        mLoginModule = new IPLoginModule();
@@ -150,6 +152,11 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         LoginHKTask loginTask = new LoginHKTask();
         loginTask.execute();
         Log.i(TAG, "onCreate end ");
+
+        if (queryImgThread == null) {
+            queryImgThread = new QueryImgThread();
+            queryImgThread.start();
+        }
     }
 
     @Override
@@ -192,6 +199,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
             playingHandle = -1;
         }
         super.onDestroy();
+        queryImgThread.exist();
         //unbindService(mConnection);
     }
 
@@ -318,6 +326,43 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
                 }
             }
         });
+    }
+
+    class QueryImgThread extends Thread {
+        private boolean running = true;
+        @Override
+        public void run() {
+            while (running) {
+                try {
+                    sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (MainApplication.getInstance().isbQueryImgEnd()) {
+                    try {
+                        sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (int i = 0; i < users.length; i++) {
+                                if (users[i] != null) {
+                                    ivs[i].setImageBitmap(BitmapFactory.decodeFile(FileUtils.getUserPic(users[i].code)));
+                                    tvs[i].setText(users[i].name);
+                                }
+                            }
+                        }
+                    });
+                    MainApplication.getInstance().setbQueryImgEnd(false);
+                }
+            }
+        }
+
+        public void exist() {
+            running = false;
+        }
     }
 
     //TODO: 海康威视

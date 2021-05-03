@@ -27,6 +27,7 @@ import com.dataexpo.autogate.model.service.MsgBean;
 import com.dataexpo.autogate.model.service.Permissions;
 import com.dataexpo.autogate.model.service.RegStatus;
 import com.dataexpo.autogate.model.service.UserAndPermission;
+import com.dataexpo.autogate.model.service.UserQueryConditionVo;
 import com.dataexpo.autogate.retrofitInf.ApiService;
 import com.dataexpo.autogate.retrofitInf.rentity.NetResult;
 import com.dataexpo.autogate.service.GateService;
@@ -35,10 +36,16 @@ import com.dataexpo.autogate.service.data.CardService;
 import com.dataexpo.autogate.service.data.UserService;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -73,7 +80,9 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
 
     private Retrofit mRetrofit;
     private Integer requestNum = 0;
+    private Integer imgRrequestNum = 0;
     private Map<Integer, ReportData> requestMap = new HashMap<>();
+    private Map<Integer, IQuery> imgRequestMap = new HashMap<>();
 
     private BgThread bgThread = null;
 
@@ -81,6 +90,15 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
         super(outerContext, display);
         mContext = outerContext;
         mRetrofit = MainApplication.getmRetrofit();
+    }
+
+    class IQuery {
+        public static final int SRequest = 1;
+        public static final int SResponse = 2;
+
+        Integer qid;
+        int status;
+        User user;
     }
 
     @Override
@@ -184,12 +202,20 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                     if (res != null) {
                         //有此用户
                         //String path = FileUtils.getUserPic(res.image_name);
+
+                        Log.i(TAG, " url:   " + res.image_base64);
+
                         String path = FileUtils.getUserPic(res.code);
                         final Bitmap bitmap = BitmapFactory.decodeFile(path);
+                        if ( bitmap == null) {
+                            //h获取人像
+                            downloadImage(res);
+                        } else {
+                            iv_head.setImageBitmap(bitmap);
+                            iv_head.setVisibility(View.VISIBLE);
+                        }
                         Log.i(TAG, " responseData image path: " + path);
 
-                        iv_head.setImageBitmap(bitmap);
-                        iv_head.setVisibility(View.VISIBLE);
 
                         if (MainApplication.getInstance().getpModel() == 1 &&
                                 MainApplication.getInstance().getPermissions() != null) {
@@ -371,12 +397,107 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                             tv_bg.setBackground(Drawable.createFromPath(path));
                         }
                     });
+                    MainApplication.getInstance().setbChange(false);
                 }
             }
         }
 
         public void exist() {
             running = false;
+        }
+    }
+
+
+    private void downloadImage(User user) {
+        IQuery query = new IQuery();
+        query.qid = imgRrequestNum++;
+        query.status = IQuery.SRequest;
+        query.user = user;
+
+        imgRequestMap.put(imgRrequestNum - 1, query);
+
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(user.image_base64)
+                .build();
+
+        okHttpClient.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, IOException e) {
+                Iterator<Map.Entry<Integer, IQuery>> iterator = imgRequestMap.entrySet().iterator();
+
+                while (iterator.hasNext()) {
+                    IQuery query1 = iterator.next().getValue();
+                    if (query1.user.image_base64.equals(call.request().url().toString())) {
+                        iterator.remove();
+                        break;
+                    }
+                }
+
+                iv_head.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mContext, "接口访问失败，请检查网络或联系服务器管理员", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                Log.i(TAG, "onFailure" + e.toString());
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                ResponseBody result = response.body();
+
+                Iterator<Map.Entry<Integer, IQuery>> iterator = imgRequestMap.entrySet().iterator();
+                IQuery query = null;
+                while (iterator.hasNext()) {
+                    query = iterator.next().getValue();
+                    if (query.user.image_base64.equals(call.request().url().toString())) {
+                        iterator.remove();
+                        break;
+                    }
+                }
+
+                if (query == null) {
+                    iv_head.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(mContext, "请求过期 ", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    return;
+                }
+
+                if (result != null) {
+                    // 获取图片
+                    Bitmap bitmap = BitmapFactory.decodeStream(result.byteStream());
+                    iv_head.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            iv_head.setImageBitmap(bitmap);
+                            //通知 小屏刷新
+                            MainApplication.getInstance().setbQueryImgEnd(true);
+                            //iv_sync_curr.setImageBitmap(bitmap);
+                        }
+                    });
+
+                    fixImgLocal(bitmap, query.user);
+                } else {
+                    Log.i(TAG, "图像不存在 ");
+                }
+            }
+        });
+    }
+
+
+    //将请求到的图像
+    private void fixImgLocal(Bitmap bitmap, User user) {
+        //把bitmap存到本地文件中
+        File rootFile = FileUtils.getRegistedDirectory();
+        File file = new File(rootFile.getPath() + "/" + user.code + ".jpg");
+
+        if (FileUtils.saveBitmap(file, bitmap)) {
+            UserService.getInstance().updateToSyncOk(user.pid, user.code);
         }
     }
 }

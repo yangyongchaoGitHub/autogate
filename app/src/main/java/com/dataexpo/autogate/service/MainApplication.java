@@ -32,6 +32,8 @@ public class MainApplication extends Application {
 
     //背景图片是否有变化
     private boolean bChange = false;
+
+    private boolean bQueryImgEnd = false;
     //通道权限
     private Permissions permissions;
     //当前运行模式  0为普通模式，1为验证识别模式(按不同权限区别可进入区域) 默认是普通模式
@@ -176,5 +178,13 @@ public class MainApplication extends Application {
 
     public void setRecordModel(int recordModel) {
         this.recordModel = recordModel;
+    }
+
+    public boolean isbQueryImgEnd() {
+        return bQueryImgEnd;
+    }
+
+    public void setbQueryImgEnd(boolean bQueryImgEnd) {
+        this.bQueryImgEnd = bQueryImgEnd;
     }
 }
