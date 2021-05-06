@@ -86,6 +86,8 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
 
     private BgThread bgThread = null;
 
+    private String currUrl = "";
+
     public SecondaryPhoneCameraPresentationReverse(Context outerContext, Display display) {
         super(outerContext, display);
         mContext = outerContext;
@@ -207,7 +209,8 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
 
                         String path = FileUtils.getUserPic(res.code);
                         final Bitmap bitmap = BitmapFactory.decodeFile(path);
-                        if ( bitmap == null) {
+                        currUrl = res.image_base64;
+                        if ( bitmap == null && res.image_base64 != null && res.image_base64.startsWith("http")) {
                             //h获取人像
                             downloadImage(res);
                         } else {
@@ -474,7 +477,10 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                     iv_head.post(new Runnable() {
                         @Override
                         public void run() {
-                            iv_head.setImageBitmap(bitmap);
+                            if (currUrl.equals(call.request().url().toString())) {
+                                iv_head.setImageBitmap(bitmap);
+                                iv_head.setVisibility(View.VISIBLE);
+                            }
                             //通知 小屏刷新
                             MainApplication.getInstance().setbQueryImgEnd(true);
                             //iv_sync_curr.setImageBitmap(bitmap);
