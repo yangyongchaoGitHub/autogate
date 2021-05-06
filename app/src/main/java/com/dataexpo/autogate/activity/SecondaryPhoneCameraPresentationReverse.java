@@ -195,7 +195,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                     if ("FFFFFFFFFFFFFFFF".equals(mReports.getNumber())) {
                         iv_head.setVisibility(View.INVISIBLE);
                         iv_head.setImageResource(R.drawable.err);
-                        tv_name.setText("非法通过！");
+                        tv_name.setText("非法通过或长时间逗留！");
                         return;
                     }
 
