@@ -156,6 +156,7 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
     }
 
     public void ledCtrl(int target, Rfid rfid) {
+        Log.i(TAG, "led: --------- " + target);
         GateService.getInstance().ledCtrl(target, rfid);
     }
 

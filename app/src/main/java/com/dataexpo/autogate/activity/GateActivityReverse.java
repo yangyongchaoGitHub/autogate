@@ -710,7 +710,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         @Override
         protected Boolean doInBackground(String... params) {
             Log.i(TAG, " LoginTAsk doInBackground!!!");
-            String ip = "192.168.1.64";
+            String ip = "192.168.225.64";
             String port = "8000";
             String loginName = "admin";
             String pswd = "dataexpo123";
