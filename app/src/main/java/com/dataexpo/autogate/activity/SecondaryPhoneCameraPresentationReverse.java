@@ -194,8 +194,9 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
 
                     if ("FFFFFFFFFFFFFFFF".equals(mReports.getNumber())) {
                         iv_head.setVisibility(View.INVISIBLE);
-                        iv_head.setImageResource(R.drawable.err);
-                        tv_name.setText("非法通过或长时间逗留！");
+                        //iv_head.setImageResource(R.drawable.err);
+                        tv_name.setText("");
+                        GateService.getInstance().ledCtrl(LED_RED, mReports.getRfid());
                         return;
                     }
 
@@ -230,8 +231,10 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                         }
 
                     } else {
+                        GateService.getInstance().ledCtrl(LED_GREEN, mReports.getRfid());
                         iv_head.setVisibility(View.INVISIBLE);
-                        tv_name.setText("未注册！");
+                        tv_name.setText("嘉宾");
+
                     }
                     //tv_direction.setText("In".equals(mReports.getDirection()) ? "进" : "出");
 

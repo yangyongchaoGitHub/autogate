@@ -96,6 +96,8 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
 
     private int seed = 1000;
 
+    OkHttpClient okHttpClient = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -283,8 +285,10 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
             return;
         }
         vo.setRequestStatus(UserQueryConditionVo.STATUS_REQUESTING);
+        if (okHttpClient == null) {
+            okHttpClient = new OkHttpClient();
+        }
 
-        OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(vo.getImageBase64())
                 .build();

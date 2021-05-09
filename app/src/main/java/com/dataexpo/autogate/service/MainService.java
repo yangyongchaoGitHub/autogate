@@ -104,7 +104,7 @@ public class MainService extends Service implements GateObserver, MQTTObserver {
 
             } else {
                 mReports.setStatus(1);
-                ledCtrl(LED_RED, mReports.getRfid());
+                //ledCtrl(LED_RED, mReports.getRfid());
             }
             if (MainApplication.getInstance().getRecordModel() == 1) {
                 //在线模式，直接上传数据到服务器

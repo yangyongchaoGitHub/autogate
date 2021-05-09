@@ -237,13 +237,18 @@ public class UserService {
     public ArrayList<User> limitList(int start, int size) {
         ArrayList<User> list = new ArrayList<>();
         Cursor cursor = DBUtils.getInstance().limitWith(DBUtils.TABLE_USER, start, size);
-        while (cursor.moveToNext()) {
-            User user = resolve(cursor);
-            if (user != null) {
-                list.add(user);
+        try {
+            while (cursor.moveToNext()) {
+                User user = resolve(cursor);
+                if (user != null) {
+                    list.add(user);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
         }
-        cursor.close();
         return list;
     }
 
@@ -270,11 +275,16 @@ public class UserService {
             return user_response;
         }
 
-        if (cursor.moveToNext()) {
-            user_response = resolve(cursor);
+        try {
+            if (cursor.moveToNext()) {
+                user_response = resolve(cursor);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
         }
 
-        cursor.close();
         return user_response;
     }
 
@@ -286,11 +296,16 @@ public class UserService {
             return user_response;
         }
 
-        if (cursor.moveToNext()) {
-            user_response = resolve(cursor);
+        try {
+            if (cursor.moveToNext()) {
+                user_response = resolve(cursor);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
         }
 
-        cursor.close();
         return user_response;
     }
 
@@ -298,10 +313,16 @@ public class UserService {
         Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_USER, "cardcode", user.cardCode);
         User user_response = null;
 
-        if (cursor.moveToNext()) {
-            user_response = resolve(cursor);
+        try {
+            if (cursor.moveToNext()) {
+                user_response = resolve(cursor);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
         }
-        cursor.close();
+
         return user_response;
     }
 
@@ -419,10 +440,15 @@ public class UserService {
         Cursor cursor = DBUtils.getInstance().rowQuery("select * from gate_user where image_sync = ? limit 1", new String[]{"1"});
         User user_response = null;
 
-        if (cursor.moveToNext()) {
-            user_response = resolve(cursor);
+        try {
+            if (cursor.moveToNext()) {
+                user_response = resolve(cursor);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
         }
-        cursor.close();
         return user_response;
     }
 

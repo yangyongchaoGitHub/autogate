@@ -96,10 +96,16 @@ public class CardService implements GateObserver {
         Cursor cursor = DBUtils.getInstance().rowQuery("select * from gate_card_record limit 1", null);
         ReportData reportData = null;
 
-        if (cursor.moveToNext()) {
-            reportData = resolve(cursor);
+        try {
+            if (cursor.moveToNext()) {
+                reportData = resolve(cursor);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
         }
-        cursor.close();
+
         return reportData;
     }
 
@@ -152,21 +158,26 @@ public class CardService implements GateObserver {
         ArrayList<ReportData> list = new ArrayList<>();
         Cursor cursor = DBUtils.getInstance().findBy(DBUtils.TABLE_CARD_RECORD, "number", number);
 
-        while (cursor.moveToNext()) {
-            int id = cursor.getInt(cursor.getColumnIndex("id"));
-            String n = cursor.getString(cursor.getColumnIndex("number"));
-            String eucode = cursor.getString(cursor.getColumnIndex("number"));
-            int direction = cursor.getInt(cursor.getColumnIndex("direction"));
-            String time = cursor.getString(cursor.getColumnIndex("time"));
-            int model = cursor.getInt(cursor.getColumnIndex("model"));
-            int pid = cursor.getInt(cursor.getColumnIndex("pid"));
-            String address = cursor.getString(cursor.getColumnIndex("address"));
-            int status = cursor.getInt(cursor.getColumnIndex("status"));
-            int permissionid = cursor.getInt(cursor.getColumnIndex("permissionid"));
-            list.add(new ReportData(id, number, direction, time, model, pid, address, status, permissionid, eucode));
+        try {
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(cursor.getColumnIndex("id"));
+                String n = cursor.getString(cursor.getColumnIndex("number"));
+                String eucode = cursor.getString(cursor.getColumnIndex("number"));
+                int direction = cursor.getInt(cursor.getColumnIndex("direction"));
+                String time = cursor.getString(cursor.getColumnIndex("time"));
+                int model = cursor.getInt(cursor.getColumnIndex("model"));
+                int pid = cursor.getInt(cursor.getColumnIndex("pid"));
+                String address = cursor.getString(cursor.getColumnIndex("address"));
+                int status = cursor.getInt(cursor.getColumnIndex("status"));
+                int permissionid = cursor.getInt(cursor.getColumnIndex("permissionid"));
+                list.add(new ReportData(id, number, direction, time, model, pid, address, status, permissionid, eucode));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
         }
 
-        cursor.close();
         return list;
     }
 

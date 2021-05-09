@@ -118,7 +118,12 @@ public class DBUtils {
 
     //添加数据基础方法
     public long insert(String tebleName, String nullColumnHack, ContentValues contentValues) {
-        return db.insert(tebleName, nullColumnHack, contentValues);
+        try {
+            return  db.insert(tebleName, nullColumnHack, contentValues);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0L;
     }
 
     /**
@@ -188,17 +193,32 @@ public class DBUtils {
 
     public int count(String sql) {
         Cursor cursor = db.rawQuery(sql, null);
-        cursor.moveToFirst();
-        int res = Integer.parseInt(cursor.getString(0));
-        cursor.close();
+        int res = 0;
+        try {
+            cursor.moveToFirst();
+            res = Integer.parseInt(cursor.getString(0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
+        }
+
+
         return res;
     }
 
     public int count(String sql, String[] args) {
         Cursor cursor = db.rawQuery(sql, args);
-        cursor.moveToFirst();
-        int res = Integer.parseInt(cursor.getString(0));
-        cursor.close();
+        int res = 0;
+        try {
+            cursor.moveToFirst();
+            res = Integer.parseInt(cursor.getString(0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
+        }
+
         return res;
     }
 
