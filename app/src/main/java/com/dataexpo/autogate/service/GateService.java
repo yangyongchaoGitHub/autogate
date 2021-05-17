@@ -111,7 +111,7 @@ public class GateService extends GateSubject {
         mGetReportThrd = null;
         initThrd = null;
 
-        Log.i(TAG, "restart 1" + rStatus + " " + rStatus_i);
+        //Log.i(TAG, "restart 1" + rStatus + " " + rStatus_i);
         for (Rfid r: rfids) {
             Log.i(TAG, "close --- " + r.getId());
             if (r.m_reader.isReaderOpen()) {
@@ -119,7 +119,7 @@ public class GateService extends GateSubject {
             }
         }
 
-        Log.i(TAG, "restart 2");
+        //Log.i(TAG, "restart 2");
         start();
     }
 
@@ -275,12 +275,16 @@ public class GateService extends GateSubject {
 
         public void run() {
             int iret, initResult;
+            byte[] reportBuf, time, byData;
+            int[] nSize;
+            byte direction;
+            ReportData report;
 
             byte flag = 0;
 
             while (bGetReportThrd) {
                 try {
-                    sleep(20);
+                    sleep(10);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -301,8 +305,8 @@ public class GateService extends GateSubject {
                                     Object hReport = r.m_reader.RDR_GetTagDataReport(RfidDef.RFID_SEEK_FIRST);
 
                                     while (hReport != null) {
-                                        byte[] reportBuf = new byte[64];
-                                        int[] nSize = new int[1];
+                                        reportBuf = new byte[64];
+                                        nSize = new int[1];
                                         iret = ADReaderInterface.RDR_ParseTagDataReportRaw(
                                                 hReport, reportBuf, nSize);
 
@@ -313,15 +317,15 @@ public class GateService extends GateSubject {
                                                 continue;
                                             }
                                             // byte evntType;
-                                            byte direction;
-                                            byte[] time = new byte[6];
+
+                                            time = new byte[6];
                                             int dataLen;
 
                                             // evntType = reportBuf[0];
                                             direction = reportBuf[1];
-                                            for (int i = 0; i < 6; i++) {
-                                                time[i] = reportBuf[2 + i];
-                                            }
+
+                                            System.arraycopy(reportBuf, 2, time, 0, 6);
+
                                             dataLen = reportBuf[8];
                                             if (dataLen < 0) {
                                                 dataLen += 256;
@@ -333,23 +337,23 @@ public class GateService extends GateSubject {
                                                 continue;
                                             }
 
-                                            byte[] byData = new byte[dataLen];
+                                            byData = new byte[dataLen];
 
 
                                             System.arraycopy(reportBuf, 9, byData, 0,
                                                     dataLen);
 
-                                            for (byte b:byData) {
-                                                System.out.print(b + " ");
-                                            }
-                                            System.out.println("-");
+//                                            for (byte b:byData) {
+//                                                System.out.print(b + " ");
+//                                            }
+//                                            System.out.println("-");
                                             //获取是否取反通过方向
                                             String dire = Utils.getGATEConfig(mContext, GATE_DIRECTION_SET);
 
-                                            direction = (byte)("".equals(dire) ? 1 : Integer.parseInt(dire) == 2 ?
-                                                    (direction == 1 ? 2 : 1) : direction);
+//                                            direction = (byte)("".equals(dire) ? 1 : Integer.parseInt(dire) == 2 ?
+//                                                    (direction == 1 ? 2 : 1) : direction);
 
-                                            ReportData report = new ReportData(r, GFunction.encodeHexStr(byData),
+                                            report = new ReportData(r, GFunction.encodeHexStr(byData),
                                                     direction, GFunction.encodeHexStr(time));
 
                                             notifyGate(report);

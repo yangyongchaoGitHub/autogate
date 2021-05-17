@@ -206,7 +206,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                         //有此用户
                         //String path = FileUtils.getUserPic(res.image_name);
 
-                        Log.i(TAG, " url:   " + res.image_base64);
+                        //Log.i(TAG, " url:   " + res.image_base64);
 
                         String path = FileUtils.getUserPic(res.code);
                         final Bitmap bitmap = BitmapFactory.decodeFile(path);
@@ -218,9 +218,8 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                             iv_head.setImageBitmap(bitmap);
                             iv_head.setVisibility(View.VISIBLE);
                         }
-                        Log.i(TAG, " responseData image path: " + path);
-
-
+                        //Log.i(TAG, " responseData image path: " + path);
+                        
                         if (MainApplication.getInstance().getpModel() == 1 &&
                                 MainApplication.getInstance().getPermissions() != null) {
                             //查询权限
@@ -234,7 +233,6 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                         GateService.getInstance().ledCtrl(LED_GREEN, mReports.getRfid());
                         iv_head.setVisibility(View.INVISIBLE);
                         tv_name.setText("嘉宾");
-
                     }
                     //tv_direction.setText("In".equals(mReports.getDirection()) ? "进" : "出");
 
