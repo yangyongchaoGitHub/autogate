@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.hardware.display.DisplayManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -56,6 +57,8 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
         mContext = this;
         DBUtils.getInstance().create(mContext);
         NetSDKLib.getInstance().init();
+
+        hideBottomUIMenu();
 
         //初始化后台服务
         mConnection = new ServiceConnection() {
@@ -210,6 +213,20 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
                 startActivity(new Intent(mContext, ClearDataActivity.class));
                 break;
             default:
+        }
+    }
+
+    protected void hideBottomUIMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
+            View v = this.getWindow().getDecorView();
+            v.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            //for new api versions.
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
         }
     }
 }

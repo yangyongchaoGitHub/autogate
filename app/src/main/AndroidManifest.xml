@@ -81,6 +81,14 @@
         <activity android:name=".activity.UserDetails"/>
         <activity android:name=".activity.faceset.FaceLivenessThresholdActivity"/>
 
+        <receiver android:name=".Receiver.BootReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </receiver>
+
         <service android:name=".service.MainService"/>
 
         <!-- Mqtt服务 -->

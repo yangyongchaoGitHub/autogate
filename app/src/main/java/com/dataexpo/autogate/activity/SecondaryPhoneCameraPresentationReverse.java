@@ -219,7 +219,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                             iv_head.setVisibility(View.VISIBLE);
                         }
                         //Log.i(TAG, " responseData image path: " + path);
-                        
+
                         if (MainApplication.getInstance().getpModel() == 1 &&
                                 MainApplication.getInstance().getPermissions() != null) {
                             //查询权限
