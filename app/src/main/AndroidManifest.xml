@@ -94,6 +94,17 @@
         <!-- Mqtt服务 -->
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 
+        <service
+            android:name=".service.keepalive.LocalService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name=".service.keepalive.RemoteService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":RemoteProcess" />
+
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
     </application>
 </manifest>
