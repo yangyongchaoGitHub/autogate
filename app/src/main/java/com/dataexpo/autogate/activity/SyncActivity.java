@@ -3,6 +3,7 @@ package com.dataexpo.autogate.activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +29,7 @@ import com.dataexpo.autogate.service.data.UserService;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import static com.dataexpo.autogate.comm.BitmapUtils.getFitSampleBitmap;
 import static com.dataexpo.autogate.comm.Utils.EXPO_ID;
 
 public class SyncActivity extends BascActivity implements View.OnClickListener {
@@ -105,6 +108,11 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
         mContext = this;
         mRetrofit = MainApplication.getmRetrofit();
         initView();
+
+//        ImageView ivv = findViewById(R.id.testview);
+//        //final Bitmap cacheBitmap = BitmapFactory.decodeFile(FileUtils.getRegistedDirectory().getPath() + "/" + "134172.jpg");
+//        ivv.setBackground(Drawable.createFromPath(FileUtils.getRegistedDirectory().getPath() + "/" + "134173.jpg"));
+        //ivv.setImageBitmap(cacheBitmap);
     }
 
     private void initView() {
@@ -171,7 +179,9 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                     btn_check.setText("检查数据完整性");
                     if (uist != null) {
                         uist.setRunningStop();
+                        uist = null;
                     }
+                    UserService.getInstance().waitToNoSync();
                     return;
                 }
 
@@ -215,7 +225,9 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
         }
         if (uist != null) {
             uist.setRunningStop();
+            uist = null;
         }
+        UserService.getInstance().waitToNoSync();
     }
 
     //获取用户数据
@@ -284,6 +296,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
             UserService.getInstance().updateToNoSyncImg(vo.getStartEuId());
             return;
         }
+
         vo.setRequestStatus(UserQueryConditionVo.STATUS_REQUESTING);
         if (okHttpClient == null) {
             okHttpClient = new OkHttpClient();
@@ -328,25 +341,93 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                         break;
                     }
                 }
+                //Log.i(TAG, "queryConditionVo " + result.contentLength());
 
                 if (queryConditionVo == null) {
-                    queryConditionVo.setRequestStatus(UserQueryConditionVo.STATUS_FAIL);
+                    //queryConditionVo.setRequestStatus(UserQueryConditionVo.STATUS_FAIL);
                     Toast.makeText(mContext, "请求过期", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if (result != null) {
-                    // 获取图片
-                    Bitmap bitmap = BitmapFactory.decodeStream(result.byteStream());
+                    // 获取图片 old
+//                    Bitmap bitmap = BitmapFactory.decodeStream(result.byteStream());
+//                    if (bitmap != null) {
+//                        fixImgLocal(bitmap, queryConditionVo);
+//
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                iv_sync_curr.setImageBitmap(bitmap);
+//                            }
+//                        });
+//                    } else {
+//                        //跳过
+//                        queryConditionVo.setRequestStatus(UserQueryConditionVo.STATUS_RESPONSE);
+//                        UserService.getInstance().updateToNoWaitSyncImg(queryConditionVo.getStartEuId());
+//                    }
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            iv_sync_curr.setImageBitmap(bitmap);
+                    // 获取图片 new
+//                    Bitmap bitmap = null;
+//                    try {
+//                        bitmap = getFitSampleBitmap(result.byteStream());
+//                        if (bitmap != null) {
+//                            fixImgLocal(bitmap, queryConditionVo);
+//
+//                            Bitmap finalBitmap = bitmap;
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    iv_sync_curr.setImageBitmap(finalBitmap);
+//                                }
+//                            });
+//                        } else {
+//                            //跳过
+//                            queryConditionVo.setRequestStatus(UserQueryConditionVo.STATUS_RESPONSE);
+//                            UserService.getInstance().updateToNoWaitSyncImg(queryConditionVo.getStartEuId());
+//                        }
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                        queryConditionVo.setRequestStatus(UserQueryConditionVo.STATUS_RESPONSE);
+//                        UserService.getInstance().updateToNoWaitSyncImg(queryConditionVo.getStartEuId());
+//                    }
+
+                    //直接保存流的方式
+                    try {
+                        InputStream is = result.byteStream();//获得输入流
+                        File rootFile = FileUtils.getRegistedDirectory();
+                        final String path = rootFile.getPath() + "/" + queryConditionVo.getEucode() + ".jpg";
+                        File file = new File(path);
+
+                        FileOutputStream fos = new FileOutputStream(file);//对应文件建立输出流
+                        byte[] buffer = new byte[1024];//新建缓存  用来存储 从网络读取数据 再写入文件
+                        int len = 0;
+                        while ((len = is.read(buffer)) != -1) {//当没有读到最后的时候
+                            fos.write(buffer, 0, len);//将缓存中的存储的文件流file文件
                         }
-                    });
+                        fos.flush();//将缓存中的写入file
+                        fos.close();
+                        is.close();//将输入流 输出流关闭
+                        Log.e("========", "++++++file++++" + file.getAbsolutePath());
+                        UserService.getInstance().updateToSyncOk(queryConditionVo.getStartEuId(), queryConditionVo.getEucode());
+                        queryConditionVo.setRequestStatus(UserQueryConditionVo.STATUS_RESPONSE);
 
-                    fixImgLocal(bitmap, queryConditionVo);
+                        fixProgressImgShow();
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                iv_sync_curr.setImageBitmap(BitmapFactory.decodeFile(path));
+                                //iv_sync_curr.setBackground(Drawable.createFromPath(path));
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        queryConditionVo.setRequestStatus(UserQueryConditionVo.STATUS_RESPONSE);
+                        UserService.getInstance().updateToNoWaitSyncImg(queryConditionVo.getStartEuId());
+                    }
+
+
                 } else {
                     queryConditionVo.setRequestStatus(UserQueryConditionVo.STATUS_RESPONSE);
                     Log.i(TAG, "图像不存在 " + queryConditionVo.getEucode() + " euid: " +queryConditionVo.getStartEuId());
@@ -391,7 +472,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                 if (result != null) {
                     // 获取图片
                     Bitmap bitmap = BitmapFactory.decodeStream(result.byteStream());
-
+                    fixImgLocal(bitmap, queryConditionVo);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -399,7 +480,6 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                         }
                     });
 
-                    fixImgLocal(bitmap, queryConditionVo);
                 } else {
                     queryConditionVo.setRequestStatus(UserQueryConditionVo.STATUS_RESPONSE);
                     Log.i(TAG, "图像不存在 " + queryConditionVo.getEucode() + " euid: " +queryConditionVo.getStartEuId());
@@ -718,7 +798,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                     User user = UserService.getInstance().findNoSyncImgOne();
 
                     if (user != null) {
-                        Log.i(TAG, "user != null " + user.code );
+                        Log.i(TAG, "user != null " + user.code);
                         conditionVo = new UserQueryConditionVo();
                         conditionVo.setEucode(user.code);
                         conditionVo.setStartEuId(user.pid);
@@ -739,6 +819,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                                 btn_check.setText("检查数据完整性");
                                 Toast.makeText(mContext, "同步结束", Toast.LENGTH_SHORT).show();
                                 setRunningStop();
+                                UserService.getInstance().waitToNoSync();
                                 uist = null;
                             }
                         });

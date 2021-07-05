@@ -295,34 +295,40 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
 
                 User res = UserService.getInstance().findUserByCardCode(user);
 
-                if (res != null) {
-                    //有此用户
-                    //String path = FileUtils.getUserPic(res.image_name);
-                    String path = FileUtils.getUserPic(res.code);
-                    final Bitmap bitmap = BitmapFactory.decodeFile(path);
-                    Log.i(TAG, " responseData image path: " + path);
-                    iv_success_curr.setImageBitmap(bitmap);
+                try {
+                    if (res != null) {
+                        //有此用户
+                        //String path = FileUtils.getUserPic(res.image_name);
+                        String path = FileUtils.getUserPic(res.code);
+//                    final Bitmap bitmap = BitmapFactory.decodeFile(path);
+                        Log.i(TAG, " responseData image path: " + path);
+                        iv_success_curr.setImageBitmap(BitmapFactory.decodeFile(path));
+                        //iv_success_curr.setBackground(Drawable.createFromPath(path));
 
-                    tv_name.setText(res.name);
-                    tv_company.setText(res.company);
-                    tv_deputation.setText(res.position);
-                    tv_auth.setText(AUTH_SUCCESS == res.auth ? "授权通过" : "授权未通过");
-                    int len = users.length;
+                        tv_name.setText(res.name);
+                        tv_company.setText(res.company);
+                        tv_deputation.setText(res.position);
+                        tv_auth.setText(AUTH_SUCCESS == res.auth ? "授权通过" : "授权未通过");
+                        int len = users.length;
 
-                    for (int i = len - 1; i > 0; i--) {
-                        users[i] = users[i - 1];
-                    }
-
-                    users[0] = res;
-
-                    for (int i = 0; i < len; i++) {
-                        if (users[i] != null) {
-                            ivs[i].setImageBitmap(BitmapFactory.decodeFile(FileUtils.getUserPic(users[i].code)));
-                            tvs[i].setText(users[i].name);
+                        for (int i = len - 1; i > 0; i--) {
+                            users[i] = users[i - 1];
                         }
-                    }
-                } else {
+
+                        users[0] = res;
+
+                        for (int i = 0; i < len; i++) {
+                            if (users[i] != null) {
+                                ivs[i].setBackground(Drawable.createFromPath(users[i].code));
+                                //ivs[i].setImageBitmap(BitmapFactory.decodeFile(FileUtils.getUserPic(users[i].code)));
+                                tvs[i].setText(users[i].name);
+                            }
+                        }
+                    } else {
 //                    tv_name.setText("未注册！");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -349,8 +355,13 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
                         public void run() {
                             for (int i = 0; i < users.length; i++) {
                                 if (users[i] != null) {
-                                    ivs[i].setImageBitmap(BitmapFactory.decodeFile(FileUtils.getUserPic(users[i].code)));
-                                    tvs[i].setText(users[i].name);
+                                    try {
+                                        //ivs[i].setBackground(Drawable.createFromPath(users[i].code));
+                                        ivs[i].setImageBitmap(BitmapFactory.decodeFile(FileUtils.getUserPic(users[i].code)));
+                                        tvs[i].setText(users[i].name);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
                         }
@@ -710,7 +721,7 @@ public class GateActivityReverse extends BascActivity implements View.OnClickLis
         @Override
         protected Boolean doInBackground(String... params) {
             Log.i(TAG, " LoginTAsk doInBackground!!!");
-            String ip = "192.168.225.64";
+            String ip = "192.168.1.64";
             String port = "8000";
             String loginName = "admin";
             String pswd = "dataexpo123";

@@ -23,6 +23,7 @@ import static com.dataexpo.autogate.model.User.IMAGE_TYPE_PNG;
 import static com.dataexpo.autogate.model.User.IMG_SYNC_CHANGE;
 import static com.dataexpo.autogate.model.User.IMG_SYNC_END;
 import static com.dataexpo.autogate.model.User.IMG_SYNC_NONE;
+import static com.dataexpo.autogate.model.User.IMG_SYNC_WAIT;
 
 public class UserService {
     private static final String TAG = UserService.class.getSimpleName();
@@ -481,6 +482,15 @@ public class UserService {
         contentValues.put("image_sync", 0);
         return DBUtils.getInstance().update(DBUtils.TABLE_USER, contentValues, "pid = ?", new String[]{startEuId+ ""});
     }
+    /**
+     * 取消同步图片状态
+     * @param startEuId
+     */
+    public int updateToNoWaitSyncImg(Integer startEuId) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("image_sync", IMG_SYNC_WAIT);
+        return DBUtils.getInstance().update(DBUtils.TABLE_USER, contentValues, "pid = ?", new String[]{startEuId+ ""});
+    }
 
     /**
      * 情况所有人像
@@ -507,6 +517,16 @@ public class UserService {
     }
 
     /**
+     * 把设置了等待同步的未同步文件设置成等待同步状态
+     */
+    public int waitToNoSync() {
+        //return 1;
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("image_sync", 1);
+        return DBUtils.getInstance().update(DBUtils.TABLE_USER, contentValues, "image_sync = ?", new String[]{"3"});
+    }
+
+    /**
      * 把服务器数据转化为本地数据
      * @param ue
      * @param user
@@ -518,6 +538,7 @@ public class UserService {
         user.position = ue.getPosition();
         user.cardCode = ue.getCardCode();
         user.code = ue.getEucode();
+        user.image_base64 = ue.getImageBase64();
     }
 
     /**

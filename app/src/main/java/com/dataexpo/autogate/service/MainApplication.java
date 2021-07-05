@@ -70,10 +70,10 @@ public class MainApplication extends Application {
         super.onCreate();
         application = this;
 
-        if (isMainProcess(getApplicationContext())) {
-            Log.i(TAG,"------------ start");
-            startService(new Intent(this, LocalService.class));
-        }
+//        if (isMainProcess(getApplicationContext())) {
+//            Log.i(TAG,"------------ start");
+//            startService(new Intent(this, LocalService.class));
+//        }
 
         createRetrofit();
         String model = Utils.getModel(this, MODEL_NAME);
