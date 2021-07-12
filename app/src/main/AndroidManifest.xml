@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.TYPE_SYSTEM_ALERT" />
 
     <application
         android:allowBackup="false"
@@ -80,10 +81,29 @@
         <activity android:name=".activity.UserDetails"/>
         <activity android:name=".activity.faceset.FaceLivenessThresholdActivity"/>
 
+        <receiver android:name=".Receiver.BootReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </receiver>
+
         <service android:name=".service.MainService"/>
 
         <!-- Mqtt服务 -->
         <service android:name="org.eclipse.paho.android.service.MqttService" />
+
+        <service
+            android:name=".service.keepalive.LocalService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name=".service.keepalive.RemoteService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":RemoteProcess" />
 
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
     </application>

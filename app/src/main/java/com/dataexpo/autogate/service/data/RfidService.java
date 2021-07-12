@@ -74,13 +74,19 @@ public class RfidService {
     public ArrayList<Rfid> limitList(int start, int size) {
         ArrayList<Rfid> list = new ArrayList<>();
         Cursor cursor = DBUtils.getInstance().limitWith(DBUtils.TABLE_RFID_GATE, start, size);
-        while (cursor.moveToNext()) {
-            Rfid rfid = resolve(cursor);
-            if (rfid != null) {
-                list.add(rfid);
+        try {
+            while (cursor.moveToNext()) {
+                Rfid rfid = resolve(cursor);
+                if (rfid != null) {
+                    list.add(rfid);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
         }
-        cursor.close();
+
         return list;
     }
 

@@ -5,8 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.hardware.display.DisplayManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -15,6 +18,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import androidx.core.content.PermissionChecker;
 
 import com.dataexpo.autogate.R;
 import com.dataexpo.autogate.comm.DBUtils;
@@ -52,6 +57,8 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
         mContext = this;
         DBUtils.getInstance().create(mContext);
         NetSDKLib.getInstance().init();
+
+        hideBottomUIMenu();
 
         //初始化后台服务
         mConnection = new ServiceConnection() {
@@ -96,6 +103,20 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         Log.i(TAG, "width: " + dm.widthPixels + " height: " + dm.heightPixels);
+
+        //获取允许出现在其他应用上权限
+        int hasAlertWindow = PermissionChecker.checkSelfPermission(this, Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+
+        Log.i("---------------------", hasAlertWindow + " " + PermissionChecker.PERMISSION_GRANTED);
+
+        //if (hasAlertWindow != PermissionChecker.PERMISSION_GRANTED) {
+        if (!Settings.canDrawOverlays(this)) {
+            //requestPerssionArr.add(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+        }
     }
 
     private void initDisplay() {
@@ -192,6 +213,20 @@ public class MainSelectActivity extends BascActivity implements View.OnClickList
                 startActivity(new Intent(mContext, ClearDataActivity.class));
                 break;
             default:
+        }
+    }
+
+    protected void hideBottomUIMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
+            View v = this.getWindow().getDecorView();
+            v.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            //for new api versions.
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
         }
     }
 }

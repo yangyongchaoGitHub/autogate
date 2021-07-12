@@ -3,11 +3,17 @@ package com.dataexpo.autogate.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+
+import androidx.core.content.PermissionChecker;
 
 import com.dataexpo.autogate.listener.GateObserver;
 import com.dataexpo.autogate.listener.MQTTObserver;
@@ -54,18 +60,7 @@ public class BascActivity extends Activity implements GateObserver, MQTTObserver
                     requestPerssionArr.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 }
 
-                //获取允许出现在其他应用上权限
-//                int hasAlertWindow = PermissionChecker.checkSelfPermission(this, Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-//
-//                Log.i("---------------------", hasAlertWindow + " " + PermissionChecker.PERMISSION_GRANTED);
-//
-//                if (hasAlertWindow != PermissionChecker.PERMISSION_GRANTED) {
-//                    //requestPerssionArr.add(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-//
-//                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-//                            Uri.parse("package:" + getPackageName()));
-//                    startActivity(intent);
-//                }
+
                 // 是否应该显示权限请求
                 if (requestPerssionArr.size() >= 1) {
                     String[] requestArray = new String[requestPerssionArr.size()];

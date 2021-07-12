@@ -1,12 +1,17 @@
 package com.dataexpo.autogate.service;
 
+import android.app.ActivityManager;
 import android.app.Application;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.company.NetSDK.NET_DEVICEINFO_Ex;
+import com.dataexpo.autogate.activity.MainSelectActivity;
 import com.dataexpo.autogate.comm.Utils;
 import com.dataexpo.autogate.model.service.Permissions;
 import com.dataexpo.autogate.retrofitInf.URLs;
+import com.dataexpo.autogate.service.keepalive.LocalService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.concurrent.Executors;
@@ -32,6 +37,8 @@ public class MainApplication extends Application {
 
     //背景图片是否有变化
     private boolean bChange = false;
+
+    private boolean bQueryImgEnd = false;
     //通道权限
     private Permissions permissions;
     //当前运行模式  0为普通模式，1为验证识别模式(按不同权限区别可进入区域) 默认是普通模式
@@ -62,6 +69,12 @@ public class MainApplication extends Application {
     public void onCreate() {
         super.onCreate();
         application = this;
+
+        if (isMainProcess(getApplicationContext())) {
+            Log.i(TAG,"------------ start");
+            startService(new Intent(this, LocalService.class));
+        }
+
         createRetrofit();
         String model = Utils.getModel(this, MODEL_NAME);
         if (model.equals("验证识别模式")) {
@@ -176,5 +189,41 @@ public class MainApplication extends Application {
 
     public void setRecordModel(int recordModel) {
         this.recordModel = recordModel;
+    }
+
+    public boolean isbQueryImgEnd() {
+        return bQueryImgEnd;
+    }
+
+    public void setbQueryImgEnd(boolean bQueryImgEnd) {
+        this.bQueryImgEnd = bQueryImgEnd;
+    }
+
+    //双service保活
+    public String getCurrentProcessName(Context context) {
+        int pid = android.os.Process.myPid();
+        String processName = "";
+        ActivityManager manager = (ActivityManager) context.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningAppProcessInfo process : manager.getRunningAppProcesses()) {
+            if (process.pid == pid) {
+                processName = process.processName;
+            }
+        }
+        return processName;
+    }
+
+    public boolean isMainProcess(Context context) {
+        Log.i(TAG,"------------ " + this.getApplicationContext().getPackageName() + " " + getCurrentProcessName(context));
+        return context.getApplicationContext().getPackageName().equals(getCurrentProcessName(context));
+    }
+
+    private static MainSelectActivity mainActivity = null;
+
+    public static MainSelectActivity getMainActivity() {
+        return mainActivity;
+    }
+
+    public static void setMainActivity(MainSelectActivity mainActivity) {
+        MainApplication.mainActivity = mainActivity;
     }
 }

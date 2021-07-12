@@ -96,6 +96,8 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
 
     private int seed = 1000;
 
+    OkHttpClient okHttpClient = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -218,7 +220,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
 
     //获取用户数据
     private UserQueryConditionVo queryUser(UserQueryConditionVo vo) {
-        Log.i(TAG, "queryUser " + vo.getPageNo());
+        Log.i(TAG, "queryUser " + vo.getPageNo() + " pagenum: " + vo.getPageNo() + " size:" + vo.getPageSize());
         ApiService apiService = mRetrofit.create(ApiService.class);
 
         vo.setRequestStatus(UserQueryConditionVo.STATUS_REQUESTING);
@@ -277,9 +279,16 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
     }
 
     private void downloadImage(UserQueryConditionVo vo) {
+        if (vo.getImageBase64() == null || vo.getImageBase64().equals("") || !vo.getImageBase64().startsWith("http")) {
+            vo.setRequestStatus(UserQueryConditionVo.STATUS_RESPONSE);
+            UserService.getInstance().updateToNoSyncImg(vo.getStartEuId());
+            return;
+        }
         vo.setRequestStatus(UserQueryConditionVo.STATUS_REQUESTING);
+        if (okHttpClient == null) {
+            okHttpClient = new OkHttpClient();
+        }
 
-        OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(vo.getImageBase64())
                 .build();
@@ -583,7 +592,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
             currChange = 0;
             totalLocalSize = UserService.getInstance().countLocal();
 
-            int pageNo = 0;
+            int pageNo = 1;
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -601,7 +610,7 @@ public class SyncActivity extends BascActivity implements View.OnClickListener {
                 //按批次进行服务器用户数据进行同步
                 if (conditionVo == null) {
                     conditionVo = new UserQueryConditionVo();
-                    conditionVo.setPageNo(1);
+                    conditionVo.setPageNo(pageNo);
                     conditionVo.setPageSize(seed);
                     conditionVo.setRequestId(++requestNo);
                     conditionVo.setThreadName(this.getName());

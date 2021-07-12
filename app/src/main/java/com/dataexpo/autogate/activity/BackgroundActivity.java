@@ -27,8 +27,10 @@ import com.dataexpo.autogate.service.MainApplication;
 import com.dataexpo.autogate.service.data.UserService;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -104,6 +106,7 @@ public class BackgroundActivity extends BascActivity implements View.OnClickList
 
     //获取背景图
     private void queryBg() {
+        iv_curr_background.setBackground(null);
         ApiService apiService = mRetrofit.create(ApiService.class);
 
         Call<MsgBean<String>> call = apiService.queryBackground(Integer.parseInt(Utils.getEXPOConfig(mContext, EXPO_ID)));
@@ -147,6 +150,8 @@ public class BackgroundActivity extends BascActivity implements View.OnClickList
     }
 
     private void getBg(String url) {
+        Log.i(TAG, " image url :" + url);
+
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
@@ -170,28 +175,37 @@ public class BackgroundActivity extends BascActivity implements View.OnClickList
 
                 if (result != null) {
                     // 获取图片
-                    Bitmap bitmap = BitmapFactory.decodeStream(result.byteStream());
+                    //Bitmap bitmap = BitmapFactory.decodeStream(result.byteStream());
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = getFitSampleBitmap(result.byteStream());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    Bitmap finalBitmap = bitmap;
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            progress_view.setVisibility(View.INVISIBLE);
-                            Log.i(TAG, " this : " + this.toString());
+                            if (finalBitmap != null) {
+                                progress_view.setVisibility(View.INVISIBLE);
+                                Log.i(TAG, " this : " + this.toString());
 
-                            File rootFile = FileUtils.getBgDirectory();
-                            File file = new File(rootFile.getPath() + "/bg.jpg");
+                                File rootFile = FileUtils.getBgDirectory();
+                                File file = new File(rootFile.getPath() + "/bg.jpg");
 
-                            if (FileUtils.saveBitmap(file, bitmap)) {
-                                //通知更改背景图
-                                MainApplication.getInstance().setbChange(true);
+                                if (FileUtils.saveBitmap(file, finalBitmap)) {
+                                    //通知更改背景图
+                                    MainApplication.getInstance().setbChange(true);
 
-                                //更新当前显示
-                                String path = FileUtils.getBgDirectory().getPath() + "/bg.jpg";
-                                Log.i(TAG, " responseData image path: " + path);
-                                iv_curr_background.setBackground(Drawable.createFromPath(path));
+                                    //更新当前显示
+                                    String path = FileUtils.getBgDirectory().getPath() + "/bg.jpg";
+                                    Log.i(TAG, " responseData image path: " + path);
+                                    iv_curr_background.setBackground(Drawable.createFromPath(path));
+                                }
                             }
                         }
-
                     });
                 } else {
                     runOnUiThread(new Runnable() {
@@ -206,6 +220,27 @@ public class BackgroundActivity extends BascActivity implements View.OnClickList
         });
     }
 
+    public  static  Bitmap  getFitSampleBitmap(InputStream  inputStream) throws Exception{
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        byte[] bytes = readStream(inputStream);
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+        options.inSampleSize = 2;
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+    }
+
+    public static byte[] readStream(InputStream inStream) throws Exception{
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len = 0;
+        while ((len = inStream.read(buffer)) != -1) {
+            outStream.write(buffer, 0, len);
+        }
+        outStream.close();
+        inStream.close();
+        return outStream.toByteArray();
+    }
     //获取背景图
 //    private void queryBg() {
 //        ApiService apiService = mRetrofit.create(ApiService.class);
