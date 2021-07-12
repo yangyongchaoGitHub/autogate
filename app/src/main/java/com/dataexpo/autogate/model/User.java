@@ -24,6 +24,7 @@ public class User extends BaseModel {
     public static final int IMG_SYNC_NONE = 0;
     public static final int IMG_SYNC_CHANGE = 1;
     public static final int IMG_SYNC_END = 2;
+    public static final int IMG_SYNC_WAIT = 3;
 
     public int id;
     public int expoId;

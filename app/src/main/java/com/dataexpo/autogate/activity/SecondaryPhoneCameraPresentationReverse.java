@@ -6,6 +6,8 @@ import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -37,7 +39,9 @@ import com.dataexpo.autogate.service.data.UserService;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -88,6 +92,9 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
 
     private String currUrl = "";
 
+    private SoundPool soundPool;
+    HashMap<Integer, Integer> soundMap = new HashMap<Integer, Integer>();
+
     public SecondaryPhoneCameraPresentationReverse(Context outerContext, Display display) {
         super(outerContext, display);
         mContext = outerContext;
@@ -118,6 +125,8 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
             bgThread = new BgThread();
             bgThread.start();
         }
+        soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 5);
+        //soundMap.put(1, soundPool.load(mContext, R.raw.rescan, 1)); //播放的声音文件
     }
 
     private void initView() {
@@ -195,7 +204,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                     if ("FFFFFFFFFFFFFFFF".equals(mReports.getNumber())) {
                         iv_head.setVisibility(View.INVISIBLE);
                         //iv_head.setImageResource(R.drawable.err);
-                        tv_name.setText("");
+                        tv_name.setText("非法闯入");
                         GateService.getInstance().ledCtrl(LED_RED, mReports.getRfid());
                         return;
                     }
@@ -216,6 +225,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                             downloadImage(res);
                         } else {
                             iv_head.setImageBitmap(bitmap);
+                            //iv_head.setBackground(Drawable.createFromPath(path));
                             iv_head.setVisibility(View.VISIBLE);
                         }
                         //Log.i(TAG, " responseData image path: " + path);
@@ -232,7 +242,7 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
                     } else {
                         GateService.getInstance().ledCtrl(LED_GREEN, mReports.getRfid());
                         iv_head.setVisibility(View.INVISIBLE);
-                        tv_name.setText("嘉宾");
+                        tv_name.setText("非法闯入");
                     }
                     //tv_direction.setText("In".equals(mReports.getDirection()) ? "进" : "出");
 
@@ -474,28 +484,49 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
 
                 if (result != null) {
                     // 获取图片
-                    Bitmap bitmap = BitmapFactory.decodeStream(result.byteStream());
-                    iv_head.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (currUrl.equals(call.request().url().toString())) {
-                                iv_head.setImageBitmap(bitmap);
-                                iv_head.setVisibility(View.VISIBLE);
-                            }
-                            //通知 小屏刷新
-                            MainApplication.getInstance().setbQueryImgEnd(true);
-                            //iv_sync_curr.setImageBitmap(bitmap);
-                        }
-                    });
+                    try {
+                        InputStream is = result.byteStream();//获得输入流
+                        File rootFile = FileUtils.getRegistedDirectory();
+                        final String path = rootFile.getPath() + "/" + user.code + ".jpg";
+                        File file = new File(path);
 
-                    fixImgLocal(bitmap, query.user);
+                        FileOutputStream fos = new FileOutputStream(file);//对应文件建立输出流
+                        byte[] buffer = new byte[1024];//新建缓存  用来存储 从网络读取数据 再写入文件
+                        int len = 0;
+                        while ((len = is.read(buffer)) != -1) {//当没有读到最后的时候
+                            fos.write(buffer, 0, len);//将缓存中的存储的文件流file文件
+                        }
+                        fos.flush();//将缓存中的写入file
+                        fos.close();
+                        is.close();//将输入流 输出流关闭
+                        Log.e("========", "++++++file++++" + file.getAbsolutePath());
+
+                        UserService.getInstance().updateToSyncOk(user.pid, user.code);
+
+                        iv_head.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Bitmap bitmap = BitmapFactory.decodeFile(path);
+                                if (currUrl.equals(call.request().url().toString())) {
+                                    iv_head.setImageBitmap(bitmap);
+                                    //iv_head.setBackground(Drawable.createFromPath(path));
+                                    iv_head.setVisibility(View.VISIBLE);
+                                }
+                                //通知 小屏刷新
+                                MainApplication.getInstance().setbQueryImgEnd(true);
+                                //iv_sync_curr.setImageBitmap(bitmap);
+                            }
+                        });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     Log.i(TAG, "图像不存在 ");
                 }
             }
         });
     }
-
 
     //将请求到的图像
     private void fixImgLocal(Bitmap bitmap, User user) {
@@ -507,4 +538,23 @@ public class SecondaryPhoneCameraPresentationReverse extends Presentation implem
             UserService.getInstance().updateToSyncOk(user.pid, user.code);
         }
     }
+
+//    private void playSound() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    Thread.sleep(200);
+//                    soundPool.play(soundMap.get(1), 1, // 左声道音量
+//                            1, // 右声道音量
+//                            1, // 优先级，0为最低
+//                            0, // 循环次数，0无不循环，-1无永远循环
+//                            1 // 回放速度 ，该值在0.5-2.0之间，1为正常速度
+//                    );
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
+//    }
 }
